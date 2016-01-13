@@ -1,0 +1,55 @@
+### WATSS: a Web Annotation Tool for Surveillance Scenarios ##
+
+A web based annotation tool to create ground truth for datasets related to visual surveillance and behavior understanding. 
+The system persistence is based on a relational database and the user interface is designed using HTML5, Javascript and CSS. 
+Our tool can easily manage datasets with multiple cameras. It allows annotating a person location in the image, its identity, its body and
+head gaze, as well as a potential occlusion or group membership.
+
+
+
+CONTENTS:
+- /css: style sheets
+- /DB: scripts to generate and popolate the database
+- /fonts: font files
+- /frames: contains the frames to label with WATSS
+- /gt-making: main page of  WATSS
+- /js: scripts javascript
+- /img/real_people: contains one representative image for each annotated people
+- /php: contains api.php with functions to run queries and connection.ini where are stored the parameters for the connection with the database (it is automatically generated through /DB/config.py script)
+- contributors.txt: peoples who have contributed to implement WATSS 
+- export.php: script to export the entire databse in CSV
+- index.php: home page
+- legend.html: contains the keyboard shortcuts
+- Readme: The file you are reading now :)...
+
+
+[*DB/config.conf*]
+This file allows to set some parameters of WATSS. Before running the tool the user must modify this file. Each section of *config.conf* file is showed in the follow:
+- [DBConnection]: contains the user/password/host/db parameters to connect WATSS with the database.
+ **Note: the database must be created manually from a mysql client, and the user specified in the db parameters must be granted privileges on this database. We also assume MySQL is listening on default port 3306**
+- [camera]: cameras information: ids and potential calibration information.
+- [user]: initial annotator usernames
+- [poi]: definition of poi (point of interest):
+	- each poi is defined using [poi_POI NAME] and the cameras in which it appears. For each camera a location_x,location_y,width and height is defined.
+
+
+QUICK START INSTRUCTIONS:
+1. Put WATSS code on web server e.g. by cloning the repo.
+ **Note: ensure WATSS has write privileges for the folder /img/real_people**
+2. Go to the */frames* folder (or create this folder if not exist)
+3. Create a folder for each camera to use with WATSS, e.g. 1,2,...N  in the *frames* folder. 
+ **Note: you can use only numeric notation for folder names**
+4. For each camera_id insert in the folder */frames/camera_id* all the relative images
+ **Note: the image will be ordered considering the name and the extension of the images**
+
+5. Set the parameters in the configuration file *config.conf* (see Above)
+
+6. Go to the folder DB and run: python DB/config.py
+ **Note: this python script generates the sql script insertData2DB.sql to insert the data in the database**
+7. Import the *DB/createSchemaDB.sql* script in a MySQL client to create the schema of the database
+8. Import the *DB/insertData2DB.sql* script in a MySQL client to insert the data in the database
+
+You should be able to start annotating opening a Web browser at: http://localhost/watss/
+
+[online WATSS]
+You can try WATSS at http://150.217.35.152/watss, with Name=Guest
