@@ -12,6 +12,7 @@
     </head>
 
     <body>
+    <?php phpinfo();?>
 		<div style="margin: 15px 15px;">
 			<nav class="navbar navbar-default" role="navigation">
 			  <div class="container-fluid">
