@@ -5,12 +5,9 @@
 	session_start();
 
 	$conFile=parse_ini_file("./connection.ini");
-	//print_r($conFile["host"]);
-	//$conn=mysql_connect("localhost","tooluser","t00lus3r");
 	$conn=mysql_connect($conFile["host"],$conFile["user"],$conFile["password"]);
     if (! $conn) exit("Error: ".mysql_error());
 	mysql_select_db($conFile['db']) or exit("Wrong Database");
-	//mysql_select_db("mnemosynedatasettool") or exit("Wrong Database");
 	
 	// check if a person already exists in the DB
 	function check_person($id){

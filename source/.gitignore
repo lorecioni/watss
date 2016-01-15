@@ -1,0 +1,4 @@
+*.pydevproject
+*.DS_Store
+*.project
+DB/insertData2DB.sql
