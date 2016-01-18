@@ -6,3 +6,5 @@ source/frames/2/*
 source/php/connection.ini
 source/img/real_people/*
 
+
+source/DB/insertData2DB.sql
