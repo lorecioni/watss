@@ -1,5 +1,6 @@
 <?php
 
+	require_once 'utils.php';
 	//error_reporting(E_ALL);
 	//ini_set("display_errors",1);
 	session_start();
@@ -383,23 +384,36 @@
 			jecho($group);
 		break;
 
-		//Add a person - DB
+		/** 
+		 * Adding person to database, if people_id is set a new istance of that person is made, 
+		 * else a new person is registred.
+		 * 
+		 * - Generates random color for the bounding box
+		 * - Insert person into the database
+		 * **/
 		case "add-person":	
-		// Generate random color and convert to hex
-			$red = rand(0,255);	
-			$green = rand(0,255);	
-			$blue = rand(0,255);
-			$rgb = array($red,$green,$blue);
-			$hex = "#";
-			$hex .= str_pad(dechex($rgb[0]), 2, "0", STR_PAD_LEFT);
-			$hex .= str_pad(dechex($rgb[1]), 2, "0", STR_PAD_LEFT);
-			$hex .= str_pad(dechex($rgb[2]), 2, "0", STR_PAD_LEFT);
-		// Query
+		    //Generate random HEX color 
+			$hex = getRandomColorHEX();
+			
+			//Initial bounding box settings
+			$bb = new stdClass(); //Full bounding box
+			$bb->x = 300;
+			$bb->y = 200;
+			$bb->width = 32;
+			$bb->height = 64;
+			
+			$bbV = new stdClass(); //Visible bounding box
+			$bbV->x = 300;
+			$bbV->y = 200;
+			$bbV->width = 20;
+			$bbV->height = 30;
+			
+		    //Query indicator: if true the query has been done
 			$done = true;
 
 			if (isset($_REQUEST["people_id"])){
 				$sql="INSERT INTO `people` (`peopleid`,`frameid`, `cameraid`, `bb_x`, `bb_y`, `bb_width`, `bb_height`, `bbV_x`, `bbV_y`, `bbV_width`, `bbV_height`, `gazeAngle_face`, `gazeAngle_face_z`, `gazeAngle_body`, `gazeAngle_body_z`,`color`, `poiid`, `userid`, `groupid`) VALUES
-				(".$_REQUEST["people_id"].", 'F".$_SESSION["frame_id"]."', '".$_SESSION["camera_id"]."', 300, 200, 32, 64, 300, 200, 20, 30, 0, 0, 0, 0,'".$hex."', 'O0', '".$_SESSION["user"]."', 'G0');";
+				(".$_REQUEST["people_id"].", 'F".$_SESSION["frame_id"]."', '".$_SESSION["camera_id"]."', ".$bb['x'].", ".$bb['y'].", ".$bb['width'].", ".$bb['height'].", ".$bbV['x'].", ".$bbV['y'].", ".$bbV['width'].", ".$bbV['height'].", 0, 0, 0, 0,'".$hex."', 'O0', '".$_SESSION["user"]."', 'G0');";
 				$result=mysql_query($sql) or
 				$done = false;
 				if ($done){
@@ -425,7 +439,6 @@
 				if ($done){
 					$person = array("id"=>$my_id,"color"=>$hex,"angle_face"=>0,"angle_face_z"=>0,"angle_body"=>0,"angle_body_z"=>0,"group"=>'G0',"artwork"=>'O0', "prev_frame"=>true, "bb"=>array(300, 200, 20, 30),"bbV"=>array(300, 200, 20, 30));
 				}
-			
 			}
 							
 			jecho($person);
@@ -774,16 +787,6 @@
             break;
 
 	}
-    
-    function jecho( $value ){
-        header("Content-type: application/json");
-        echo json_encode($value);
-    }
-    
-    function error_500($msg){
-        header("HTTP/1.0 500 Internal Server Error");
-        echo $msg;
-        exit;
-    }
+   
 
 ?>
