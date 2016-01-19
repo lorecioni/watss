@@ -2,6 +2,18 @@ body {
 	margin: 15px;
 }
 
+/** Navigation bar **/
+
+.main-nav {
+	font-weight: bold;
+}
+
+/** Panels **/
+
+.panel-heading {
+    font-weight: bold;
+}
+
 .table {
 	margin: 0px;
 }
@@ -13,16 +25,10 @@ body {
 	background-color: #111111;
 }
 
-/*.draggable {*/
-/*	background-color: rgba(0,0,0,0);*/
-/*}*/
-
 .draggable {
 	margin: 0px;
 	padding: 0px;
 }
-
-div.dataTables_wrapper { min-height: 300px; }
 
 #username {
 	height: 28px;
@@ -58,5 +64,24 @@ div.dataTables_wrapper { min-height: 300px; }
 /* Image picker dimension */
 img.image_picker_image {
     max-height: 100px;
+}
+
+/** Panels **/
+
+a.btn-panel {
+    float: right;
+}
+
+.panel-heading {
+    line-height: 34px;
+}
+
+.paging_bootstrap.pagination, 
+.paging_bootstrap .pagination {
+    margin: 20px 0 10px;
+}
+
+div.dataTables_info {
+    padding: 2px;
 }
 

@@ -24,11 +24,12 @@
 			<div class="container-fluid">
 				<!-- Collect the nav links, forms, and other content for toggling -->
 				<div class="collapse navbar-collapse">
-					<ul class="nav navbar-nav">
+					<ul class="nav navbar-nav main-nav">
 						<li><a href="../index.php">Home</a></li>
 						<li class="active"><a href="#">GT Making</a></li>
 						<li><a href="../export.php">Export Results</a></li>				
 						<li><a href="../legend.html">Legend</a></li>
+						<li><a href="#">Configuration</a></li>		
 					</ul>
 <ul class="nav navbar-nav navbar-right">
          <li><a id="welcome-person"></a></li>
@@ -72,6 +73,9 @@
 
 
 				<div class="col-md-5">
+				<!-- People panel -->
+				 <div class="people-panel panel panel-default">
+				  <div class="panel-heading">People <a class="btn btn-primary btn-panel" id="open-modal-add-person" data-toggle="modal" data-target="#insertPersonModal" href>Add person</a></div>
 					<table id="people-table" class="table table-condesed table-hover not-update">
 						<thead>
 							<tr>
@@ -93,11 +97,9 @@
 							</tr>
 						</tbody>
 					</table>
-					<div class="row">					
-						<div class="add-people-link">
-							<a id="open-modal-add-person" data-toggle="modal" data-target="#insertPersonModal" href>Add person</a>
-						</div>
 					</div>
+					<!-- !end of people panel -->
+					
 					<!-- Add person modal -->
 					<div class="modal fade" id="insertPersonModal" tabindex="-1" role="dialog" aria-labelledby="insertPersonModalLabel" aria-hidden="true">
 					  <div class="modal-dialog modal-lg">
@@ -129,6 +131,9 @@
 					  </div>
 					</div>					
 
+					<!-- Group panel -->
+				 <div class="groups-panel panel panel-default">
+				  <div class="panel-heading">Groups <a class="btn btn-primary btn-panel" data-toggle="modal" data-target="#insertGroupModal" href>Add group</a></div>
 					<table id="groups-table" class="table table-condesed table-hover">
 						<thead>
 							<tr>
@@ -148,10 +153,6 @@
 						</tbody>
 					</table>					
 						<div id="groups-pagination"></div>
-						<div class="row">					
-							<div class="add-group-link">
-								<a data-toggle="modal" data-target="#insertGroupModal" href>Add group</a>
-							</div>
 						</div>
 					</div>
 					<!-- Add group modal -->
