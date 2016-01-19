@@ -42,8 +42,13 @@ div.dataTables_wrapper { min-height: 300px; }
 	position: absolute;
 	z-index: 3;
 }
-.bbV{
-	/*position: relative;*/
+.bbV {
+	position: absolute;
+	z-index: 2;
+}
+
+.face {
+	position: absolute;
 }
 
 .frame-form {
