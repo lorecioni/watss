@@ -418,21 +418,23 @@ function pagination(table_id, people_per_page){
  */
 
 function addBoundingBox(people){
-	var videoWidth = jQuery('#video-box').width();
-	var videoHeight = jQuery('#video-box').height();
+	var videoBoxWidth = jQuery('#video-box').width();
+	var videoBoxHeight = jQuery('#video-box').height();
+	var videoWidth = $("#video-box").data("width");
+	var videoHeight = $("#video-box").data("height");
 	
 	for(var i in people){
-		// update coordinates
-		people[i]["bb"][0] = people[i]["bb"][0]*videoWidth/videoWidth;
-		people[i]["bb"][1] = people[i]["bb"][1]*videoHeight/videoHeight;
-		people[i]["bb"][2] = people[i]["bb"][2]*videoWidth/videoWidth;
-		people[i]["bb"][3] = people[i]["bb"][3]*videoHeight/videoHeight;
+		//Updates bounding box coordinates
+		people[i]["bb"][0] = people[i]["bb"][0]*videoBoxWidth/videoWidth;
+		people[i]["bb"][1] = people[i]["bb"][1]*videoBoxHeight/videoHeight;
+		people[i]["bb"][2] = people[i]["bb"][2]*videoBoxWidth/videoWidth;
+		people[i]["bb"][3] = people[i]["bb"][3]*videoBoxHeight/videoHeight;
 
-		// update coordinates
-		people[i]["bbV"][0] = people[i]["bbV"][0]*videoWidth/videoWidth;
-		people[i]["bbV"][1] = people[i]["bbV"][1]*videoHeight/videoHeight;
-		people[i]["bbV"][2] = people[i]["bbV"][2]*videoWidth/videoWidth;
-		people[i]["bbV"][3] = people[i]["bbV"][3]*videoHeight/videoHeight;
+		//Updates bounding box visible coordinates
+		people[i]["bbV"][0] = people[i]["bbV"][0]*videoBoxWidth/videoWidth;
+		people[i]["bbV"][1] = people[i]["bbV"][1]*videoBoxHeight/videoHeight;
+		people[i]["bbV"][2] = people[i]["bbV"][2]*videoBoxWidth/videoWidth;
+		people[i]["bbV"][3] = people[i]["bbV"][3]*videoBoxHeight/videoHeight;
 
 		//Bounding box
 		var boundingBox = jQuery('<div></div>')
@@ -442,6 +444,7 @@ function addBoundingBox(people){
 				'width' : people[i]['bb'][2],
 				'height' : people[i]['bb'][3],
 				'border' : '1px dotted ' + people[i]["color"],
+				'z-index' : 3,
 				'position' : 'absolute'})
 			.attr('id', 'box-' + people[i]["id"])
 			.attr('data-id',  people[i]["id"])
@@ -454,6 +457,7 @@ function addBoundingBox(people){
 				'width' : people[i]['bbV'][2],
 				'height' : people[i]['bbV'][3],
 				'border' : '2px dashed ' + people[i]["color"],
+				'z-index' : 4,
 				'visibility' : 'hidden',
 				'position' : 'absolute'})
 			.attr('id', 'box-' + people[i]["id"] + '-bbV')
@@ -468,6 +472,7 @@ function addBoundingBox(people){
 				'height' : people[i]['bb'][3],
 				'border' : '1px dashed ' + people[i]["color"],
 				'visibility' : 'hidden',
+				'z-index' : 2,
 				'position' : 'absolute'})
 			.attr('id', 'box-' + people[i]["id"] + '-face')
 			.attr('data-id',  people[i]["id"])
@@ -479,11 +484,13 @@ function addBoundingBox(people){
 		$("#video-box").append(boundingBox);
 		$("#video-box").append(boundingBoxVisible);
 		$("#video-box").append(boundingBoxFace);
+		setDragResize(boundingBox, boundingBoxVisible, boundingBoxFace)
+		
 	}
 
-	for(var i in people){
-		setDragNResize("#box-"+people[i]["id"],"#box-"+people[i]["id"]+"-bbV");
-	}
+//	for(var i in people){
+//		setDragResize("#box-"+people[i]["id"],"#box-"+people[i]["id"]+"-bbV");
+//	}
 
 	if(people.length == 1){
 		$(".bb:last, .bbV:last, .face:last").click(function(){
