@@ -264,11 +264,8 @@ $('#prev-frame').click(function(){
 	});
 });
 
-function checkInfo(){	
-	console.log("[check-gt-info] call user:"+$("#username").val()+" camera_id:"+($("#cameras").select2("data")==null?"\
-":$("#cameras").select2("data").id)+" frame_id:"+$("input[name=frameRadios]:checked\
-").val()+" frame_number:"+($("#frame-number").select2("data")==null?"":$("#frame-number\
-").select2("data").id));
+function checkInfo(){
+	console.log('[check-gt-info]');
 	$.ajax({
 		type: "POST",
 		url: "../php/api.php",

@@ -416,7 +416,6 @@ function pagination(table_id, people_per_page){
  * Add bounding box into the frame, based on people list
  * @param people
  */
-
 function addBoundingBox(people){
 	var videoBoxWidth = jQuery('#video-box').width();
 	var videoBoxHeight = jQuery('#video-box').height();

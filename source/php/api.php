@@ -27,128 +27,47 @@
 		
 		return $var;
 	}
-	
-	function create_avatar($bbV, $id){
-		$done = true;
-		$first_change = false;
-		$dimension = array();
-		$alpha = 0.09;		
-		$gamma = 0.9;
-		$beta = 1-($alpha+$gamma);
-		// recover person avatar...
-		$sql="SELECT * FROM `real_people` WHERE `peopleid`=".$id;
-		$result=mysql_query($sql) or
-		$done = false;
-		if ($done == true){
-			while ($row=mysql_fetch_array($result) )
-			{
-				if ($row["image"] != "../img/real_people/default.png"){
-					$dimension = getimagesize($row["image"]);
-				}else{
-					$dimension[0] = 0.1;
-					$dimension[1] = 0.1;	
-					$first_change = true;
-				}
-				$face = intval($row["face"]);
-				$face_z = intval($row["face_z"]);
-			}
-		}		
-
-		$sql="SELECT gazeAngle_face, gazeAngle_face_z FROM `people` WHERE `peopleid`=".$id." AND cameraid = '".$_SESSION['camera_id']."' AND frameid = 'F".$_SESSION['frame_id']."'";
-
-		$result=mysql_query($sql) or
-		$done = false;
-		if ($done == true){
-			while ($row=mysql_fetch_array($result) )
-			{
-				$face_people = intval($row['gazeAngle_face']);
-				$face_z_people = intval($row['gazeAngle_face_z']);
-			}		
-		}
-		
-		$old_value = 1/($dimension[0]*$dimension[1]);
-		$new_value = 1/($bbV[2]*$bbV[3]);
-		
-        if ( $new_value < $old_value ){
-			$sql="SELECT path FROM `video` WHERE `frameid`='F".$_SESSION["frame_id"]."' AND `cameraid`='".$_SESSION["camera_id"]."'";
-			$result=mysql_query($sql) or
-			$done = false;
-			if ($done == true){
-				while ($row=mysql_fetch_array($result) )
-				{
-					$src = imagecreatefromjpeg("../frames/".$row["path"]);					
-					$dest = imagecreatetruecolor($bbV[2], $bbV[3]);					
-					$done = imagecopyresampled($dest, $src, 0, 0, $bbV[0],  $bbV[1],  $bbV[2],  $bbV[3], $bbV[2],  $bbV[3]);
-					$done = imagejpeg($dest, "../img/real_people/".$id.".jpg");
-					
-					$src = $dest;
-					$dest = imagecreatetruecolor(intval(100.0*$bbV[2]/$bbV[3]), 100);	
-					$done = imagecopyresampled($dest, $src, 0, 0, 0,  0, intval(100.0*$bbV[2]/$bbV[3]), 100, $bbV[2],$bbV[3]);
-					$done = imagejpeg($dest, "../img/real_people/".$id."_100.jpg");
-
-					chmod("../img/real_people/".$id.".jpg",0777);
-					chmod("../img/real_people/".$id."_100.jpg",0777);
-					imagedestroy($src);
-					imagedestroy($dest);
-					
-				}
-				
-				$sql="UPDATE `real_people` SET face=".$face_people.", face_z=".$face_z_people." WHERE peopleid=".$id;
-				$result=mysql_query($sql) or
-				$done=false;
-			}
-			
-			if ($first_change == true){
-				$sql="UPDATE `real_people` SET `image`='../img/real_people/".$id.".jpg' WHERE peopleid=".$id;
-				$result=mysql_query($sql) or
-				$done=false;
-			}
-		}
-		
-		return $done;		
-	}
-
 
 	if( !isset($_REQUEST['action']) )
 		error_500("missing action");
 
 	switch( $_REQUEST['action'] ) {
 
+		/**
+		 * Checking user permission and data validity. Check fram number
+		 * camera id validity
+		 * 
+		 * @return boolean : true if user can proceed
+		 */
 		case "check-gt-info":
-
 			$to_return = true;
 			if (!isset($_SESSION["user"])){
 				if($_REQUEST["user"]!="" &&  $_REQUEST["camera_id"]!="" && 
-				($_REQUEST["frame_id"]!="number" || $_REQUEST["frame_number"]!="")){
+					($_REQUEST["frame_id"]!="number" || $_REQUEST["frame_number"]!="")){
 						$sql="SELECT userid FROM user WHERE name='".mysql_real_escape_string($_REQUEST["user"])."'";
-						$result=mysql_query($sql) or
-						die ("Error: ".mysql_error());
+						$result=mysql_query($sql) or die ("Error: ".mysql_error());
 						if ( mysql_num_rows($result)==0 ) {					
 							$to_return = false;
-						}else{
+						} else{
 							while ($row=mysql_fetch_array($result) ){
 								$_SESSION["user"] = $row["userid"];
 								$_SESSION["camera_id"] = $_REQUEST["camera_id"];
 								$sql="SELECT g.groupid FROM `tgroup` as g, `user` as u WHERE g.userid=u.userid AND u.name='".$_REQUEST["user"]."' AND g.groupid='G0'";
-								$result_zero = mysql_query($sql) or
-								$to_return = false;
-								if ( mysql_num_rows($result_zero)==0 ) {
+								$result_zero = mysql_query($sql) or $to_return = false;
+								if (mysql_num_rows($result_zero) == 0) {
 									$sql_1= "SELECT `userid` FROM `user` WHERE `name`='".$_REQUEST["user"]."'";
-									$result_1 = mysql_query($sql_1) or
-									$to_return = false;
+									$result_1 = mysql_query($sql_1) or $to_return = false;
 									while ($returned_id=mysql_fetch_array($result_1) ){							
 										$sql_2="INSERT INTO `tgroup` (`groupid`, `name`, `userid`) VALUES
-										('G0', 'Nessun Gruppo', '".$returned_id["userid"]."');";
-										$final_result=mysql_query($sql_2) or
-										$to_return = false;
+											('G0', 'Nessun Gruppo', '".$returned_id["userid"]."');";
+										$final_result=mysql_query($sql_2) or $to_return = false;
 									}
 								}
 							}
 						}
 						if ($_REQUEST["frame_id"] == 'first'){
 								$sql= "SELECT MIN(CAST(n as UNSIGNED)) as id FROM (SELECT SUBSTRING(`frameid`,2) as n FROM video ) as tab";
-								$result_2 = mysql_query($sql) or
-								$to_return = false;						
+								$result_2 = mysql_query($sql) or $to_return = false;						
 								while ($final_res=mysql_fetch_array($result_2) ){
 									$_SESSION["frame_id"]=(intval($final_res["id"]));
 									$_SESSION["frame_id"]=sprintf("%06d",$_SESSION["frame_id"]);
@@ -156,8 +75,7 @@
 						}else{
 							if ($_REQUEST["frame_id"] == 'FUF'){
 								$sql= "SELECT MIN(CAST(SUBSTRING(frameid,2) as UNSIGNED)) as id FROM video WHERE frameid not in (SELECT frameid FROM people WHERE userid='".$_SESSION["user"]."' AND cameraid='".$_SESSION["camera_id"]."')";
-								$result_2 = mysql_query($sql) or
-								$to_return = false;						
+								$result_2 = mysql_query($sql) or $to_return = false;						
 								while ($final_res=mysql_fetch_array($result_2) ){
 									$_SESSION["frame_id"]=(intval($final_res["id"]));									
 									$_SESSION["frame_id"]=sprintf("%06d",$_SESSION["frame_id"]);
@@ -165,15 +83,14 @@
 							}else{
 								if ($_REQUEST["frame_id"] == 'number'){
 									$_SESSION["frame_id"] = intval(substr($_REQUEST["frame_number"],1));
-									$_SESSION["frame_id"]=sprintf("%06d",$_SESSION["frame_id"]);
+									$_SESSION["frame_id"] = sprintf("%06d",$_SESSION["frame_id"]);
 								}
 							}
 						}
-				}else{
+				} else {
 					$to_return = false;
 				}
 			}
-			
 			jecho($to_return);
 			break;
 
@@ -779,6 +696,87 @@
 //			jecho($people);
             break;
 
+	}
+	
+
+	function create_avatar($bbV, $id){
+		$done = true;
+		$first_change = false;
+		$dimension = array();
+		$alpha = 0.09;
+		$gamma = 0.9;
+		$beta = 1-($alpha+$gamma);
+		// recover person avatar...
+		$sql="SELECT * FROM `real_people` WHERE `peopleid`=".$id;
+		$result=mysql_query($sql) or
+		$done = false;
+		if ($done == true){
+			while ($row=mysql_fetch_array($result) )
+			{
+				if ($row["image"] != "../img/real_people/default.png"){
+					$dimension = getimagesize($row["image"]);
+				}else{
+					$dimension[0] = 0.1;
+					$dimension[1] = 0.1;
+					$first_change = true;
+				}
+				$face = intval($row["face"]);
+				$face_z = intval($row["face_z"]);
+			}
+		}
+	
+		$sql="SELECT gazeAngle_face, gazeAngle_face_z FROM `people` WHERE `peopleid`=".$id." AND cameraid = '".$_SESSION['camera_id']."' AND frameid = 'F".$_SESSION['frame_id']."'";
+	
+		$result=mysql_query($sql) or
+		$done = false;
+		if ($done == true){
+			while ($row=mysql_fetch_array($result) )
+			{
+				$face_people = intval($row['gazeAngle_face']);
+				$face_z_people = intval($row['gazeAngle_face_z']);
+			}
+		}
+	
+		$old_value = 1/($dimension[0]*$dimension[1]);
+		$new_value = 1/($bbV[2]*$bbV[3]);
+	
+		if ( $new_value < $old_value ){
+			$sql="SELECT path FROM `video` WHERE `frameid`='F".$_SESSION["frame_id"]."' AND `cameraid`='".$_SESSION["camera_id"]."'";
+			$result=mysql_query($sql) or
+			$done = false;
+			if ($done == true){
+				while ($row=mysql_fetch_array($result) )
+				{
+					$src = imagecreatefromjpeg("../frames/".$row["path"]);
+					$dest = imagecreatetruecolor($bbV[2], $bbV[3]);
+					$done = imagecopyresampled($dest, $src, 0, 0, $bbV[0],  $bbV[1],  $bbV[2],  $bbV[3], $bbV[2],  $bbV[3]);
+					$done = imagejpeg($dest, "../img/real_people/".$id.".jpg");
+						
+					$src = $dest;
+					$dest = imagecreatetruecolor(intval(100.0*$bbV[2]/$bbV[3]), 100);
+					$done = imagecopyresampled($dest, $src, 0, 0, 0,  0, intval(100.0*$bbV[2]/$bbV[3]), 100, $bbV[2],$bbV[3]);
+					$done = imagejpeg($dest, "../img/real_people/".$id."_100.jpg");
+	
+					chmod("../img/real_people/".$id.".jpg",0777);
+					chmod("../img/real_people/".$id."_100.jpg",0777);
+					imagedestroy($src);
+					imagedestroy($dest);
+						
+				}
+	
+				$sql="UPDATE `real_people` SET face=".$face_people.", face_z=".$face_z_people." WHERE peopleid=".$id;
+				$result=mysql_query($sql) or
+				$done=false;
+			}
+				
+			if ($first_change == true){
+				$sql="UPDATE `real_people` SET `image`='../img/real_people/".$id.".jpg' WHERE peopleid=".$id;
+				$result=mysql_query($sql) or
+				$done=false;
+			}
+		}
+	
+		return $done;
 	}
    
 
