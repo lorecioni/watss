@@ -7,6 +7,7 @@
 	<!-- CSS -->
 	<link rel="stylesheet" href="css/bootstrap.min.css">
 	<link rel="stylesheet" href="css/bootstrap-theme.min.css">
+	<link rel="stylesheet" href="css/style.css">
 
         <!--<script src="js/event-handler"></script>-->
     </head>
@@ -15,19 +16,9 @@
 		<div style="margin: 15px 15px;">
 			<nav class="navbar navbar-default" role="navigation">
 			  <div class="container-fluid">
-				<!-- Brand and toggle get grouped for better mobile display -->
-				<!--<div class="navbar-header">
-				  <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1">
-					<span class="sr-only">Toggle navigation</span>
-					<span class="icon-bar"></span>
-					<span class="icon-bar"></span>
-					<span class="icon-bar"></span>
-				  </button>
-				  <a class="navbar-brand" href="#">Home</a>
-				</div>-->
 
 				<!-- Collect the nav links, forms, and other content for toggling -->
-				<div class="collapse navbar-collapse">
+				<div class="collapse navbar-collapse main-nav">
 				  <ul class="nav navbar-nav">
 					<li><a href="#">Home</a></li>
 					<li><a href="gt-making/gt-making.php">GT Making</a></li>

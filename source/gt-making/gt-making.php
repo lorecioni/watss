@@ -15,7 +15,7 @@
 		<link rel="stylesheet" href="../css/select2.css">
 		<link rel="stylesheet" href="../css/select2-bootstrap.css">
 		<link rel="stylesheet" href="../css/image-picker.css">
-		<link rel="stylesheet" href="../css/gt-making.css">
+		<link rel="stylesheet" href="../css/style.css">
 		<link rel="stylesheet" href="../css/ui-lightness/jquery-ui-1.10.4.css">
 	</head>
 
@@ -31,15 +31,15 @@
 						<li><a href="../legend.html">Legend</a></li>
 						<li><a href="#">Configuration</a></li>		
 					</ul>
-<ul class="nav navbar-nav navbar-right">
-         <li><a id="welcome-person"></a></li>
-        <li class="dropdown">
-          <a href="#" class="dropdown-toggle" data-toggle="dropdown"><span class="glyphicon glyphicon-cog"></span></a>
-          <ul class="dropdown-menu">
-            <li><a href="#" id="logout-button">Logout</a></li>
-          </ul>
-        </li>
-      </ul>
+			 <ul class="nav navbar-nav navbar-right">
+		         <li><a id="welcome-person"></a></li>
+		        <li class="dropdown">
+		          <a href="#" class="dropdown-toggle" data-toggle="dropdown"><span class="glyphicon glyphicon-cog"></span></a>
+		          <ul class="dropdown-menu">
+		            <li><a href="#" id="logout-button">Logout</a></li>
+		          </ul>
+		        </li>
+		      </ul>
 				</div><!-- /.navbar-collapse -->
 			</div><!-- /.container-fluid -->
 		</nav>
