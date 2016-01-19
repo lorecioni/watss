@@ -12,8 +12,7 @@
     </head>
 
     <body>
-		<div style="margin: 15px 15px;">
-			<nav class="navbar navbar-default" role="navigation">
+		<nav class="navbar navbar-default" role="navigation">
 			  <div class="container-fluid">
 
 				<!-- Collect the nav links, forms, and other content for toggling -->
