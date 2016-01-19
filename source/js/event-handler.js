@@ -82,6 +82,9 @@ $(document).ready(function(){
 					console.log("[add-person] returned");
 					$("#people-table").dataTable().fnDestroy();
 					addPeople(response, groups, artworks, "#people-table", people_per_page, people_att);
+				},
+				error: function(err){
+					console.log(err);
 				}
 			});
 		}else{

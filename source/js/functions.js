@@ -428,12 +428,31 @@ function addBoundingBox(people){
 		people[i]["bbV"][2] = people[i]["bbV"][2]*680/$("#video-box").data("width");
 		people[i]["bbV"][3] = people[i]["bbV"][3]*425/$("#video-box").data("height");
 
+		//Bounding box container
+		var boundingBox = jQuery('<div></div>')
+			.addClass('draggable not-update bb')
+			.css({'top': people[i]["bb"][1],
+				'left' : people[i]["bb"][0],
+				'width' : people[i]['bb'][2],
+				'height' : people[i]['bb'][3],
+				'border' : '1px dotted ' + people[i]["color"]})
+			.attr('id', 'box-' + people[i]["id"])
+			.attr('data-mode', 'bb');
+		
+		
+		
 		//bb
 		to_append+="<div class='draggable not-update bb' data-id='"+people[i]["id"]+"' id='box-"+people[i]["id"]+"' data-mode='bb' style='position: absolute; border:1px dotted "+people[i]["color"]+"; top:"+people[i]["bb"][1]+"px;left:"+(people[i]["bb"][0])+"px;width:"+people[i]["bb"][2]+"px;height:"+people[i]["bb"][3]+"px; z-index: 3;'></div>";
 		//bbV
 		to_append+="<div class='not-update bbV' data-id='"+people[i]["id"]+"' id='box-"+people[i]["id"]+"-bbV'  style='position: absolute; border:2px dashed "+people[i]["color"]+"; top:"+people[i]["bbV"][1]+"px;left:"+(people[i]["bbV"][0])+"px;width:"+(people[i]["bbV"][2])+"px;height:"+(people[i]["bbV"][3])+"px; visibility:hidden; z-index: 2;'></div>";
 		//face
+		
+		
 		to_append+="<div class='not-update face' data-id='"+people[i]["id"]+"' id='box-"+people[i]["id"]+"-face' data-face='"+people[i]["angle_face"]+"' data-facez='"+people[i]["angle_face_z"]+"' data-body='"+people[i]["angle_body"]+"' data-bodyz='"+people[i]["angle_body_z"]+"' style='position: absolute; border:1px dashed "+people[i]["color"]+"; top:"+people[i]["bb"][1]+"px;left:"+(people[i]["bb"][0])+"px;width:"+people[i]["bb"][2]+"px;height:"+people[i]["bb"][3]+"px; visibility:hidden; z-index: 2;'></div>";
+		
+		//boundingBox.append(to_append);
+		//$("#video-box").append(boundingBox);
+		
 	}
 
 	$("#video-box").append(to_append);

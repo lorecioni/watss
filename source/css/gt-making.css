@@ -39,7 +39,8 @@ div.dataTables_wrapper { min-height: 300px; }
 }
 
 .bb{
-	/*position: relative;*/
+	position: absolute;
+	z-index: 3;
 }
 .bbV{
 	/*position: relative;*/
@@ -47,5 +48,10 @@ div.dataTables_wrapper { min-height: 300px; }
 
 .frame-form {
 	margin-top: 20px;
+}
+
+/* Image picker dimension */
+img.image_picker_image {
+    max-height: 100px;
 }
 

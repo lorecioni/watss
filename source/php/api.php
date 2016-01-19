@@ -1,6 +1,7 @@
 <?php
-
+	//Include utils functions
 	require_once 'utils.php';
+	
 	//error_reporting(E_ALL);
 	//ini_set("display_errors",1);
 	session_start();
@@ -113,12 +114,6 @@
 
 	switch( $_REQUEST['action'] ) {
 
-		case "prova":
-			$bb = array(0,0, 30, 111);
-			create_avatar($bb, 33);
-		break;
-		
-		
 		case "check-gt-info":
 
 			$to_return = true;
@@ -396,51 +391,47 @@
 			$hex = getRandomColorHEX();
 			
 			//Initial bounding box settings
-			$bb = new stdClass(); //Full bounding box
+  			//Full bounding box
+			$bb = new stdClass(); 
 			$bb->x = 300;
 			$bb->y = 200;
-			$bb->width = 32;
-			$bb->height = 64;
-			
-			$bbV = new stdClass(); //Visible bounding box
+			$bb->width = 40;
+			$bb->height = 84;		
+			//Visible bounding box
+			$bbV = new stdClass(); 
 			$bbV->x = 300;
 			$bbV->y = 200;
-			$bbV->width = 20;
-			$bbV->height = 30;
+			$bbV->width = 30;
+			$bbV->height = 84;
 			
 		    //Query indicator: if true the query has been done
 			$done = true;
 
 			if (isset($_REQUEST["people_id"])){
-				$sql="INSERT INTO `people` (`peopleid`,`frameid`, `cameraid`, `bb_x`, `bb_y`, `bb_width`, `bb_height`, `bbV_x`, `bbV_y`, `bbV_width`, `bbV_height`, `gazeAngle_face`, `gazeAngle_face_z`, `gazeAngle_body`, `gazeAngle_body_z`,`color`, `poiid`, `userid`, `groupid`) VALUES
-				(".$_REQUEST["people_id"].", 'F".$_SESSION["frame_id"]."', '".$_SESSION["camera_id"]."', ".$bb['x'].", ".$bb['y'].", ".$bb['width'].", ".$bb['height'].", ".$bbV['x'].", ".$bbV['y'].", ".$bbV['width'].", ".$bbV['height'].", 0, 0, 0, 0,'".$hex."', 'O0', '".$_SESSION["user"]."', 'G0');";
-				$result=mysql_query($sql) or
-				$done = false;
+				$sql2 = "INSERT INTO `people` (`peopleid`,`frameid`, `cameraid`, `bb_x`, `bb_y`, `bb_width`, `bb_height`, `bbV_x`, `bbV_y`, `bbV_width`, `bbV_height`, `gazeAngle_face`, `gazeAngle_face_z`, `gazeAngle_body`, `gazeAngle_body_z`,`color`, `poiid`, `userid`, `groupid`) VALUES
+				(".$_REQUEST["people_id"].", 'F".$_SESSION["frame_id"]."', '".$_SESSION["camera_id"]."', ".$bb->x.", ".$bb->y.", ".$bb->width.", ".$bb->height.", ".$bbV->x.", ".$bbV->y.", ".$bbV->width.", ".$bbV->height.", 0, 0, 0, 0,'".$hex."', 'O0', '".$_SESSION["user"]."', 'G0');";
+			
+				$result = mysql_query($sql) or $done = false;
 				if ($done){
-					$person = array("id"=>$_REQUEST["people_id"],"color"=>$hex,"angle_face"=>0,"angle_face_z"=>0,"angle_body"=>0,"angle_body_z"=>0,"group"=>'G0',"artwork"=>'O0', "prev_frame"=>true, "bb"=>array(300, 200, 20, 30),"bbV"=>array(300, 200, 20, 30));
+					$person = array("id"=>$_REQUEST["people_id"], "color"=>$hex,"angle_face"=>0,"angle_face_z"=>0,"angle_body"=>0,"angle_body_z"=>0,"group"=>'G0',"artwork"=>'O0', "prev_frame"=>true, "bb"=>array($bb->x, $bb->y, $bb->width, $bb->height),"bbV"=>array($bbV->x, $bbV->y, $bbV->width, $bbV->height));
 				}
 			}else{
-				$sql="INSERT INTO `tgroup` (`groupid`,`name`,`deleted`,`userid`) VALUES ('G0', 'no group',0,'".$_SESSION["user"]."');";
-				$result=mysql_query($sql) or
-				$done = false;
+			    $sql="INSERT INTO `tgroup` (`groupid`,`name`,`deleted`,`userid`) VALUES ('G0', 'no group',0,'".$_SESSION["user"]."');";
+				$result = mysql_query($sql);
 
 				$sql="INSERT INTO `real_people` (`face`,`face_z`,`image`) VALUES (0,0,'../img/real_people/default.png');";
-				$result=mysql_query($sql) or
-				$done = false;
-
-							
-				$done = true;
-				$my_id = mysql_insert_id();
-				$sql="INSERT INTO `people` (`peopleid`,`frameid`, `cameraid`, `bb_x`, `bb_y`, `bb_width`, `bb_height`, `bbV_x`, `bbV_y`, `bbV_width`, `bbV_height`, `gazeAngle_face`, `gazeAngle_face_z`, `gazeAngle_body`, `gazeAngle_body_z`, `color`, `poiid`, `userid`, `groupid`) VALUES
-				(".$my_id.", 'F".$_SESSION["frame_id"]."', '".$_SESSION["camera_id"]."', 300, 200, 32, 64, 300, 200, 20, 30, 0, 0, 0, 0, '".$hex."', 'O0', '".$_SESSION["user"]."', 'G0');";
-				//print_r($sql);
-				$result=mysql_query($sql) or
-				$done = false;
-				if ($done){
-					$person = array("id"=>$my_id,"color"=>$hex,"angle_face"=>0,"angle_face_z"=>0,"angle_body"=>0,"angle_body_z"=>0,"group"=>'G0',"artwork"=>'O0', "prev_frame"=>true, "bb"=>array(300, 200, 20, 30),"bbV"=>array(300, 200, 20, 30));
+				$result = mysql_query($sql) or $done = false;
+				if($done){
+					$my_id = mysql_insert_id();
+					$sql="INSERT INTO `people` (`peopleid`,`frameid`, `cameraid`, `bb_x`, `bb_y`, `bb_width`, `bb_height`, `bbV_x`, `bbV_y`, `bbV_width`, `bbV_height`, `gazeAngle_face`, `gazeAngle_face_z`, `gazeAngle_body`, `gazeAngle_body_z`, `color`, `poiid`, `userid`, `groupid`) VALUES
+						(".$my_id.", 'F".$_SESSION["frame_id"]."', '".$_SESSION["camera_id"]."', ".$bb->x.", ".$bb->y.", ".$bb->width.", ".$bb->height.", ".$bbV->x.", ".$bbV->y.", ".$bbV->width.", ".$bbV->height.", 0, 0, 0, 0, '".$hex."', 'O0', '".$_SESSION["user"]."', 'G0');";
+					$result=mysql_query($sql) or $done = false;
+					if ($done){
+						$person = array("id"=>$my_id,"color"=>$hex,"angle_face"=>0,"angle_face_z"=>0,"angle_body"=>0,"angle_body_z"=>0,"group"=>'G0',"artwork"=>'O0', "prev_frame"=>true, "bb"=>array($bb->x, $bb->y, $bb->width, $bb->height),"bbV"=>array($bbV->x, $bbV->y, $bbV->width, $bbV->height));
+					}
 				}
 			}
-							
+			//Econding person to json				
 			jecho($person);
 		break;
 
@@ -735,7 +726,9 @@
 		
 		break;
 		
-		// List real_people - DB
+		/**
+		 * Return list of id and image avatar url of the people at the selected frame id
+		 */
 		case "get-realpeople":			
 			$realpeople = array();	
 

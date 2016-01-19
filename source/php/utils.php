@@ -6,7 +6,6 @@
  * 
  */
 
-
 /** Create and return a random color HEX value **/
 function getRandomColorHEX(){
 	$red = rand(0,255);
