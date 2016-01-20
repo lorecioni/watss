@@ -319,8 +319,37 @@ function checkLogin(){
 				});
 				
 				//Loading timeline
-				loadTimeline();
-			}else{
+				$('#timeline-container').timeline({
+					getFrames: function(limit){
+						var self = $(this);
+						$.ajax({
+							type: "POST",
+							url: "../php/api.php",
+							data: { 
+								action:"get-timeline-frames",
+								limit: limit},
+							success: function(data){
+								var current = data.current;
+								self.timeline('showFrames', {frames: data.frames, current: current});				
+							}
+						});	
+					},
+					onFrameSelected: function(id){
+						console.log('selected ' + id)
+						$.ajax({
+							type: "POST",
+							url: "../php/api.php",
+							data: {action:"get-frame",
+									frame_id: numberFormat(id, 6)},
+							success: function(response){
+								console.log("[get-frame] returned");
+								setFrame(response);
+							}
+						});
+					}
+				});
+
+			} else {
 				$("#checkInfoModal").modal("show");
 			}
 		},
@@ -401,5 +430,20 @@ function loadInfo(){
 			async: false
 		});
 	}
+}
+
+
+/**
+ * Number format
+ * @param number
+ * @param digits : number of target digits
+ * @returns {String}
+ */
+function numberFormat(number, digits) {
+    var output = number + '';
+    while (output.length < digits) {
+        output = '0' + output;
+    }
+    return output;
 }
 

@@ -16,6 +16,7 @@
 		<link rel="stylesheet" href="../css/select2-bootstrap.css">
 		<link rel="stylesheet" href="../css/image-picker.css">
 		<link rel="stylesheet" href="../css/style.css">
+		<link rel="stylesheet" href="../css/timeline.css">
 		<link rel="stylesheet" href="../css/ui-lightness/jquery-ui-1.10.4.css">
 	</head>
 
@@ -71,40 +72,9 @@
 					<!-- !end frame navigation -->
 
 					<!-- Timeline -->
-					<div class="timeline panel panel-default">
-					  <div class="timeline-header">
-						<div class="timeline-section timeline-left">People</div>
-						<div class="timeline-section timeline-right">
-  							<!-- Timeline cursor -->
-  							<div class="timeline-cursor-container">
-	  							<span class="timeline-cursor glyphicon glyphicon-arrow-down"></span>
-							</div>
-						</div>
-					  </div>
-					  <div class="timeline-body">
-						  <div class="timeline-section timeline-people-list timeline-left">
-						      <!-- Current frame people list -->
-						      <ul>
-						      	<li>1</li>
-						      	<li>2</li>
-						      </ul>
-						  </div>
-						  	 <!-- Timeline body -->
-							<div class="timeline-section timeline-frames timeline-right">
-	  							<div class="timeline-frame">
-	  								<span class="timeline-frame-number">34</span>
-	  								<div class="timeline-frame-indicator"></div>
-	  							</div>
-	  							<div class="timeline-frame">
-	  								<span class="timeline-frame-number">35</span>
-	  								<div class="timeline-frame-indicator"></div>
-	  							</div>
-	  						</div>
-					  </div>
-					</div>
+					<div id="timeline-container"></div>
 					<!-- end timeline -->		
 				</div>
-
 
 				<div class="col-md-5">
 				<!-- People panel -->
@@ -282,6 +252,7 @@
 		<script src="../js/jquery-ui-1.10.4.js"></script>
 		<script src="../js/three.min.js"></script>
 		<script src="../js/image-picker.min.js"></script>
+		<script src="../js/jquery.mousewheel.js"></script> 
 		<script src="../js/timeline.js"></script>
 		<script src="../js/handle-box.js"></script>
 		<script src="../js/handle-keyboard.js"></script>
@@ -289,7 +260,5 @@
 		<script src="../js/functions.js"></script>
 		<script src="../js/event-handler.js"></script>
 		<script src="../js/panzoom.js"></script> 
-		<script src="../js/jquery.mousewheel.js"></script> 
-
 	</body>
 </html>

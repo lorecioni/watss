@@ -1,0 +1,88 @@
+@CHARSET "UTF-8";
+
+/** Timeline plugin stylesheet
+** @author Lorenzo Cioni 
+**/
+
+.timeline {
+    margin: 20px 0 30px;
+}
+
+.timeline .panel-heading {
+    position: relative;
+    line-height: 15px;
+}
+
+.timeline-cursor-container {
+    position: absolute;
+    width: 83%;
+    height: 20px;
+    top: 12px;
+    left: 117px;
+    overflow: hidden;
+}
+
+span.timeline-cursor {
+	cursor: pointer;
+    position: absolute;
+    top: 0;
+    left: 0;
+    font-size: 16pt;
+    color: #810000;
+    z-index: 5;
+}
+
+.timeline .list-group {
+    margin-bottom: 0px;
+    padding-left: 0;
+}
+
+.timeline-frame {
+    float: left;
+    height: 100%;
+    position: relative;
+    width: 20px;
+    text-align: center;
+    font-size: 8pt;
+    cursor: pointer;
+}
+
+.timeline-frame-indicator {
+    width: 2px;
+    height: 90%;
+    background-color: #E4E3E3;
+    margin: 0 auto 2px;
+}
+
+.timeline .timeline-frames {
+    height: 130px;
+    position: relative;
+    overflow: hidden;
+}
+
+.timeline-frames-container {
+    position: absolute;
+    display: inline-flex;
+    height: 110px;
+    top: 10px;
+    left: 0px;
+}
+
+.current .timeline-frame-indicator {
+    background-color: #000;
+    width: 3px;
+    border-radius: 2px;
+}
+
+.timeline-frame.current {
+    color: #000;
+    font-weight: bold;
+}
+
+.timeline-frame:HOVER .timeline-frame-indicator {
+    background-color: #9F9F9F;
+}
+
+.timeline-frame:HOVER .timeline-frame-number {
+    font-weight: bold;
+}
