@@ -39,7 +39,7 @@
 		 * 
 		 * @return boolean : true if user can proceed
 		 */
-		case "check-gt-info":
+		case "check-gt-login":
 			$to_return = true;
 			if (!isset($_SESSION["user"])){
 				if($_REQUEST["user"]!="" &&  $_REQUEST["camera_id"]!="" && 
@@ -94,22 +94,23 @@
 			jecho($to_return);
 			break;
 
-		// List cameras - DB
+		/**
+		 * Getting cameras list
+		 */
 		case "get-cameras":
 			$camera = array();
 			$sql="SELECT c.cameraid FROM `camera` as c";
 			$result=mysql_query($sql) or
 			die ("Error: ".mysql_error());
-			while ($row=mysql_fetch_array($result) )
-			{
+			while ($row=mysql_fetch_array($result)){
 				$camera[] = array("id"=>$row["cameraid"],"text"=>$row["cameraid"]);
 			}
-			
 			jecho($camera);
-			
 			break;
 			
-		// Logout
+		/**
+		 * Logging out
+		 */
 		case "logout":
 			unset($_SESSION["user"]);
 			unset($_SESSION["frame_id"]);
@@ -117,7 +118,9 @@
 			jecho(true);			
 			break;
 
-		// Get user
+		/**
+		 * Getting user name from user id
+		 */
 		case "get-user":
 			$done = true;
 			$sql="SELECT name FROM `user` WHERE userid='".$_SESSION["user"]."'";
@@ -131,12 +134,16 @@
 				jecho("Unknown user");
 			break;
 		
-		// Set the camera
+		/**
+		 * Set the current camera ID
+		 */
 		case "set-camera":
 			$_SESSION["camera_id"] = $_REQUEST["camera_id"];		
 		break;
 
-		// Return the frames of a camera - DB
+		/**
+		 * Returning frame list for navigation, limited by the query and the number of restults
+		 */
 		case "get-frames":
 			$frames = array();
 			if (isset($_REQUEST['query']) && strlen($_REQUEST['query']) > 0){
@@ -144,17 +151,15 @@
 				$sql="SELECT `frameid` as id, `frameid` as txt FROM `video` WHERE `cameraid` = '".$_SESSION["camera_id"]."' AND `frameid` LIKE '%".$_REQUEST["query"]."%' ORDER BY CAST(SUBSTRING(`frameid`,2) as unsigned) ASC LIMIT ".$_REQUEST["limit"];
 				$result=mysql_query($sql) or
 				$frames = array();
-				while ($row=mysql_fetch_array($result) )
-				{
+				while ($row=mysql_fetch_array($result)){
 					$frames[] = array("id"=>$row["id"],"text"=>$row["txt"]);
 				}
 				jecho($frames);
-			}else{
+			} else {
 				$sql="SELECT `frameid` as id, `frameid` as txt FROM `video` WHERE `cameraid` = '".$_SESSION["camera_id"]."' ORDER BY CAST(SUBSTRING(`frameid`,2) as unsigned) ASC LIMIT ".$_REQUEST["limit"];
 				$result=mysql_query($sql) or
 				$frames = array();
-				while ($row=mysql_fetch_array($result) )
-				{
+				while ($row=mysql_fetch_array($result)){
 					$frames[] = array("id"=>$row["id"],"text"=>$row["txt"]);
 				}
 				jecho($frames);
@@ -214,22 +219,18 @@
 			$group_del = array();
 			$group_merge = array();
 			if (isset($_REQUEST['query']) && strlen($_REQUEST['query']) > 0){	
-
-//					$sql="select * from (select N.groupid,N.name, max(people) as people FROM ( SELECT g.groupid, g.name, count(p.groupid) as people FROM `people` as p right outer join `tgroup` as g on p.groupid = g.groupid WHERE  g.name LIKE '%".$_REQUEST['query']."%' GROUP BY g.groupid, p.cameraid,p.frameid ORDER BY g.groupid) as N group by N.groupid) as F order by F.people";
-
-						$sql="SELECT N.groupid, N.name, COUNT( N.groupid ) AS people FROM ( SELECT g.groupid, p.peopleid, g.name, COUNT( p.groupid ) FROM  `people` AS p RIGHT OUTER JOIN  `tgroup` AS g ON p.groupid = g.groupid WHERE   g.name LIKE '%".$_REQUEST['query']."%' GROUP BY p.groupid, p.peopleid ORDER BY p.groupid ) AS N GROUP BY N.groupid";
+					//$sql="select * from (select N.groupid,N.name, max(people) as people FROM ( SELECT g.groupid, g.name, count(p.groupid) as people FROM `people` as p right outer join `tgroup` as g on p.groupid = g.groupid WHERE  g.name LIKE '%".$_REQUEST['query']."%' GROUP BY g.groupid, p.cameraid,p.frameid ORDER BY g.groupid) as N group by N.groupid) as F order by F.people";
+					$sql="SELECT N.groupid, N.name, COUNT( N.groupid ) AS people FROM ( SELECT g.groupid, p.peopleid, g.name, COUNT( p.groupid ) FROM  `people` AS p RIGHT OUTER JOIN  `tgroup` AS g ON p.groupid = g.groupid WHERE   g.name LIKE '%".$_REQUEST['query']."%' GROUP BY p.groupid, p.peopleid ORDER BY p.groupid ) AS N GROUP BY N.groupid";
 
 					$result=mysql_query($sql) or
 					$group = array();
 					if ( mysql_num_rows($result)==0 ) $group = array();
-					while ($row=mysql_fetch_array($result) )
-					{
+					while ($row=mysql_fetch_array($result)){
 						$group[] = array("id"=>$row["groupid"],"text"=>$row["name"],"people"=>$row["people"]);
 					}
 
-//					$sql="select * from (select N.groupid,N.name, max(people) as people FROM ( SELECT g.groupid, g.name, count(p.groupid) as people FROM `people` as p right outer join `tgroup` as g on p.groupid = g.groupid WHERE  g.name LIKE '%".$_REQUEST['query']."%' AND g.deleted=0 GROUP BY g.groupid, p.cameraid,p.frameid ORDER BY g.groupid) as N group by N.groupid) as F order by F.people";
-
-						$sql="SELECT N.groupid, N.name, COUNT( N.groupid ) AS people FROM ( SELECT g.groupid, p.peopleid, g.name, COUNT( p.groupid ) FROM  `people` AS p RIGHT OUTER JOIN  `tgroup` AS g ON p.groupid = g.groupid WHERE   g.name LIKE '%".$_REQUEST['query']."%' AND g.deleted=0 GROUP BY p.groupid, p.peopleid ORDER BY p.groupid ) AS N GROUP BY N.groupid";
+					//$sql="select * from (select N.groupid,N.name, max(people) as people FROM ( SELECT g.groupid, g.name, count(p.groupid) as people FROM `people` as p right outer join `tgroup` as g on p.groupid = g.groupid WHERE  g.name LIKE '%".$_REQUEST['query']."%' AND g.deleted=0 GROUP BY g.groupid, p.cameraid,p.frameid ORDER BY g.groupid) as N group by N.groupid) as F order by F.people";
+					$sql="SELECT N.groupid, N.name, COUNT( N.groupid ) AS people FROM ( SELECT g.groupid, p.peopleid, g.name, COUNT( p.groupid ) FROM  `people` AS p RIGHT OUTER JOIN  `tgroup` AS g ON p.groupid = g.groupid WHERE   g.name LIKE '%".$_REQUEST['query']."%' AND g.deleted=0 GROUP BY p.groupid, p.peopleid ORDER BY p.groupid ) AS N GROUP BY N.groupid";
 
 					$result=mysql_query($sql) or
 					$group_del = array();
@@ -237,47 +238,43 @@
 					{
 						$group_del[] = array("id"=>$row["groupid"],"text"=>$row["name"],"people"=>0);
 					}					
-			}else {
+			} else {
 
-//						$sql="select * from ( select N.groupid,N.name, max(people) as people FROM (SELECT g.groupid, g.name, count(p.groupid) as people FROM `people` as p right outer join `tgroup` as g on p.groupid = g.groupid   GROUP BY g.groupid, p.cameraid,p.frameid ORDER BY g.groupid )as N group by N.groupid ) as F order by F.people";
+					//$sql="select * from ( select N.groupid,N.name, max(people) as people FROM (SELECT g.groupid, g.name, count(p.groupid) as people FROM `people` as p right outer join `tgroup` as g on p.groupid = g.groupid   GROUP BY g.groupid, p.cameraid,p.frameid ORDER BY g.groupid )as N group by N.groupid ) as F order by F.people";
+					$sql="SELECT N.groupid, N.name, COUNT( N.groupid ) AS people FROM ( SELECT g.groupid, p.peopleid, g.name, COUNT( p.groupid ) FROM  `people` AS p RIGHT OUTER JOIN  `tgroup` AS g ON p.groupid = g.groupid GROUP BY p.groupid, p.peopleid ORDER BY p.groupid ) AS N GROUP BY N.groupid";
+					$result=mysql_query($sql) or
+					$group = array();
+					if ( mysql_num_rows($result)==0 ) $group = array();
+					while ($row=mysql_fetch_array($result) ){
+						$group[] = array("id"=>$row["groupid"],"text"=>$row["name"],"people"=>$row["people"]);
+					}
+					//$sql="select * from ( select N.groupid,N.name, max(people) as people FROM (SELECT g.groupid, g.name, count(p.groupid) as people FROM `people` as p right outer join `tgroup` as g on p.groupid = g.groupid WHERE g.deleted=0 GROUP BY g.groupid, p.cameraid,p.frameid  ORDER BY g.groupid) as N group by N.groupid)   as F order by F.people";
+					$sql="SELECT N.groupid, N.name, COUNT( N.groupid ) AS people FROM ( SELECT g.groupid, p.peopleid, g.name, COUNT( p.groupid ) FROM  `people` AS p RIGHT OUTER JOIN  `tgroup` AS g ON p.groupid = g.groupid WHERE g.deleted=0 GROUP BY p.groupid, p.peopleid ORDER BY p.groupid ) AS N GROUP BY N.groupid";
 
-						$sql="SELECT N.groupid, N.name, COUNT( N.groupid ) AS people FROM ( SELECT g.groupid, p.peopleid, g.name, COUNT( p.groupid ) FROM  `people` AS p RIGHT OUTER JOIN  `tgroup` AS g ON p.groupid = g.groupid GROUP BY p.groupid, p.peopleid ORDER BY p.groupid ) AS N GROUP BY N.groupid";
-						$result=mysql_query($sql) or
-						$group = array();
-						if ( mysql_num_rows($result)==0 ) $group = array();
-						while ($row=mysql_fetch_array($result) )
-						{
-						   $group[] = array("id"=>$row["groupid"],"text"=>$row["name"],"people"=>$row["people"]);
-						}
-
-//						$sql="select * from ( select N.groupid,N.name, max(people) as people FROM (SELECT g.groupid, g.name, count(p.groupid) as people FROM `people` as p right outer join `tgroup` as g on p.groupid = g.groupid WHERE g.deleted=0 GROUP BY g.groupid, p.cameraid,p.frameid  ORDER BY g.groupid) as N group by N.groupid)   as F order by F.people";
-
-						$sql="SELECT N.groupid, N.name, COUNT( N.groupid ) AS people FROM ( SELECT g.groupid, p.peopleid, g.name, COUNT( p.groupid ) FROM  `people` AS p RIGHT OUTER JOIN  `tgroup` AS g ON p.groupid = g.groupid WHERE g.deleted=0 GROUP BY p.groupid, p.peopleid ORDER BY p.groupid ) AS N GROUP BY N.groupid";
-
-						$result=mysql_query($sql) or
-						$group_del = array();
-						while ($row=mysql_fetch_array($result) )
-						{
-							$group_del[] = array("id"=>$row["groupid"],"text"=>$row["name"],"people"=>0);
-						}
+					$result=mysql_query($sql) or $group_del = array();
+					while ($row = mysql_fetch_array($result)){
+						$group_del[] = array("id"=>$row["groupid"],"text"=>$row["name"],"people"=>0);
+					}
 			}
 			foreach ($group_del as $g){
-						$found=false;
-						for ($i=0; $i<count($group); $i++){
-							if ($group[$i]["id"]==$g["id"]){
-								$found=true;								
-							}
-						}
-						if (!$found){
-							$group_merge[] = $g;
-						}
+				$found=false;
+				for ($i=0; $i<count($group); $i++){
+					if ($group[$i]["id"]==$g["id"]){
+						$found=true;								
+					}
+				}
+				if (!$found){
+					$group_merge[] = $g;
+				}
 			}
 			$group = array_merge($group, $group_merge);
 			array_multisort($group, SORT_ASC);
 			jecho($group);			
 			break;
 			
-		//Find group that can be removed
+		/**
+		 * Find a group that can be removed
+		 */
 		case "get-deletable":
 			$sql="SELECT g.groupid, count(p.groupid) as people FROM `people` as p right outer join `tgroup` as g on p.groupid = g.groupid WHERE g.userid='".$_SESSION["user"]."' AND g.deleted=0 GROUP BY g.groupid ORDER BY g.groupid ";
 			$result=mysql_query($sql) or
@@ -493,7 +490,9 @@
 			
 		break;
 
-		//Remove a person - DB
+		/**
+		 * Remove person by ID
+		 */
 		case "remove-person":
 			if(isset($_REQUEST['id'])){
 				$sql="DELETE FROM `people` WHERE cameraid='".$_SESSION["camera_id"]."' AND peopleid=".$_REQUEST['id']." AND frameid='F".$_SESSION["frame_id"]."'";
@@ -503,7 +502,9 @@
 			}
 		break;
 
-		//Add a group - DB - To appear a group must have at least one person associated
+		/**
+		 * Add a group to DB - To appear a group must have at least one person associated
+		 */
 		case "add-group":
 			$group = array();
 			if(!isset($_REQUEST['name'])) {
@@ -527,7 +528,9 @@
 			jecho($group);
 		break;
 
-		//Remove a group (DO NOT REMOVE FROM DB)
+		/**
+		 * Remove a group (DO NOT REMOVE FROM DB)
+		 */
 		case "remove-group":
 			$done=true;
 			if(!isset($_REQUEST['id']))
@@ -542,7 +545,9 @@
 			}
 			break;
 		
-		//Return the frame based on its ID - DB
+		/**
+		 * Return the frame based on its ID - DB
+		 */
 		case "get-frame":
 			$dimension = array();
 			$img = array();	
@@ -559,8 +564,7 @@
 			$result=mysql_query($sql) or
 			$done = false;
 			if ($done == true){
-				while ($row=mysql_fetch_array($result) )
-				{
+				while ($row=mysql_fetch_array($result) ){
 					$dimension = getimagesize("../frames/".$row["path"]);
 					$img = array("background"=>"../frames/".$row["path"],"width"=>$dimension[0], "height"=>$dimension[1], "frame_id"=>$myframe);
 
@@ -570,7 +574,9 @@
 		break;
 		
 		
-		//Return a frame based on its ID - DB
+		/**
+		 * Returns previous or next frame
+		 */
 		case "get-nearframe":
 			$dimension = array();
 			$img = array();	
@@ -581,10 +587,8 @@
 			}
 			if ($_REQUEST["frame"] === "prev"){
 				$sql="SELECT MAX(CAST(SUBSTRING(frameid,2) as UNSIGNED)) as n FROM video WHERE CAST(SUBSTRING(frameid,2) as UNSIGNED) < ".$_SESSION["frame_id"];
-				$result=mysql_query($sql) or
-				$done = false;
-				while ($row=mysql_fetch_array($result) )
-				{
+				$result=mysql_query($sql) or $done = false;
+				while ($row=mysql_fetch_array($result) ){
 					$myframe = intval($row["n"]);
 				}
 				if ($myframe != null){
@@ -592,10 +596,8 @@
 				}			
 			}else{
 				$sql="SELECT MIN(CAST(SUBSTRING(frameid,2) as UNSIGNED)) as n FROM video WHERE CAST(SUBSTRING(frameid,2) as UNSIGNED) > ".$_SESSION["frame_id"];
-				$result=mysql_query($sql) or
-				$done = false;
-				while ($row=mysql_fetch_array($result) )
-				{
+				$result=mysql_query($sql) or $done = false;
+				while ($row=mysql_fetch_array($result) ){
 					$myframe = intval($row["n"]);
 				}
 				if ($myframe != null){
@@ -604,11 +606,9 @@
 			}
 			$myframe=sprintf("F%06d",$_SESSION["frame_id"]);			
 			$sql="SELECT * FROM `video` WHERE `frameid`='".$myframe."' AND `cameraid`='".$_SESSION["camera_id"]."'";
-			$result=mysql_query($sql) or
-			$done = false;
+			$result=mysql_query($sql) or $done = false;
 			if ($done == true){
-				while ($row=mysql_fetch_array($result) )
-				{
+				while ($row=mysql_fetch_array($result) ){
 					$dimension = getimagesize("../frames/".$row["path"]);
 					$img = array("background"=>"../frames/".$row["path"],"width"=>$dimension[0], "height"=>$dimension[1], "frame_id"=>$myframe);
 
@@ -617,7 +617,9 @@
 			jecho($img);
 		break;
 		
-		//Return the list of artworks - DB
+		/**
+		 * Returns the artworks list from the DB
+		 */
 		case "get-artworks":
 			$artwork = array();
 			if (isset($_REQUEST['query']) && strlen($_REQUEST['query']) > 0){	
@@ -625,8 +627,7 @@
 					$result=mysql_query($sql) or
 					die ("Error: ".mysql_error());
 					if ( mysql_num_rows($result)==0 ) $artwork = array();
-					while ($row=mysql_fetch_array($result) )
-					{
+					while ($row=mysql_fetch_array($result) ){
 						$artwork[] = array("id"=>$row["poiid"],"cameraid"=>$row["cameraid"],"location_x"=>$row["location_x"],"location_y"=>$row["location_y"],"width"=>$row["width"],"height"=>$row["height"],"text"=>$row["name"] );
 					}
 			}else {
@@ -634,8 +635,7 @@
 					$result=mysql_query($sql) or
 					die ("Error: ".mysql_error());
 					if ( mysql_num_rows($result)==0 ) $artwork = array();
-					while ($row=mysql_fetch_array($result) )
-					{
+					while ($row=mysql_fetch_array($result) ){
 						$artwork[] = array("id"=>$row["poiid"],"cameraid"=>$row["cameraid"],"location_x"=>$row["location_x"],"location_y"=>$row["location_y"],"width"=>$row["width"],"height"=>$row["height"],"text"=>$row["name"] );
 					}
 			}
@@ -665,7 +665,59 @@
 			jecho($realpeople);
 		break;
 		
-		// Export - DB
+		/**
+		 * Returns the frames list for the timeline. Each frame has associated the list of person ID
+		 * present in that frame; based on a frame ID (current).
+		 * Timeline starts from k previous frames and end after k frames from the selected one.
+		 *
+		 * @param frame_id : the current frame id
+		 * @param limit : k value
+		 * @return frames list array (frame id, people id list for each frame)
+		 */
+		case "get-timeline-frames":
+				
+			$frames = array();
+			$done = true;
+				
+			//Check if params are valid
+			if( !isset($_SESSION["frame_id"]) || !isset($_REQUEST['limit'])){
+				error_500("Missing information");
+			}
+			
+			$frame_id = intval(substr($_SESSION['frame_id'], 1));
+		
+			//Retrieving previous and next frames
+			$sql = "SELECT DISTINCT frameid FROM video
+                  WHERE (CAST(SUBSTRING(frameid,2) as UNSIGNED) >= ".($frame_id - $_REQUEST['limit']).")
+                  		and (CAST(SUBSTRING(frameid,2) as UNSIGNED) <= ".($frame_id + $_REQUEST['limit']).");";
+			$result=mysql_query($sql) or $done = false;
+			while ($row = mysql_fetch_array($result) ){
+				$frame = new stdClass();
+				$frame->id = $row["frameid"];
+				array_push($frames, $frame);
+			}
+			
+			//Loading people for each frame
+			foreach ($frames as $frame){
+				$people = array();
+				$sql = "SELECT * FROM `people` 
+						WHERE cameraid='".$_SESSION["camera_id"]."' AND frameid='".$frame->id."'";
+				$result = mysql_query($sql) or $done = false;
+				while ($row = mysql_fetch_array($result) ){
+					$person = new stdClass();
+					$person->id = $row["peopleid"];
+					$person->color = $row["color"];					
+					array_push($people, $person);
+				}
+				$frame->people = $people;
+			}
+				
+			jecho($frames);
+			break;
+		
+		/**
+		 * Export function for DB
+		 */
 		case "export":	
 
 

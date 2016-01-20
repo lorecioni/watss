@@ -758,5 +758,27 @@ function setFrame(frame){
 	});
 	
 	panzoom_scale = 1.0;
+}
+
+/**
+ * Timeline functions
+ */
+
+function loadTimeline(){
+	var limit = 10; //FIXME to be updated
+	
+	$.ajax({
+		type: "POST",
+		url: "../php/api.php",
+		data: { 
+			action:"get-timeline-frames",
+			limit: limit},
+		success: function(response){
+			console.log("[load timeline] returned "+response);
+			
+		}
+	});	
 	
 }
+
+

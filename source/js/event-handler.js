@@ -7,6 +7,9 @@ var groups_att = ["id","text","people"];
 var loaded_keyboard = false;
 
 $(document).ready(function(){
+	
+	//Checking user login permissions
+	checkLogin();
 
 	$('#cameras').select2({
 		multiple: false,
@@ -68,7 +71,7 @@ $(document).ready(function(){
 		$("#optionsRadios3").prop('checked', true);
 	});
 
-	checkInfo();
+	
 
 	//Add person link
 	$("#add-person").click(function(){
@@ -87,7 +90,7 @@ $(document).ready(function(){
 					console.log(err);
 				}
 			});
-		}else{
+		} else {
 			console.log("[add-person] call id: "+$("#prev-person-picker").val());
 			$.ajax({
 				type: "POST",
@@ -164,7 +167,21 @@ $(document).ready(function(){
 			}
 		});	
 	});
-});
+	
+	//Logout button clicked
+	$("#logout-button").click(function(){
+		console.log("[logout] call");
+		$.ajax({
+			type: "POST",
+			url: "../php/api.php",
+			data: {action:"logout"},
+			success: function(response){
+				console.log("[logout] returned");
+				$("#checkInfoModal").modal("show");
+			}
+		});
+	});
+}); // end of ready method
 
 $("#checkInfoModal").on("hidden.bs.modal", function(){
 	checkInfo();
@@ -174,27 +191,17 @@ $("#checkInfoModal").on('shown.bs.modal',function(){
 	$("#username").focus();
 });
 
-$("#logout-button").click(function(){
-	console.log("[logout] call");
-	$.ajax({
-		type: "POST",
-		url: "../php/api.php",
-		data: {action:"logout"},
-		success: function(response){
-			console.log("[logout] returned");
-			$("#checkInfoModal").modal("show");
-		}
-	});
-});
 
-	// Clicked row of table
-	$('#people-table tbody').on( 'click', 'tr', function () {
-		var table = $('#people-table').DataTable();
-		if (! $(this).hasClass('info') ) {			
-		    deselectAllBox("#people-table");
-		    selectBox($(this));
-        }
-    });
+/**
+ * Person in table selected, selects its bounding box in frame
+ */
+$('#people-table tbody').on( 'click', 'tr', function () {
+	var table = $('#people-table').DataTable();
+	if (! $(this).hasClass('info') ) {			
+		deselectAllBox("#people-table");
+		selectBox($(this));
+    }
+});
 
 // frame form
 $('#goto-frame').select2({
@@ -264,18 +271,22 @@ $('#prev-frame').click(function(){
 	});
 });
 
-function checkInfo(){
-	console.log('[check-gt-info]');
+
+/**
+ * Called first for checking user login validity, permission and correct camera
+ */
+function checkLogin(){
+	console.log('[check-gt-login]');
 	$.ajax({
 		type: "POST",
 		url: "../php/api.php",
-		data: {action:"check-gt-info",
+		data: {action:"check-gt-login",
 				user: $("#username").val(),
 				camera_id: $("#cameras").select2("data")==null?"":$("#cameras").select2("data").id,
 				frame_id: $("input[name=frameRadios]:checked").val(),
 				frame_number: $("#frame-number").select2("data")==null?"":$("#frame-number").select2("data").id},
 		success: function(response){
-			console.log("[check-gt-info] returned: response "+response);
+			console.log("[check-gt-login] returned: response "+ response);
 			if(response){
 				if (!loaded_keyboard) {
 					addKeyboardEvents();
@@ -306,6 +317,9 @@ function checkInfo(){
 					},
 					async: false
 				});
+				
+				//Loading timeline
+				loadTimeline();
 			}else{
 				$("#checkInfoModal").modal("show");
 			}
@@ -314,7 +328,10 @@ function checkInfo(){
 	});
 }
 
-//load info
+/**
+ * Loading gt info, getting groups, artworks, people
+ * 
+ */
 function loadInfo(){	
 	
 	console.log("[get-groups] call");
