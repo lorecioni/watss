@@ -85,3 +85,106 @@ div.dataTables_info {
     padding: 2px;
 }
 
+/** Timeline **/
+
+.timeline {
+    margin: 20px 0 30px;
+}
+
+.timeline-section {
+    display: inline-table;
+    padding: 10px;
+}
+
+.timeline-section.timeline-left {
+    width: 15%;
+    border-right: 1px solid rgba(0, 0, 0, 0.27);
+}
+
+.timeline-section.timeline-right {
+    width: 84%;
+}
+
+.timeline-header {
+    background-color: #F1F1F1;
+}
+
+.timeline-section.timeline-people-list,
+.timeline-section.timeline-frames {
+    padding: 0;
+    height: 100%;
+}
+
+.timeline-people-list ul li {
+	cursor: pointer;
+    border-bottom: 1px solid rgba(0, 0, 0, 0.25);
+    border-top: none;
+    border-radius: 0;
+    border-left: none;
+    border-right: none;
+    width: 100%;
+    margin: 0;
+}
+
+.timeline-body {
+    height: 130px;
+}
+
+.timeline-people-list ul {
+    margin: 0;
+    list-style: none;
+    padding: 0;
+}
+
+.timeline-header .timeline-section.timeline-right {
+    position: relative;
+}
+
+span.timeline-cursor {
+	cursor: pointer;
+    position: absolute;
+    top: 0;
+    left: 0;
+    font-size: 16pt;
+    color: #810000;
+}
+
+.timeline-cursor-container {
+    position: absolute;
+    width: 96%;
+    height: 20px;
+    top: 4px;
+    left: 10px;
+}
+
+.timeline-section.timeline-frames {
+    height: 100%;
+    position: relative;
+    padding: 0;
+}
+
+.timeline-frames .timeline-frame {
+    position: absolute;
+    top: -53px;
+    height: 108%;
+    font-size: 9pt;
+    color: #7F7E7E;
+}
+
+.timeline-frame-indicator {
+    width: 2px;
+    height: 83%;
+    margin: 28px auto 0;
+    background-color: rgba(0, 0, 0, 0.12);
+    border-radius: 1.5px;
+}
+
+.timeline-frame.current {
+    color: #000;
+    font-weight: bold;
+}
+
+.current .timeline-frame-indicator {
+    background-color: #000;
+    width: 3px;
+}

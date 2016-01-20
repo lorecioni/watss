@@ -775,9 +775,15 @@ function loadTimeline(){
 			limit: limit},
 		success: function(response){
 			console.log("[load timeline] returned "+response);
-			
 		}
 	});	
+	
+	$('.timeline .timeline-cursor').draggable({
+		containment: "parent",
+		drag: function( event, ui ) {
+			ui.position.top = ui.originalPosition.top;
+		}
+	});
 	
 }
 

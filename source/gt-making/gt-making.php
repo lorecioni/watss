@@ -47,15 +47,14 @@
 		<!-- video goes here -->
 		<div class="container-fluid">
 			<div class="row">
-				<div class="col-md-7">
+			  <div class="col-md-7">
 				<div style="width:680px;height:425px;">
-					<div id="video-box">					
-						
-					</div>
+					<div id="video-box"></div>
 				</div>
+					<!-- Frame navigation and zoom -->
 					<div class="form-inline frame-form row">
 						<div class="form-group col-md-6">
-							<label for="goto-frame">Change Frame:&nbsp;</label>
+							<label for="goto-frame">Go to frame:&nbsp;</label>
 							<input type="text" class="form-control frame-number" id="goto-frame" placeholder="Frame number">
   						</div>
 						<div class="col-md-4">						
@@ -65,10 +64,41 @@
 								Next Frame <span class="glyphicon glyphicon-chevron-right"></span></a>
 						</div>
 						<div class="form-group col-md-2">
-							<button class="zoom-out btn btn-default btn-sm"><span class="glyphicon glyphicon-minus"></span></button>
-							<button class="zoom-in btn btn-primary btn-sm"><span class="glyphicon glyphicon-plus"></span></button>
+							<button class="zoom-out btn btn-default btn-sm"><span class="glyphicon glyphicon-zoom-out"></span></button>
+							<button class="zoom-in btn btn-primary btn-sm"><span class="glyphicon glyphicon-zoom-in"></span></button>
 						</div>
-					</div>			
+					</div>	
+					<!-- !end frame navigation -->
+
+					<!-- Timeline -->
+					<div class="timeline panel panel-default">
+					  <div class="timeline-header">
+						<div class="timeline-section timeline-left">People</div>
+						<div class="timeline-section timeline-right">
+  							<!-- Timeline cursor -->
+  							<div class="timeline-cursor-container">
+	  							<span class="timeline-cursor glyphicon glyphicon-arrow-down"></span>
+							</div>
+						</div>
+					  </div>
+					  <div class="timeline-body">
+						  <div class="timeline-section timeline-people-list timeline-left">
+						      <!-- Current frame people list -->
+						      <ul>
+						      	<li>1</li>
+						      	<li>2</li>
+						      </ul>
+						  </div>
+							<div class="timeline-section timeline-frames timeline-right">
+	  							<!-- Timeline body -->
+	  							<div class="timeline-frame">
+	  								<span class="timeline-frame-number">34</span>
+	  								<div class="timeline-frame-indicator"></div>
+	  							</div>
+	  						</div>
+					  </div>
+					</div>
+					<!-- end timeline -->		
 				</div>
 
 

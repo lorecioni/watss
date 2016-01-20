@@ -184,7 +184,7 @@ $(document).ready(function(){
 }); // end of ready method
 
 $("#checkInfoModal").on("hidden.bs.modal", function(){
-	checkInfo();
+	checkLogin();
 });
 
 $("#checkInfoModal").on('shown.bs.modal',function(){
