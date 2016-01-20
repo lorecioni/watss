@@ -89,10 +89,14 @@
 						      	<li>2</li>
 						      </ul>
 						  </div>
+						  	 <!-- Timeline body -->
 							<div class="timeline-section timeline-frames timeline-right">
-	  							<!-- Timeline body -->
 	  							<div class="timeline-frame">
 	  								<span class="timeline-frame-number">34</span>
+	  								<div class="timeline-frame-indicator"></div>
+	  							</div>
+	  							<div class="timeline-frame">
+	  								<span class="timeline-frame-number">35</span>
 	  								<div class="timeline-frame-indicator"></div>
 	  							</div>
 	  						</div>
@@ -278,6 +282,7 @@
 		<script src="../js/jquery-ui-1.10.4.js"></script>
 		<script src="../js/three.min.js"></script>
 		<script src="../js/image-picker.min.js"></script>
+		<script src="../js/timeline.js"></script>
 		<script src="../js/handle-box.js"></script>
 		<script src="../js/handle-keyboard.js"></script>
 		<script src="../js/handle-cone.js"></script>

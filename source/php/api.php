@@ -676,6 +676,7 @@
 		 */
 		case "get-timeline-frames":
 				
+			$output = new stdClass();
 			$frames = array();
 			$done = true;
 				
@@ -685,6 +686,7 @@
 			}
 			
 			$frame_id = intval(substr($_SESSION['frame_id'], 1));
+			$output->current = $frame_id;
 		
 			//Retrieving previous and next frames
 			$sql = "SELECT DISTINCT frameid FROM video
@@ -694,6 +696,7 @@
 			while ($row = mysql_fetch_array($result) ){
 				$frame = new stdClass();
 				$frame->id = $row["frameid"];
+				$frame->number =  intval(substr($row['frameid'], 1));
 				array_push($frames, $frame);
 			}
 			
@@ -711,8 +714,9 @@
 				}
 				$frame->people = $people;
 			}
+			$output->frames = $frames;
 				
-			jecho($frames);
+			jecho($output);
 			break;
 		
 		/**
