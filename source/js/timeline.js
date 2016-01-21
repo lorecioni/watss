@@ -20,6 +20,18 @@
 		showFrames : function(data, current) {
 			showTimelineFrames(data.frames, data.current);
 	    },
+	    previousFrame : function(){
+	    	var prev = $('.timeline-frame.current').data('id') - 1;    	
+	    	if($('#timeline-frame-' + prev).data('id') != undefined){
+	    		selectFrame(prev);
+	    	}	    	
+	    },
+	    nextFrame : function(){
+	    	var next = $('.timeline-frame.current').data('id') + 1;    	
+	    	if($('#timeline-frame-' + next).data('id') != undefined){
+	    		selectFrame(next);
+	    	}	 
+	    },
 	    onFrameSelected : function(id){}
 	};
 	
@@ -37,6 +49,7 @@
     		params = $.extend({
     			title: 'Timeline',
     			limit: 100,
+    			cursorDraggable: false,
     			mouseScrolling: true,
     			getFrames: function(){},
     			onFrameSelected: function(){}
@@ -58,13 +71,17 @@
 			var cursor = $('<span></span>')
 				.addClass('timeline-cursor glyphicon glyphicon-arrow-down');
 			
-			cursor.draggable({
-				containment: "parent",
-				drag: function( event, ui ) {
-					ui.position.top = ui.originalPosition.top;
-				}
-			});
-			
+			//Enabling draggable cursor
+			if(params.cursorDraggable){
+				cursor.draggable({
+					containment: "parent",
+					drag: function( event, ui ) {
+						ui.position.top = ui.originalPosition.top;
+						
+						if(ui.position.left) console.log(ui.position.left)
+					}
+				});
+			}
 			cursorContainer.append(cursor);
 			
 			//Timeline heading
@@ -74,7 +91,7 @@
 				.append(cursorContainer);
 			
 			//Timeline body
-			var tableBody = '<tbody><tr><th class="col-md-2" scope="row">' +
+			var tableBody = '<tbody><tr><th class="timeline-people col-md-2" scope="row">' +
 				'<ul class="list-group"><li class="list-group-item">1</li><li class="list-group-item">2</li></ul>' +
 				'</th><td class="timeline-frames col-md-10"><div class="timeline-frames-container"></div></td>' + 
 				'</tr></tbody>'; 
@@ -88,6 +105,7 @@
 			$(this).html(panel);	
 		});
 		
+		//Enable mouse scrolling for navigating timeline
 		if(params.mouseScrolling){
 			$('.timeline .timeline-frames').on('mousewheel', function(e) {
 				e.preventDefault();
@@ -107,9 +125,10 @@
 				$('.timeline-frames .timeline-frames-container').css({
 					left: offset
 				})
+				
+				updateCursor();
 			});
 		}
-		
 		
 		//Displaying loading gif
 		var loading = $('<img></img>')
@@ -130,6 +149,7 @@
 		for (var i in frames) {
 			var frame = $('<div></div>')
 				.addClass('timeline-frame')
+				.attr('id', 'timeline-frame-' + frames[i].number)
 				.attr('data-id', frames[i].number)
 				.append('<div class="timeline-frame-indicator"></div>')
 				.append('<span class="timeline-frame-number">' + frames[i].number + '</span>');
@@ -137,13 +157,30 @@
 				frame.addClass('current');
 			}
 			
+			//On click change frame
 			frame.click(function(){
-				methods.onFrameSelected($(this).data('id'));
+				selectFrame($(this).data('id'));
 			});
-			
-			
+				
 			$('.timeline-frames-container').append(frame);
 		}
 		$('.timeline-loading').remove();
+		updateCursor();
+	}
+	
+	//Selects frame with the given id in timeline
+	function selectFrame(id){
+		$('.timeline-frame.current').removeClass('current');
+		$('#timeline-frame-' + id).addClass('current');
+		updateCursor();
+		methods.onFrameSelected(id);
+	}
+	
+	//Updates cursor position pointing to the current frame
+	function updateCursor(){
+		$('.timeline-cursor').css({
+			left: $('.timeline-frame.current').parent().position().left 
+						+ $('.timeline-frame.current').position().left
+		});
 	}
 })(jQuery);

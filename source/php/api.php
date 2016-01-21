@@ -573,50 +573,6 @@
 			jecho($img);
 		break;
 		
-		
-		/**
-		 * Returns previous or next frame
-		 */
-		case "get-nearframe":
-			$dimension = array();
-			$img = array();	
-			$done = true;
-
-			if( !isset($_REQUEST["frame"])){				
-				error_500("Missing frame");
-			}
-			if ($_REQUEST["frame"] === "prev"){
-				$sql="SELECT MAX(CAST(SUBSTRING(frameid,2) as UNSIGNED)) as n FROM video WHERE CAST(SUBSTRING(frameid,2) as UNSIGNED) < ".$_SESSION["frame_id"];
-				$result=mysql_query($sql) or $done = false;
-				while ($row=mysql_fetch_array($result) ){
-					$myframe = intval($row["n"]);
-				}
-				if ($myframe != null){
-					$_SESSION["frame_id"] =sprintf("%06d",$myframe);
-				}			
-			}else{
-				$sql="SELECT MIN(CAST(SUBSTRING(frameid,2) as UNSIGNED)) as n FROM video WHERE CAST(SUBSTRING(frameid,2) as UNSIGNED) > ".$_SESSION["frame_id"];
-				$result=mysql_query($sql) or $done = false;
-				while ($row=mysql_fetch_array($result) ){
-					$myframe = intval($row["n"]);
-				}
-				if ($myframe != null){
-					$_SESSION["frame_id"] = sprintf("%06d",$myframe);
-				}
-			}
-			$myframe=sprintf("F%06d",$_SESSION["frame_id"]);			
-			$sql="SELECT * FROM `video` WHERE `frameid`='".$myframe."' AND `cameraid`='".$_SESSION["camera_id"]."'";
-			$result=mysql_query($sql) or $done = false;
-			if ($done == true){
-				while ($row=mysql_fetch_array($result) ){
-					$dimension = getimagesize("../frames/".$row["path"]);
-					$img = array("background"=>"../frames/".$row["path"],"width"=>$dimension[0], "height"=>$dimension[1], "frame_id"=>$myframe);
-
-				}
-			}
-			jecho($img);
-		break;
-		
 		/**
 		 * Returns the artworks list from the DB
 		 */

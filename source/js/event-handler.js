@@ -242,33 +242,11 @@ $('#goto-frame').on('change', function(){
 });
 
 $('#next-frame').click(function(){
-	var num_id = parseInt($("#goto-frame").select2("data").id.replace("F",""));
-	console.log("[get-frame] call frame_id:"+(num_id+1));
-	$.ajax({
-		type: "POST",
-		url: "../php/api.php",
-		data: {action:"get-nearframe",
-				frame: "next"},
-		success: function(response){
-			console.log("[get-frame] returned");
-			setFrame(response);
-		}
-	});
+	$('.timeline').timeline('nextFrame');
 });
 
 $('#prev-frame').click(function(){
-	var num_id = parseInt($("#goto-frame").select2("data").id.replace("F",""));
-	console.log("[get-frame] call frame_id:"+(num_id-1));
-	$.ajax({
-		type: "POST",
-		url: "../php/api.php",
-		data: {action:"get-nearframe",
-				frame: "prev"},
-		success: function(response){
-			console.log("[get-frame] returned");
-			setFrame(response);
-		}
-	});
+	$('.timeline').timeline('previousFrame');
 });
 
 
@@ -322,7 +300,6 @@ function checkLogin(){
 				$('#timeline-container').timeline({
 					getFrames: function(limit){
 						var self = $(this);
-						//TODO display loading gif
 						$.ajax({
 							type: "POST",
 							url: "../php/api.php",
@@ -334,14 +311,12 @@ function checkLogin(){
 						});	
 					},
 					onFrameSelected: function(id){
-						console.log('selected ' + id)
 						$.ajax({
 							type: "POST",
 							url: "../php/api.php",
 							data: {action:"get-frame",
 									frame_id: numberFormat(id, 6)},
 							success: function(response){
-								console.log("[get-frame] returned");
 								setFrame(response);
 							}
 						});
