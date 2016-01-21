@@ -86,3 +86,9 @@ span.timeline-cursor {
 .timeline-frame:HOVER .timeline-frame-number {
     font-weight: bold;
 }
+
+img.timeline-loading {
+    width: 50px;
+    margin: 30px auto;
+    display: block;
+}

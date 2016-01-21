@@ -110,6 +110,14 @@
 			});
 		}
 		
+		
+		//Displaying loading gif
+		var loading = $('<img></img>')
+			.addClass('timeline-loading')
+			.attr('src', '../img/loading.gif')
+			.attr('alt', 'loading');
+		$('.timeline-frames').append(loading);
+		
 		//Getting frames
 		params.getFrames(params.limit);
 		
@@ -133,7 +141,9 @@
 				methods.onFrameSelected($(this).data('id'));
 			});
 			
+			
 			$('.timeline-frames-container').append(frame);
 		}
+		$('.timeline-loading').remove();
 	}
 })(jQuery);
