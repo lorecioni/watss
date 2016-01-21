@@ -13,12 +13,16 @@
 
 (function($) {
 	
+	//List of frames
+	var timelineFrames = [];
+	
 	/**
 	 * Timeline public methods
 	 */
 	var methods = {
 		showFrames : function(data, current) {
-			showTimelineFrames(data.frames, data.current);
+			timelineFrames = data.frames;
+			showTimelineFrames(timelineFrames, data.current);
 	    },
 	    previousFrame : function(){
 	    	var prev = $('.timeline-frame.current').data('id') - 1;    	
@@ -92,7 +96,6 @@
 			
 			//Timeline body
 			var tableBody = '<tbody><tr><th class="timeline-people col-md-2" scope="row">' +
-				'<ul class="list-group"><li class="list-group-item">1</li><li class="list-group-item">2</li></ul>' +
 				'</th><td class="timeline-frames col-md-10"><div class="timeline-frames-container"></div></td>' + 
 				'</tr></tbody>'; 
 			
@@ -155,6 +158,7 @@
 				.append('<span class="timeline-frame-number">' + frames[i].number + '</span>');
 			if(frames[i].number == current){
 				frame.addClass('current');
+				loadPeople(frames[i].people)
 			}
 			
 			//On click change frame
@@ -168,12 +172,42 @@
 		updateCursor();
 	}
 	
+	//Loading current frame people
+	function loadPeople(people){
+		$('.timeline-people-list').empty();
+		if(people.length > 0){
+			var list = $('<ul></ul>')
+				.addClass('timeline-people-list list-group');
+			for ( var i in people) {
+				var person = $('<li></li>')
+					.addClass('timeline-person list-group-item')
+					.attr('data-id', people[i].id)
+					.attr('id', 'timeline-person-' + people[i].id)
+					.append('<div><a href="#" class="popover-img" data-container="body" href="#" data-toggle="popover" data-placement="right" data-content=\'' 
+							+ '<img src="../img/real_people/'+ people[i].id + '_100.jpg">' + '\'>' + people[i].id + '</a></div>')
+					.append('<div id="color-' + people[i].id +'" class="thumbnail pickthb" '
+						+ 'style="background-color:'+ people[i].color + '"></div>');
+				
+				person.click(function(){
+					selectPerson({id: $(this).data('id'), color: $(this).find('.pickthb').css('background-color')});
+				});
+				
+				list.append(person);
+			} 
+			$('.timeline-people').html(list);
+		} else {
+			$('.timeline-people').html('<div class="people-list-error">No people in this frame</div>');
+		}
+
+	}
+	
 	//Selects frame with the given id in timeline
 	function selectFrame(id){
 		$('.timeline-frame.current').removeClass('current');
 		$('#timeline-frame-' + id).addClass('current');
 		updateCursor();
 		methods.onFrameSelected(id);
+		loadPeople(timelineFrames[id - 1].people)
 	}
 	
 	//Updates cursor position pointing to the current frame
@@ -183,4 +217,57 @@
 						+ $('.timeline-frame.current').position().left
 		});
 	}
+	
+	//Displaying annotation duration for a selected person
+	function selectPerson(person){
+		if(!$('#timeline-person-' + person.id).hasClass('selected')){
+			$('.timeline-person.selected').removeClass('selected');
+			$('#timeline-person-' + person.id).addClass('selected');
+			$('.timeline-annotation').remove();
+			
+			var matches = [];
+			for ( var i in timelineFrames) {
+				if(timelineFrames[i].people.length > 0){
+					for ( var j in timelineFrames[i].people) {
+						if(timelineFrames[i].people[j].id == person.id){
+							matches.push(parseInt(i) + 1);
+						}
+					}
+				}
+			}
+			
+			var intervals = [];
+			var start = matches[0];
+			var end = 0;
+			for (var k = 0; k < matches.length; k++){
+				if(matches[k] + 1 != matches[k + 1]){
+					end = matches[k];
+					intervals.push({start: start, end: end});
+					start = matches[k + 1];
+				}
+			}
+			
+			for ( var i in intervals) {
+				var over = $('<div></div>')
+					.addClass('timeline-annotation')
+					.attr('id', 'timeline-annotation-' + person.id)
+					.css({
+						'background-color': person.color,
+						'width' : $('#timeline-frame-' + intervals[i].start).width() * (intervals[i].end - intervals[i].start)
+								+ $('#timeline-frame-' + intervals[i].start).width(),
+						'left' : $('#timeline-frame-' + intervals[i].start).position().left,
+						'top' : 20 
+					});
+				$('.timeline-frames-container').prepend(over);
+			}
+			
+			console.log(matches)
+			console.log(intervals)
+			
+		} else {
+			$('.timeline-person.selected').removeClass('selected');
+			$('.timeline-annotation').remove();
+		}
+	}
+	
 })(jQuery);

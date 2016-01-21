@@ -92,9 +92,57 @@ img.timeline-loading {
     padding: 0;
 }
 
-.timeline .list-group {
+.timeline .timeline-people-list {
     margin-bottom: 0px;
     padding-left: 0;
     border-radius: 0;
     box-shadow: none;
+}
+
+li.timeline-person.list-group-item {
+    border-radius: 0;
+    border-right: 0;
+    border-left: 0;
+    line-height: 10px;
+    background-color: #dff0d8;
+    cursor: pointer;
+}
+
+li.timeline-person.list-group-item:HOVER {
+    background-color: #d0e9c6;
+}
+
+li.timeline-person.list-group-item.selected {
+    background-color: #d0e9c6;
+}
+
+li.timeline-person.list-group-item:first-child {
+    border-top: none;
+}
+
+.timeline-person div {
+    display: inline-flex;
+}
+
+.timeline-person div:first-child {
+    width: 40px;
+    margin-left: 5px;
+    cursor: pointer;
+}
+
+div.people-list-error {
+    padding: 8px;
+    font-weight: normal;
+    font-size: 8pt;
+}
+
+.timeline-annotation {
+    position: absolute;
+    width: 100px;
+    height: 15px;
+    z-index: 100;
+    border-radius: 4px;
+    top: 10px;
+    left: 9px;
+    box-shadow: 1px 1px 2px rgba(0, 0, 0, 0.48);
 }
