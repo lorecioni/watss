@@ -322,12 +322,11 @@ function checkLogin(){
 				$('#timeline-container').timeline({
 					getFrames: function(limit){
 						var self = $(this);
+						//TODO display loading gif
 						$.ajax({
 							type: "POST",
 							url: "../php/api.php",
-							data: { 
-								action:"get-timeline-frames",
-								limit: limit},
+							data: {action:"get-timeline-frames"},
 							success: function(data){
 								var current = data.current;
 								self.timeline('showFrames', {frames: data.frames, current: current});				

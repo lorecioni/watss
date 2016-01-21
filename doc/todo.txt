@@ -1,0 +1,5 @@
+WATTS: ToDo list
+
+- Loading image per caricamento frames
+- Muovere cursore selezione frames
+- Introdurre supporto alle persone dei frames ed alla durata delle annotazioni

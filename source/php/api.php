@@ -681,7 +681,7 @@
 			$done = true;
 				
 			//Check if params are valid
-			if( !isset($_SESSION["frame_id"]) || !isset($_REQUEST['limit'])){
+			if( !isset($_SESSION["frame_id"])){
 				error_500("Missing information");
 			}
 			
@@ -689,9 +689,14 @@
 			$output->current = $frame_id;
 		
 			//Retrieving previous and next frames
-			$sql = "SELECT DISTINCT frameid FROM video
+			if(isset($_REQUEST['limit'])){
+				$sql = "SELECT frameid FROM video
                   WHERE (CAST(SUBSTRING(frameid,2) as UNSIGNED) >= ".($frame_id - $_REQUEST['limit']).")
-                  		and (CAST(SUBSTRING(frameid,2) as UNSIGNED) <= ".($frame_id + $_REQUEST['limit']).");";
+                  		and (CAST(SUBSTRING(frameid,2) as UNSIGNED) <= ".($frame_id + $_REQUEST['limit']).")
+                  		and cameraid = '".$_SESSION['camera_id']."';";
+			} else {
+				$sql = "SELECT frameid FROM video WHERE cameraid = '".$_SESSION['camera_id']."';";
+			}
 			$result=mysql_query($sql) or $done = false;
 			while ($row = mysql_fetch_array($result) ){
 				$frame = new stdClass();
