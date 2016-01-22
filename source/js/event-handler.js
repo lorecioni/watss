@@ -85,6 +85,8 @@ $(document).ready(function(){
 					console.log("[add-person] returned");
 					$("#people-table").dataTable().fnDestroy();
 					addPeople(response, groups, artworks, "#people-table", people_per_page, people_att);
+					//Updates timeline
+					$('.timeline').timeline('addPerson', {id: response.id, color: response.color});
 				},
 				error: function(err){
 					console.log(err);
@@ -101,6 +103,8 @@ $(document).ready(function(){
 					console.log("[add-person] returned");
 					$("#people-table").dataTable().fnDestroy();
 					addPeople(response, groups, artworks, "#people-table", people_per_page, people_att);
+					//Updates timeline
+					$('.timeline').timeline('addPerson', {id: response.id, color: response.color});
 				}
 			});
 		}	
@@ -195,11 +199,21 @@ $("#checkInfoModal").on('shown.bs.modal',function(){
 /**
  * Person in table selected, selects its bounding box in frame
  */
-$('#people-table tbody').on( 'click', 'tr', function () {
+$('#people-table tbody').on( 'click', 'tr', function (e) {
 	var table = $('#people-table').DataTable();
 	if (! $(this).hasClass('info') ) {			
 		deselectAllBox("#people-table");
 		selectBox($(this));
+		//Select person in timeline
+		var target = $(e.target);
+		if(!target.is('.remove-person *')) {
+			$('.timeline').timeline('selectPerson', {
+				id: $(this).data('id'), 
+				color: $(this).find('.pickthb').css('background-color')
+			});
+		} else {
+			$('.timeline').timeline('removePerson', $(this).data('id'));
+		}
     }
 });
 
@@ -241,11 +255,13 @@ $('#goto-frame').on('change', function(){
 	});
 });
 
-$('#next-frame').click(function(){
+$('#next-frame').click(function(e){
+	e.preventDefault();
 	$('.timeline').timeline('nextFrame');
 });
 
-$('#prev-frame').click(function(){
+$('#prev-frame').click(function(e){
+	e.preventDefault();
 	$('.timeline').timeline('previousFrame');
 });
 
@@ -300,6 +316,7 @@ function checkLogin(){
 				$('#timeline-container').timeline({
 					getFrames: function(limit){
 						var self = $(this);
+						//FIXME handle limit if undefined
 						$.ajax({
 							type: "POST",
 							url: "../php/api.php",
@@ -378,12 +395,13 @@ function loadInfo(){
 	// Click on the body (remove focus)
 	$('body').click(function(e){
 		var target = $(e.target);
-		if(!target.is('.not-update *') && !target.is('.colorpicker *') && !target.is('.editable-submit *')) {
+		if(!target.is('.not-update *') && !target.is('.colorpicker *') && !target.is('.editable-submit *') && !target.is('.timeline *')) {
 			if(!target.hasClass('not-update')){
 				if(!target.is('a') && !target.is('button')  && !target.is('submit')) {		
 					if (!select_shown){
 						deselectAllBox("#people-table");
 						$("#video-box").panzoom("option", "disablePan", false);
+						$('.timeline').timeline('deselectAll');
 					}
 				}
 			}

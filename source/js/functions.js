@@ -497,6 +497,11 @@ function addBoundingBox(people){
 			if(!$("#tr-"+$(this).data("id")).hasClass('info')){
 				deselectAllBox("#people-table");
 				changeSelectBox("#people-table",$(this));
+				$('.timeline').timeline('selectPerson', {
+					id: $(this).data('id'), 
+					color: $('#people-table #color-' + $(this).data('id'))
+						.css('background-color')
+				});
 			}
 		});
 	}else{
@@ -505,6 +510,11 @@ function addBoundingBox(people){
 			if(!$("#tr-"+$(this).data("id")).hasClass('info')){
 				deselectAllBox("#people-table");
 				changeSelectBox("#people-table",$(this));
+				$('.timeline').timeline('selectPerson', {
+					id: $(this).data('id'), 
+					color: $('#people-table #color-' + $(this).data('id'))
+						.css('background-color')
+				});
 			}
 		});
 	}

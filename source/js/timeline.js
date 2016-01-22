@@ -3,8 +3,10 @@
  * Designed for WATSS annotation tool
  * 
  * @param title: title displayed above timeline
- * @param limit: query limit for retrieving frame from the current
+ * @param limit: query limit for retrieving frame from the current (if undefined there is no limit)
  * @param mouseScrolling: true/false, enabling/disabling mouse scrolling for navigating timeline
+ * @param cursorDraggable: enabling/disabling draggable cursor (not yet finished)
+ * @param loadedFrames: number of frames loaded in timeline (if undefined there all frames are preloaded)
  * @param getFrames: function for getting frames
  * @param onFrameSelected: callback function after a frame is selected in timeline
  * 
@@ -13,10 +15,19 @@
 
 (function($) {
 	
+	var config = {
+		title: 'Timeline',
+		limit: undefined,
+		cursorDraggable: false,
+		mouseScrolling: true,
+		loadedFrames: undefined,		
+	}
+	
 	//List of frames
 	var timelineFrames = [];
 	//Preloaded frames in timeline
-	var loadedFrames = 30;
+	var currentFrame;
+	var loadedFrames;
 	var displayedFrames = [];
 	
 	/**
@@ -25,12 +36,17 @@
 	var methods = {
 		showFrames : function(data) {
 			timelineFrames = data.frames;
-			if(data.current < loadedFrames/2){
-				displayedFrames = timelineFrames.slice(0, loadedFrames);
+			currentFrame = data.current;
+			if(loadedFrames != undefined){
+				if(currentFrame < loadedFrames/2){
+					displayedFrames = timelineFrames.slice(0, loadedFrames);
+				} else {
+					displayedFrames = timelineFrames.slice(currentFrame - loadedFrames/2, currentFrame + loadedFrames/2);
+				}
+				initTimelineFrames(displayedFrames);
 			} else {
-				displayedFrames = timelineFrames.slice(data.current - loadedFrames/2, data.current + loadedFrames/2);
-			}		
-			initTimelineFrames(displayedFrames, data.current);
+				initTimelineFrames(timelineFrames);
+			}
 	    },
 	    previousFrame : function(){
 	    	var prev = $('.timeline-frame.current').data('id') - 1;    	
@@ -45,7 +61,24 @@
 	    	}	 
 	    },
 	    onFrameSelected : function(id){},
-	    selectPerson : function(person){}
+	    selectPerson : function(person){
+	    	selectPerson(person);
+	    },
+	    deselectAll : function(){
+	    	deselectAll();
+	    },
+	    addPerson : function(person){
+	    	timelineFrames[currentFrame - 1].people.push(person);
+	    	loadPeople(timelineFrames[currentFrame - 1].people)
+	    },
+	    removePerson : function(id){
+	    	for ( var i = 0; i < timelineFrames[currentFrame - 1].people.length; i++) {
+				if(timelineFrames[currentFrame - 1].people[i].id == id){
+					timelineFrames[currentFrame - 1].people.splice(i, 1);
+				}
+			}
+	    	loadPeople(timelineFrames[currentFrame - 1].people)
+	    }
 	};
 	
 	/**
@@ -60,11 +93,11 @@
         } else if ( typeof value === 'object' || ! value ) {
             //Setting default parameters
     		params = $.extend({
-    			title: 'Timeline',
-    			limit: 100,
-    			cursorDraggable: false,
-    			mouseScrolling: true,
-    			loadedFrames: 30,
+    			title: config.title,
+    			limit: config.limit,
+    			cursorDraggable: config.cursorDraggable,
+    			mouseScrolling: config.mouseScrolling,
+    			loadedFrames: config.loadedFrames,
     			getFrames: function(){},
     			onFrameSelected: function(){}
     		}, value);
@@ -107,6 +140,7 @@
 			
 			//Timeline body
 			var tableBody = '<tbody><tr><th class="timeline-people col-md-2" scope="row">' +
+				'<div class="scrollable"></div>' +
 				'</th><td class="timeline-frames col-md-10"><div class="timeline-frames-container"></div></td>' + 
 				'</tr></tbody>'; 
 			
@@ -132,14 +166,14 @@
 					} else {
 						direction = 'left';
 					}
-					offset += e.deltaX * e.deltaFactor;
+					offset += e.deltaX; //If necessary multiply for e.deltaFactor
 				} else if(Math.abs(e.deltaY) != 0){
 					if(e.deltaY > 0){
 						direction = 'right';
 					} else {
 						direction = 'left';
 					}
-					offset += e.deltaY * e.deltaFactor;
+					offset += e.deltaY; //If necessary multiply for e.deltaFactor
 				}
 				//Limiting scolling
 				if(offset > 0)
@@ -151,7 +185,9 @@
 					left: offset
 				})
 				
-				extendTimelineFrame(direction);
+				if(loadedFrames != undefined){
+					extendTimelineFrame(direction);
+				}		
 				updateCursor();
 			});
 		}
@@ -170,7 +206,7 @@
 	};
 	
 	//Build and display timeline frames
-	function initTimelineFrames(frames, current){
+	function initTimelineFrames(frames){
 		$('.timeline-frames-container').empty();
 		for (var i in frames) {
 			var frame = $('<div></div>')
@@ -179,7 +215,7 @@
 				.attr('data-id', frames[i].number)
 				.append('<div class="timeline-frame-indicator"></div>')
 				.append('<span class="timeline-frame-number">' + frames[i].number + '</span>');
-			if(frames[i].number == current){
+			if(frames[i].number == currentFrame){
 				frame.addClass('current');
 				loadPeople(frames[i].people)
 			}
@@ -192,6 +228,11 @@
 			$('.timeline-frames-container').append(frame);
 		}
 		$('.timeline-loading').remove();
+		//Centering timeline on current frame
+		if(currentFrame > 20){
+			$('.timeline-frames-container').css('left', - $('.timeline-frame.current').position().left 
+					+ $('.timeline-frames').width()/2);
+		}
 		updateCursor();
 	}
 	
@@ -222,6 +263,11 @@
 			.attr('data-id', id)
 			.append('<div class="timeline-frame-indicator"></div>')
 			.append('<span class="timeline-frame-number">' + id + '</span>');
+		
+		if(id == currentFrame){
+			frame.addClass('current');
+			updateCursor();
+		}
 		
 		//On click change frame
 		frame.click(function(){
@@ -260,9 +306,9 @@
 				
 				list.append(person);
 			} 
-			$('.timeline-people').html(list);
+			$('.timeline-people .scrollable').html(list);
 		} else {
-			$('.timeline-people').html('<div class="people-list-error">No people in this frame</div>');
+			$('.timeline-people .scrollable').html('<div class="people-list-error">No people in this frame</div>');
 		}
 
 	}
@@ -279,7 +325,7 @@
 	
 	//Updates cursor position pointing to the current frame
 	function updateCursor(){
-		if($('.timeline-frame.current').parent().left != undefined){
+		if($('.timeline-frame.current').parent().length > 0){
 			$('.timeline-cursor').css({
 				left: $('.timeline-frame.current').parent().position().left 
 							+ $('.timeline-frame.current').position().left
@@ -319,24 +365,33 @@
 				}
 			}
 			
+			var annotationContainer = $('<div></div>')
+				.addClass('timeline-annotation-container')
+				.addClass('timeline-annotation-' + person.id);
+			
 			for ( var i in intervals) {
 				var over = $('<div></div>')
 					.addClass('timeline-annotation')
-					.addClass('timeline-annotation-' + person.id)
 					.css({
 						'background-color': person.color,
 						'width' : $('#timeline-frame-' + intervals[i].start).width() * (intervals[i].end - intervals[i].start)
 								+ $('#timeline-frame-' + intervals[i].start).width(),
 						'left' : $('#timeline-frame-' + intervals[i].start).position().left,
-						'top' :  $('#timeline-person-' + person.id).position().top/2 
-								   + ($('#timeline-person-' + person.id).height()/2)
+						'top' :  10 + $('.timeline-annotation-container').length * 20
 					});
-				$('.timeline-frames-container').prepend(over);
+				annotationContainer.append(over);
 			}
+			$('.timeline-frames-container').prepend(annotationContainer);
 		} else {
 			$('#timeline-person-' + person.id).removeClass('selected');
 			$('.timeline-annotation-' + person.id).remove();
 		}
+	}
+	
+	//Deselect all people
+	function deselectAll(){
+		$('.timeline-person').removeClass('selected');
+		$('.timeline-annotation').remove();
 	}
 	
 })(jQuery);

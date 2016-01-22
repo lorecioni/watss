@@ -26,7 +26,7 @@ span.timeline-cursor {
 	cursor: pointer;
     position: absolute;
     top: 0;
-    left: 0;
+    left: -100px;
     font-size: 16pt;
     color: #810000;
     z-index: 5;
@@ -90,6 +90,13 @@ img.timeline-loading {
 
 .timeline th.timeline-people {
     padding: 0;
+    overflow: hidden;
+}
+
+.timeline .scrollable {
+    max-height: 135px;
+    overflow-y: scroll;
+    width: 125%;
 }
 
 .timeline .timeline-people-list {
@@ -98,6 +105,7 @@ img.timeline-loading {
     border-radius: 0;
     box-shadow: none;
     position: relative;
+    max-height: 135px;
 }
 
 li.timeline-person.list-group-item {
