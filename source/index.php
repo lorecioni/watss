@@ -22,15 +22,16 @@
 					<li><a href="gt-making/gt-making.php">GT Making</a></li>
 					<li><a href="export.php">Export Results</a></li>					
 					<li><a href="legend.html">Legend</a></li>
+					<li><a href="settings.php">Settings</a></li>
 				  </ul>
 				</div><!-- /.navbar-collapse -->
 			  </div><!-- /.container-fluid -->
 			</nav>
-
+		<div id="content-wrapper">
 		    <h1>WATSS: Web Annotation Tool for Surveillance Scenarios</h1>
 		    <h4>This tool is designed to annotate person and group bounding boxes, visible area, head gaze, body gaze and observed points of interest (poi) on surveillance datasets.</h4> 
 	     	    <h5>You may  try it on sequences acquired from the Bargello Museum, Go to <i>GT Making</i> section and enter with the user <i>Guest</i>.</h5>
-		    <img src="home_page.png" alt="Screenshot of Watss">	
+		    <img src="home_page.png" id="home-screenshot" alt="Screenshot of Watss">	
 		</div>
  <!-- jQuery (necessary for Bootstrap's JavaScript plugins) -->
 	    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.0/jquery.min.js"></script>

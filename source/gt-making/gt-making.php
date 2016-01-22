@@ -30,7 +30,7 @@
 						<li class="active"><a href="#">GT Making</a></li>
 						<li><a href="../export.php">Export Results</a></li>				
 						<li><a href="../legend.html">Legend</a></li>
-						<li><a href="#">Configuration</a></li>		
+						<li><a href="../settings.php">Settings</a></li>		
 					</ul>
 			 <ul class="nav navbar-nav navbar-right">
 		         <li><a id="welcome-person"></a></li>

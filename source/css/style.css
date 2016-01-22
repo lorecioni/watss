@@ -2,6 +2,14 @@ body {
 	margin: 15px;
 }
 
+img#home-screenshot {
+    width: 100%;
+}
+
+div#content-wrapper {
+    margin: 30px;
+}
+
 /** Navigation bar **/
 
 .main-nav {
@@ -84,3 +92,10 @@ a.btn-panel {
 div.dataTables_info {
     padding: 2px;
 }
+
+/* Settings */
+
+.settings.row {
+    margin-top: 25px;
+}
+
