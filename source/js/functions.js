@@ -494,6 +494,7 @@ function addBoundingBox(people){
 				deselectAllBox("#people-table");
 				changeSelectBox("#people-table",$(this));
 				//Selecting person in timeline
+				$('.timeline').timeline('deselectAll');
 				$('.timeline').timeline('selectPerson', {
 					id: $(this).data('id'), 
 					color: $('#people-table #color-' + $(this).data('id'))
@@ -508,6 +509,7 @@ function addBoundingBox(people){
 				deselectAllBox("#people-table");
 				changeSelectBox("#people-table",$(this));
 				//Selecting person in timeline
+				$('.timeline').timeline('deselectAll');
 				$('.timeline').timeline('selectPerson', {
 					id: $(this).data('id'), 
 					color: $('#people-table #color-' + $(this).data('id'))
