@@ -58,7 +58,8 @@
 	    	var prev = currentFrame - 1;    	
 	    	if($('#timeline-frame-' + prev).data('id') != undefined){
 	    		selectFrame(prev);
-	    	}	    	
+	    		currentFrame = prev;
+	    	}
 	    },
 	    /**
 		 * Go to the next frame
@@ -67,6 +68,7 @@
 	    	var next = currentFrame + 1;    	
 	    	if($('#timeline-frame-' + next).data('id') != undefined){
 	    		selectFrame(next);
+	    		currentFrame = next;
 	    	}	 
 	    },
 	    /**
