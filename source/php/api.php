@@ -307,29 +307,29 @@
 			//Initial bounding box settings
   			//Full bounding box
 			$bb = new stdClass(); 
-			$bb->x = 300;
-			$bb->y = 200;
-			$bb->width = 40;
-			$bb->height = 84;		
+			$bb->x = 500;
+			$bb->y = 300;
+			$bb->width = 50;
+			$bb->height = 90;		
 			//Visible bounding box
 			$bbV = new stdClass(); 
-			$bbV->x = 300;
-			$bbV->y = 200;
+			$bbV->x = 500;
+			$bbV->y = 300;
 			$bbV->width = 30;
-			$bbV->height = 84;
+			$bbV->height = 30;
 			
 		    //Query indicator: if true the query has been done
 			$done = true;
 
 			if (isset($_REQUEST["people_id"])){
-				$sql2 = "INSERT INTO `people` (`peopleid`,`frameid`, `cameraid`, `bb_x`, `bb_y`, `bb_width`, `bb_height`, `bbV_x`, `bbV_y`, `bbV_width`, `bbV_height`, `gazeAngle_face`, `gazeAngle_face_z`, `gazeAngle_body`, `gazeAngle_body_z`,`color`, `poiid`, `userid`, `groupid`) VALUES
-				(".$_REQUEST["people_id"].", 'F".$_SESSION["frame_id"]."', '".$_SESSION["camera_id"]."', ".$bb->x.", ".$bb->y.", ".$bb->width.", ".$bb->height.", ".$bbV->x.", ".$bbV->y.", ".$bbV->width.", ".$bbV->height.", 0, 0, 0, 0,'".$hex."', 'O0', '".$_SESSION["user"]."', 'G0');";
+				$sql = "INSERT INTO `people` (`peopleid`,`frameid`, `cameraid`, `bb_x`, `bb_y`, `bb_width`, `bb_height`, `bbV_x`, `bbV_y`, `bbV_width`, `bbV_height`, `gazeAngle_face`, `gazeAngle_face_z`, `gazeAngle_body`, `gazeAngle_body_z`,`color`, `poiid`, `userid`, `groupid`) VALUES
+					(".$_REQUEST["people_id"].", 'F".$_SESSION["frame_id"]."', '".$_SESSION["camera_id"]."', ".$bb->x.", ".$bb->y.", ".$bb->width.", ".$bb->height.", ".$bbV->x.", ".$bbV->y.", ".$bbV->width.", ".$bbV->height.", 0, 0, 0, 0,'".$hex."', 'O0', '".$_SESSION["user"]."', 'G0');";
 			
 				$result = mysql_query($sql) or $done = false;
 				if ($done){
 					$person = array("id"=>$_REQUEST["people_id"], "color"=>$hex,"angle_face"=>0,"angle_face_z"=>0,"angle_body"=>0,"angle_body_z"=>0,"group"=>'G0',"artwork"=>'O0', "prev_frame"=>true, "bb"=>array($bb->x, $bb->y, $bb->width, $bb->height),"bbV"=>array($bbV->x, $bbV->y, $bbV->width, $bbV->height));
 				}
-			}else{
+			} else {
 			    $sql="INSERT INTO `tgroup` (`groupid`,`name`,`deleted`,`userid`) VALUES ('G0', 'no group',0,'".$_SESSION["user"]."');";
 				$result = mysql_query($sql);
 

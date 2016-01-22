@@ -486,17 +486,14 @@ function addBoundingBox(people){
 		setDragResize(boundingBox, boundingBoxVisible, boundingBoxFace)
 		
 	}
-
-//	for(var i in people){
-//		setDragResize("#box-"+people[i]["id"],"#box-"+people[i]["id"]+"-bbV");
-//	}
-
+	
 	if(people.length == 1){
 		$(".bb:last, .bbV:last, .face:last").click(function(){
 			$("#video-box").panzoom("option", "disablePan", true);
 			if(!$("#tr-"+$(this).data("id")).hasClass('info')){
 				deselectAllBox("#people-table");
 				changeSelectBox("#people-table",$(this));
+				//Selecting person in timeline
 				$('.timeline').timeline('selectPerson', {
 					id: $(this).data('id'), 
 					color: $('#people-table #color-' + $(this).data('id'))
@@ -504,12 +501,13 @@ function addBoundingBox(people){
 				});
 			}
 		});
-	}else{
+	} else {
 		$(".bb, .bbV, .face").click(function(){
 			$("#video-box").panzoom("option", "disablePan", true);
 			if(!$("#tr-"+$(this).data("id")).hasClass('info')){
 				deselectAllBox("#people-table");
 				changeSelectBox("#people-table",$(this));
+				//Selecting person in timeline
 				$('.timeline').timeline('selectPerson', {
 					id: $(this).data('id'), 
 					color: $('#people-table #color-' + $(this).data('id'))
@@ -523,7 +521,6 @@ function addBoundingBox(people){
 function destroyBoundingBox(){
 	$("#video-box").panzoom("destroy");
 	$("#video-box").html("");
-
 }
 
 /* -- BOX OPTIONS -- */

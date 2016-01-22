@@ -34,6 +34,9 @@
 	 * Timeline public methods
 	 */
 	var methods = {
+		/**
+		 * Display timeline frames
+		 */
 		showFrames : function(data) {
 			timelineFrames = data.frames;
 			currentFrame = data.current;
@@ -48,29 +51,50 @@
 				initTimelineFrames(timelineFrames);
 			}
 	    },
+	    /**
+		 * Go to the previous frame
+		 */
 	    previousFrame : function(){
-	    	var prev = $('.timeline-frame.current').data('id') - 1;    	
+	    	var prev = currentFrame - 1;    	
 	    	if($('#timeline-frame-' + prev).data('id') != undefined){
 	    		selectFrame(prev);
 	    	}	    	
 	    },
+	    /**
+		 * Go to the next frame
+		 */
 	    nextFrame : function(){
-	    	var next = $('.timeline-frame.current').data('id') + 1;    	
+	    	var next = currentFrame + 1;    	
 	    	if($('#timeline-frame-' + next).data('id') != undefined){
 	    		selectFrame(next);
 	    	}	 
 	    },
+	    /**
+		 * Function handler on frame selected
+		 */
 	    onFrameSelected : function(id){},
+	    /**
+		 * Function handler on person selected
+		 */
 	    selectPerson : function(person){
 	    	selectPerson(person);
 	    },
+	    /**
+		 * Deselect all people in timeline, removing annotation
+		 */
 	    deselectAll : function(){
 	    	deselectAll();
 	    },
+	    /**
+		 * Adding person to the current frame in timeline
+		 */
 	    addPerson : function(person){
 	    	timelineFrames[currentFrame - 1].people.push(person);
 	    	loadPeople(timelineFrames[currentFrame - 1].people)
 	    },
+	    /**
+		 * Remove person from the current frame in timeline with the given id
+		 */
 	    removePerson : function(id){
 	    	for ( var i = 0; i < timelineFrames[currentFrame - 1].people.length; i++) {
 				if(timelineFrames[currentFrame - 1].people[i].id == id){
@@ -391,7 +415,7 @@
 	//Deselect all people
 	function deselectAll(){
 		$('.timeline-person').removeClass('selected');
-		$('.timeline-annotation').remove();
+		$('.timeline-annotation-container').remove();
 	}
 	
 })(jQuery);
