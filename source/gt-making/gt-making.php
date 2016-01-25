@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
 	<head>
-		<title>Bargello - Frame</title>
+	    <title>WATTS - GT Making</title>
 		<meta name="description" content="Video tagging and results comparison">
 		<meta name="keywords" content="Video, Ground truth, Keyboard, Automatic">
 		<meta charset="UTF-8">
@@ -28,7 +28,7 @@
 					<ul class="nav navbar-nav main-nav">
 						<li><a href="../index.php">Home</a></li>
 						<li class="active"><a href="#">GT Making</a></li>
-						<li><a href="../export.php">Export Results</a></li>				
+						<li><a href="../export.php">Export</a></li>				
 						<li><a href="../legend.html">Legend</a></li>
 						<li><a href="../settings.php">Settings</a></li>		
 					</ul>
@@ -233,12 +233,9 @@
 		  </div>
 		</div>
 
-		<!-- jQuery (necessary for Bootstrap's JavaScript plugins) -->
-		<!--<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.0/jquery.min.js"></script>-->
-		<!-- Include all compiled plugins (below), or include individual files as needed -->
 		<script src="../js/jquery-1.11.1.min.js"></script>
 		<script src="../js/bootstrap.min.js"></script>
-		<script type="text/javascript" src="../js/jquery.bootpag.min.js"></script>
+		<script src="../js/jquery.bootpag.min.js"></script>
 		<script src="../js/bootstrap-colorpicker.min.js"></script>
 		<script src="../js/jquery.hotkeys.js"></script>
 		<script src="../js/bloodhound.min.js"></script>

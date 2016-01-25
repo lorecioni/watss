@@ -8,6 +8,9 @@
 	<!-- CSS -->
 	<link rel="stylesheet" href="css/bootstrap.min.css">
 	<link rel="stylesheet" href="css/bootstrap-theme.min.css">
+	<link rel="stylesheet" href="css/bootstrap-editable.css">
+	<link rel="stylesheet" href="css/select2.css">
+	<link rel="stylesheet" href="css/select2-bootstrap.css">
 	<link rel="stylesheet" href="css/style.css">
     <!--<script src="js/event-handler"></script>-->
     </head>
@@ -22,7 +25,7 @@
 				  <ul class="nav navbar-nav main-nav">
 					<li><a href="index.php">Home</a></li>
 					<li><a href="gt-making/gt-making.php">GT Making</a></li>
-					<li><a href="export.php">Export Results</a></li>					
+					<li><a href="export.php">Export</a></li>					
 					<li><a href="legend.html">Legend</a></li>
 					<li class="active" ><a href="#">Settings</a></li>
 				  </ul>
@@ -86,11 +89,11 @@
 						  <div class="panel-body">
 						  	<form id="add-user-form" class="form-inline">
 							  <div class="form-group">
-							    <input type="text" class="form-control" id="user" placeholder="Username">
+							    <input type="text" class="form-control" id="add-user-name" placeholder="Username">
 							  </div>
 							  <button type="submit" class="btn btn-primary">Add user</button>
 							</form>
-							<div class="scrllable-container">
+							<div class="scrollable-container">
 								<div class="scrollable"></div>
 							</div>
 						  </div>
@@ -101,22 +104,52 @@
 				  
 				  <!-- Cameras settings -->
 				  <div class="col-xs-6 col-sm-4">
-				  	<div class="settings-panel panel panel-default">
+				  	<div id="camera-settings" class="settings-panel panel panel-default">
 						  <div class="panel-heading">
 						    <h3 class="panel-title">Cameras</h3>
 						  </div>
 						  <div class="panel-body">
-						    
+						  	<form id="add-camera-form" class="form-inline">
+							  <div class="form-group">
+							    <input type="number" class="form-control" id="add-camera-calibration" placeholder="Calibration">
+							  </div>
+							  <button type="submit" class="btn btn-primary">Add camera</button>
+							</form>
+							<div class="scrollable-container">
+								<div class="scrollable"></div>
+							</div>
 						  </div>
-					</div>
+						</div>
 				  </div>		    	
 		    	 <!-- end of camera setting -->
+		    	 
+		    	 <!-- POI settings -->
+				  <div class="col-xs-12 col-sm-12">
+				  	<div id="poi-settings" class="settings-panel panel panel-default">
+						  <div class="panel-heading">
+						    <h3 class="panel-title">Points of Interest</h3>
+						  </div>
+						  <div class="panel-body">
+						  	<form id="add-poi-form" class="form-inline">
+							  <div class="form-group">
+							    <input type="text" class="form-control" id="add-poi-camera">							    
+							  </div>
+							  <button type="submit" class="btn btn-primary">Add POI</button>
+							</form>
+							<div class="scrollable-container">
+								<div class="scrollable"></div>
+							</div>
+						  </div>
+						</div>
+				  </div>		 
 			</div>
 		 </div>
 		 <!-- jQuery (necessary for Bootstrap's JavaScript plugins) -->
 	    <script src="js/jquery-1.11.1.min.js"></script>
 	    <!-- Include all compiled plugins (below), or include individual files as needed -->
 	    <script src="js/bootstrap.min.js"></script>
+	    <script src="js/bootstrap-editable.js"></script>
+	    <script src="js/select2.js"></script>
 	    <script src="js/settings.js"></script>
 	</body>
 </html>

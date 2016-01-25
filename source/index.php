@@ -1,5 +1,6 @@
 <html>
     <head>
+    <title>WATTS - Home</title>
 	<meta name="description" content="Video tagging and results comparison">
 	<meta name="keywords" content="Video, Ground truth, Keyboard, Automatic">
 	<meta charset="UTF-8">
@@ -20,7 +21,7 @@
 				  <ul class="nav navbar-nav main-nav">
 					<li class="active"><a href="#">Home</a></li>
 					<li><a href="gt-making/gt-making.php">GT Making</a></li>
-					<li><a href="export.php">Export Results</a></li>					
+					<li><a href="export.php">Export</a></li>					
 					<li><a href="legend.html">Legend</a></li>
 					<li><a href="settings.php">Settings</a></li>
 				  </ul>

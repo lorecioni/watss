@@ -120,7 +120,7 @@ div.dataTables_info {
     width: 15%;
 }
 
-.settings-panel .scrllable-container {
+.settings-panel .scrollable-container {
     overflow: hidden;
 }
 
@@ -130,3 +130,30 @@ div.dataTables_info {
     width: 104.3%;
 }
 
+.list-group span.badge {
+    cursor: pointer;
+}
+
+.list-group span.badge:HOVER {
+    background-color: #7C7C7C;
+}
+
+img.panel-heading-loading {
+    position: absolute;
+    width: 30px;
+    top: 55px;
+    right: 50px;
+}
+
+#camera-settings a.editable {
+    float: right;
+}
+
+#camera-settings span.editable-container.editable-inline {
+    float: right;
+    margin-top: -5px;
+}
+
+#camera-settings input.form-control.input-sm {
+    width: 60px;
+}
