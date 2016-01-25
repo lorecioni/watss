@@ -12,7 +12,6 @@ operaId=-1;
 
 def loadFrames(fOutSQL):
 
-
 	global framesPath
 	print('\n[Loading Frames]')
 	fOutSQL.write('\n\nINSERT INTO `video` (`frameid`, `cameraid`, `path`, `date`) VALUES');
@@ -32,23 +31,21 @@ def loadFrames(fOutSQL):
 			if not isFirstLine:
 				fOutSQL.write(',');
 			isFirstLine=0					
-			fOutSQL.write("\n('F"+str(frameId).zfill(6)+"', 'C"+cam+"', '"+cam+"/"+imgFile+"','"+ datetime.datetime.now().date().strftime("%Y-%m-%d")+"')")					
+			fOutSQL.write("\n('" + str(frameId) + "', '" + str(cam) + "', '"+cam+"/"+imgFile+"','"+ datetime.datetime.now().date().strftime("%Y-%m-%d")+"')")					
 			print  'Insert path of image '+ imgFile +' in camera ' + cam;
 
 	fOutSQL.write(';');
 
 
 def loadUsers(fOutSQL,users):
-	fOutSQL.write('\n\nINSERT INTO `user` (`userid`, `name`) VALUES');
-	userId=0
+	fOutSQL.write('\n\nINSERT INTO `user` (`name`) VALUES');
 	isFirstLine=1
 	print('\n[Loading Users]')
 	for user in users:
-		userId+=1
 		if not isFirstLine:
 			fOutSQL.write(',')
 		isFirstLine=0					
-		fOutSQL.write("\n('U"+str(userId)+"', '"+user+"')")
+		fOutSQL.write("\n('"+str(user)+"')")
 		print  'Insert user '+ user;
 	fOutSQL.write(';')
 
@@ -61,7 +58,7 @@ def loadCameras(fOutSQL,cameraIds,calibs):
 		if not isFirstLine:
 			fOutSQL.write(',')
 		isFirstLine=0					
-		fOutSQL.write("\n('C"+cameraIds[i]+"', '"+calibs[i]+"')")
+		fOutSQL.write("\n('"+cameraIds[i]+"', '"+calibs[i]+"')")
 		print  'Insert Camera '+ cameraIds[i];
 	fOutSQL.write(';')
 
@@ -86,7 +83,7 @@ def loadpoi(fOutSQL,camerasStr,location_xStr, location_yStr ,widthStr, heightStr
 			fOutSQL.write(',');
 		isFirstLine=0					
 
-		fOutSQL.write("\n('O"+str(operaId)+"', 'C"+cameras[i]+"', "+l_x[i]+", "+l_y[i]+", "+w[i]+", "+h[i]+", '"+nameStr+"')")
+		fOutSQL.write("\n('"+str(operaId) +"', '"+str(cameras[i])+"', "+l_x[i]+", "+l_y[i]+", "+w[i]+", "+h[i]+", '"+nameStr+"')")
 		print  'Insert poi '+ nameStr + ' in camera ' + cameras[i];
 	fOutSQL.write(';');
 
@@ -129,8 +126,8 @@ if __name__ == '__main__':
 				defaultPos=defaultPos+"0"
 			else:
 				defaultPos=defaultPos+"0,"
-		#loadpoi(fOutSQL,'1,2,3,4','0,0,0,0','0,0,0,0','0,0,0,0','0,0,0,0','no poi')
-		loadpoi(fOutSQL,Config.get('camera','ids'),defaultPos,defaultPos,defaultPos,defaultPos,'no poi')
+
+		loadpoi(fOutSQL,Config.get('camera','ids'),defaultPos,defaultPos,defaultPos,defaultPos,'Not set')
 		
 		poiList=[poi for poi in Config.sections() if poi.startswith("poi")]
 		for poi in poiList:

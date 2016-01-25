@@ -3,49 +3,135 @@
  * Configuration script for retrieving information from database for the settings page
  */
 
-$configFile = "php/connection.ini";
+$dbIniFile = 'connection.ini';
 
-if(file_exists($configFile)){
-	$dbConnection = parse_ini_file($configFile);
+$checkIniFile = false;
+$checkDatabaseConnection = false;
+
+if(file_exists($dbIniFile)){
+	$checkIniFile = true;
+	$dbInfo = parse_ini_file($dbIniFile);
+	$user = $dbInfo['user'];
+	$password = $dbInfo['password'];
+	$host = $dbInfo['host'];
+	$db = $dbInfo['db'];
+	if($user == '' || $host == '' || $db == ''){
+		$checkIniFile = false;
+	} else {
+		$checkDatabaseConnection = true;
+ 		$dbConnection = mysql_connect($host, $user, $password) 
+ 				or $checkDatabaseConnection = false;
+ 		if ($checkDatabaseConnection) {
+ 			mysql_select_db($db) or $checkDatabaseConnection = false;
+  		}
+	}
 } else {
-	$dbConnection = array(
+	$dbInfo = array(
 		'user' => '',
 		'password' => '',
 		'host' => '',
 		'db' => ''
 	);
 }
-var_dump($_REQUEST['action']);
-/*
+
 if(isset($_REQUEST['action'])){
-	
-	require_once 'php/utils.php';
+	require_once 'utils.php';
 	
 	switch($_REQUEST['action']) {
 		
-		case 'update-database-connection':
+		case 'init':
+			jecho($dbInfo);
+			break;
+		
+		/**
+		 * Updates database configuration file (connection.ini)
+		 */
+		case "update-database-connection":
 			$success = true;
-			
-			$user = $_REQUEST['user'];
-			$password = $_REQUEST['password'];
-			$host = $_REQUEST['host'];
-			$db = $_REQUEST['db'];
-			
-			$ini = fopen($configFile, "w") or $success = false;
+
+			$ini = fopen($dbIniFile, "w") or $success = false;
 			if($success){
-				$txt = "user=\"".$user."\"\n";
-				$txt .= "password=\"".$password."\"\n";
-				$txt .= "host=\"".$host."\"\n";
-				$txt .= "db=\"".$db."\"";
+				$txt = "user=\"".$_REQUEST['user']."\"\n";
+				$txt .= "password=\"".$_REQUEST['password']."\"\n";
+				$txt .= "host=\"".$_REQUEST['host']."\"\n";
+				$txt .= "db=\"".$_REQUEST['db']."\"";
 				fwrite($ini, $txt);
 				fclose($ini);
 			}
 			jecho($success);
 			break;
+			
+		/**
+		 * Checking database connection
+		 */
+		case "test-database-connection":
+			$checkDatabaseConnection = true;
+			$user = $_REQUEST['user'];
+			$password = $_REQUEST['password'];
+			$host = $_REQUEST['host'];
+			$db = $_REQUEST['db'];
+			$dbConnection = mysql_connect($host, $user, $password) or $checkDatabaseConnection = false;
+			if ($checkDatabaseConnection) {
+				mysql_select_db($db) or $checkDatabaseConnection = false;
+			}
+			jecho($checkDatabaseConnection);
+			break;
+			
+		/**
+		 * Retrieving users from db
+		 */
+		case "get-users":
+			$success = true;
+			$sql = "SELECT * FROM user";
+			$users = array();
+			if($checkDatabaseConnection){
+				$result = mysql_query($sql) or $success = false;
+				if($success){
+					while ($row = mysql_fetch_array($result)){
+						$user = new stdClass();
+						$user->id = $row["userid"];
+						$user->name = $row["name"];
+						array_push($users, $user);
+					}
+				}
+			}
+			jecho($users);
+			break;
+			
+			/**
+			 * Adding user from db
+			 */
+			case "add-user":
+				$success = true;
+				$name = $_REQUEST['name'];
+				
+				$sql = "SELECT userid FROM user WHERE username='$name' limit 1";
+				$result = mysql_query($sql);
+				$value = mysql_fetch_object($result);
+				$_SESSION['myid'] = $value->id;
+				
+				
+				
+				
+				$sql = "INSERT INTO `watts`.`user` (`userid`, `name`) VALUES ('U7', 'Ciao');";
+				$users = array();
+				if($checkDatabaseConnection){
+					$result = mysql_query($sql) or $success = false;
+					if($success){
+						while ($row = mysql_fetch_array($result)){
+							$user = new stdClass();
+							$user->id = $row["userid"];
+							$user->name = $row["name"];
+							array_push($users, $user);
+						}
+					}
+				}
+				jecho($users);
+				break;
 		
 	}
 	
 }
-*/
+
 
 ?>

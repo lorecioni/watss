@@ -10,23 +10,6 @@
 	$conn=mysql_connect($conFile["host"],$conFile["user"],$conFile["password"]);
     if (! $conn) exit("Error: ".mysql_error());
 	mysql_select_db($conFile['db']) or exit("Wrong Database");
-	
-	// check if a person already exists in the DB
-	function check_person($id){
-		$var = 0;
-
-		$sql_1="SELECT * FROM `people` WHERE cameraid='".$_SESSION["camera_id"]."' AND frameid='F".$_SESSION["frame_id"]."' AND peopleid = ".$id;
-
-		$result=mysql_query($sql_1) or
-		$var = 0;
-		if ( mysql_num_rows($result)==0 ) {
-			$var = 0;
-		}else{
-			$var = 1;
-		}
-		
-		return $var;
-	}
 
 	if( !isset($_REQUEST['action']) )
 		error_500("missing action");
@@ -52,38 +35,36 @@
 							while ($row=mysql_fetch_array($result) ){
 								$_SESSION["user"] = $row["userid"];
 								$_SESSION["camera_id"] = $_REQUEST["camera_id"];
-								$sql="SELECT g.groupid FROM `tgroup` as g, `user` as u WHERE g.userid=u.userid AND u.name='".$_REQUEST["user"]."' AND g.groupid='G0'";
+								$sql="SELECT g.groupid FROM `groups` as g, `user` as u WHERE g.userid=u.userid AND u.name='".$_REQUEST["user"]."' AND g.groupid=0";
 								$result_zero = mysql_query($sql) or $to_return = false;
 								if (mysql_num_rows($result_zero) == 0) {
 									$sql_1= "SELECT `userid` FROM `user` WHERE `name`='".$_REQUEST["user"]."'";
 									$result_1 = mysql_query($sql_1) or $to_return = false;
 									while ($returned_id=mysql_fetch_array($result_1) ){							
-										$sql_2="INSERT INTO `tgroup` (`groupid`, `name`, `userid`) VALUES
-											('G0', 'Nessun Gruppo', '".$returned_id["userid"]."');";
+										$sql_2="INSERT INTO `groups` (0, `name`, `userid`) VALUES
+											(0, 'No group', '".$returned_id["userid"]."');";
 										$final_result=mysql_query($sql_2) or $to_return = false;
 									}
 								}
+								$sql="SELECT g.groupid FROM `groups` as g, `user` as u WHERE g.userid=u.userid AND u.name='".$_REQUEST["user"]."' AND g.groupid=0";
 							}
 						}
 						if ($_REQUEST["frame_id"] == 'first'){
-								$sql= "SELECT MIN(CAST(n as UNSIGNED)) as id FROM (SELECT SUBSTRING(`frameid`,2) as n FROM video ) as tab";
+								$sql= "SELECT MIN(n) as id FROM (SELECT frameid as n FROM video ) as tab";
 								$result_2 = mysql_query($sql) or $to_return = false;						
 								while ($final_res=mysql_fetch_array($result_2) ){
-									$_SESSION["frame_id"]=(intval($final_res["id"]));
-									$_SESSION["frame_id"]=sprintf("%06d",$_SESSION["frame_id"]);
+									$_SESSION["frame_id"] = intval($final_res["id"]);
 								}					
 						}else{
 							if ($_REQUEST["frame_id"] == 'FUF'){
-								$sql= "SELECT MIN(CAST(SUBSTRING(frameid,2) as UNSIGNED)) as id FROM video WHERE frameid not in (SELECT frameid FROM people WHERE userid='".$_SESSION["user"]."' AND cameraid='".$_SESSION["camera_id"]."')";
+								$sql= "SELECT MIN(frameid) as id FROM video WHERE frameid not in (SELECT frameid FROM people WHERE userid=".$_SESSION["user"]." AND cameraid=".$_SESSION["camera_id"].")";
 								$result_2 = mysql_query($sql) or $to_return = false;						
 								while ($final_res=mysql_fetch_array($result_2) ){
-									$_SESSION["frame_id"]=(intval($final_res["id"]));									
-									$_SESSION["frame_id"]=sprintf("%06d",$_SESSION["frame_id"]);
+									$_SESSION["frame_id"] = intval($final_res["id"]);									
 								}				
 							}else{
 								if ($_REQUEST["frame_id"] == 'number'){
-									$_SESSION["frame_id"] = intval(substr($_REQUEST["frame_number"],1));
-									$_SESSION["frame_id"] = sprintf("%06d",$_SESSION["frame_id"]);
+									$_SESSION["frame_id"] = intval($_REQUEST["frame_number"]);
 								}
 							}
 						}
@@ -123,7 +104,7 @@
 		 */
 		case "get-user":
 			$done = true;
-			$sql="SELECT name FROM `user` WHERE userid='".$_SESSION["user"]."'";
+			$sql="SELECT name FROM `user` WHERE userid=".$_SESSION["user"]."";
 			$result=mysql_query($sql) or $done = false;
 			if($done)
 				while ($row=mysql_fetch_array($result))
@@ -144,11 +125,13 @@
 		/**
 		 * Returning frame list for navigation, limited by the query and the number of restults
 		 */
+		
+		//FIXME da rivedere
 		case "get-frames":
 			$frames = array();
 			if (isset($_REQUEST['query']) && strlen($_REQUEST['query']) > 0){
 
-				$sql="SELECT `frameid` as id, `frameid` as txt FROM `video` WHERE `cameraid` = '".$_SESSION["camera_id"]."' AND `frameid` LIKE '%".$_REQUEST["query"]."%' ORDER BY CAST(SUBSTRING(`frameid`,2) as unsigned) ASC LIMIT ".$_REQUEST["limit"];
+				$sql="SELECT `frameid` as id, `frameid` as txt FROM `video` WHERE `cameraid` = ".$_SESSION["camera_id"]." AND `frameid` LIKE '%".$_REQUEST["query"]."%' ORDER BY CAST(SUBSTRING(`frameid`,2) as unsigned) ASC LIMIT ".$_REQUEST["limit"];
 				$result=mysql_query($sql) or
 				$frames = array();
 				while ($row=mysql_fetch_array($result)){
@@ -156,7 +139,7 @@
 				}
 				jecho($frames);
 			} else {
-				$sql="SELECT `frameid` as id, `frameid` as txt FROM `video` WHERE `cameraid` = '".$_SESSION["camera_id"]."' ORDER BY CAST(SUBSTRING(`frameid`,2) as unsigned) ASC LIMIT ".$_REQUEST["limit"];
+				$sql="SELECT `frameid` as id, `frameid` as txt FROM `video` WHERE `cameraid` = ".$_SESSION["camera_id"]." ORDER BY CAST(SUBSTRING(`frameid`,2) as unsigned) ASC LIMIT ".$_REQUEST["limit"];
 				$result=mysql_query($sql) or
 				$frames = array();
 				while ($row=mysql_fetch_array($result)){
@@ -172,7 +155,7 @@
 			$people_2 = array();
 			$people_add = array();
 
-			$sql_1="SELECT * FROM `people` WHERE cameraid='".$_SESSION["camera_id"]."' AND frameid='F".$_SESSION["frame_id"]."'";
+			$sql_1="SELECT * FROM `people` WHERE cameraid=".$_SESSION["camera_id"]." AND frameid=".$_SESSION["frame_id"]."";
 
 			$result=mysql_query($sql_1) or
 			$people = array();	
@@ -181,10 +164,11 @@
 			{
 				$people[] = array("id"=>$row["peopleid"],"color"=>$row["color"],"angle_face"=>$row["gazeAngle_face"],"angle_face_z"=>$row["gazeAngle_face_z"],"angle_body"=>$row["gazeAngle_body"],"angle_body_z"=>$row["gazeAngle_body_z"],"group"=>$row["groupid"],"artwork"=>$row["poiid"],"prev_frame"=>true, "bb"=>array(intval($row["bb_x"]), intval($row["bb_y"]),intval($row["bb_width"]),intval($row["bb_height"])),"bbV"=>array(intval($row["bbV_x"]), intval($row["bbV_y"]), intval($row["bbV_width"]), intval($row["bbV_height"])));
 			}
-			if ((intval($_SESSION["frame_id"])-1)>0){
-				$prev_frame_id=sprintf("%06d",intval($_SESSION["frame_id"])-1);
 
-				$sql_2="SELECT * FROM `people` WHERE cameraid='".$_SESSION["camera_id"]."' AND frameid='F".$prev_frame_id."'";
+			if ((intval($_SESSION["frame_id"])-1)>0){
+				$prev_frame_id = $_SESSION["frame_id"] - 1;
+
+				$sql_2="SELECT * FROM `people` WHERE cameraid=".$_SESSION["camera_id"]." AND frameid=".$prev_frame_id."";
 
 				$result=mysql_query($sql_2) or
 				$people_2 = array();
@@ -219,8 +203,8 @@
 			$group_del = array();
 			$group_merge = array();
 			if (isset($_REQUEST['query']) && strlen($_REQUEST['query']) > 0){	
-					//$sql="select * from (select N.groupid,N.name, max(people) as people FROM ( SELECT g.groupid, g.name, count(p.groupid) as people FROM `people` as p right outer join `tgroup` as g on p.groupid = g.groupid WHERE  g.name LIKE '%".$_REQUEST['query']."%' GROUP BY g.groupid, p.cameraid,p.frameid ORDER BY g.groupid) as N group by N.groupid) as F order by F.people";
-					$sql="SELECT N.groupid, N.name, COUNT( N.groupid ) AS people FROM ( SELECT g.groupid, p.peopleid, g.name, COUNT( p.groupid ) FROM  `people` AS p RIGHT OUTER JOIN  `tgroup` AS g ON p.groupid = g.groupid WHERE   g.name LIKE '%".$_REQUEST['query']."%' GROUP BY p.groupid, p.peopleid ORDER BY p.groupid ) AS N GROUP BY N.groupid";
+
+					$sql="SELECT N.groupid, N.name, COUNT( N.groupid ) AS people FROM ( SELECT g.groupid, p.peopleid, g.name, COUNT( p.groupid ) FROM  `people` AS p RIGHT OUTER JOIN  `groups` AS g ON p.groupid = g.groupid WHERE  g.name LIKE '%".$_REQUEST['query']."%' GROUP BY p.groupid, p.peopleid ORDER BY p.groupid ) AS N GROUP BY N.groupid";
 
 					$result=mysql_query($sql) or
 					$group = array();
@@ -229,8 +213,7 @@
 						$group[] = array("id"=>$row["groupid"],"text"=>$row["name"],"people"=>$row["people"]);
 					}
 
-					//$sql="select * from (select N.groupid,N.name, max(people) as people FROM ( SELECT g.groupid, g.name, count(p.groupid) as people FROM `people` as p right outer join `tgroup` as g on p.groupid = g.groupid WHERE  g.name LIKE '%".$_REQUEST['query']."%' AND g.deleted=0 GROUP BY g.groupid, p.cameraid,p.frameid ORDER BY g.groupid) as N group by N.groupid) as F order by F.people";
-					$sql="SELECT N.groupid, N.name, COUNT( N.groupid ) AS people FROM ( SELECT g.groupid, p.peopleid, g.name, COUNT( p.groupid ) FROM  `people` AS p RIGHT OUTER JOIN  `tgroup` AS g ON p.groupid = g.groupid WHERE   g.name LIKE '%".$_REQUEST['query']."%' AND g.deleted=0 GROUP BY p.groupid, p.peopleid ORDER BY p.groupid ) AS N GROUP BY N.groupid";
+					$sql="SELECT N.groupid, N.name, COUNT( N.groupid ) AS people FROM ( SELECT g.groupid, p.peopleid, g.name, COUNT( p.groupid ) FROM  `people` AS p RIGHT OUTER JOIN  `groups` AS g ON p.groupid = g.groupid WHERE   g.name LIKE '%".$_REQUEST['query']."%' AND g.deleted=0 GROUP BY p.groupid, p.peopleid ORDER BY p.groupid ) AS N GROUP BY N.groupid";
 
 					$result=mysql_query($sql) or
 					$group_del = array();
@@ -240,16 +223,14 @@
 					}					
 			} else {
 
-					//$sql="select * from ( select N.groupid,N.name, max(people) as people FROM (SELECT g.groupid, g.name, count(p.groupid) as people FROM `people` as p right outer join `tgroup` as g on p.groupid = g.groupid   GROUP BY g.groupid, p.cameraid,p.frameid ORDER BY g.groupid )as N group by N.groupid ) as F order by F.people";
-					$sql="SELECT N.groupid, N.name, COUNT( N.groupid ) AS people FROM ( SELECT g.groupid, p.peopleid, g.name, COUNT( p.groupid ) FROM  `people` AS p RIGHT OUTER JOIN  `tgroup` AS g ON p.groupid = g.groupid GROUP BY p.groupid, p.peopleid ORDER BY p.groupid ) AS N GROUP BY N.groupid";
+					$sql="SELECT N.groupid, N.name, COUNT( N.groupid ) AS people FROM ( SELECT g.groupid, p.peopleid, g.name, COUNT( p.groupid ) FROM  `people` AS p RIGHT OUTER JOIN  `groups` AS g ON p.groupid = g.groupid GROUP BY p.groupid, p.peopleid ORDER BY p.groupid ) AS N GROUP BY N.groupid";
 					$result=mysql_query($sql) or
 					$group = array();
 					if ( mysql_num_rows($result)==0 ) $group = array();
 					while ($row=mysql_fetch_array($result) ){
 						$group[] = array("id"=>$row["groupid"],"text"=>$row["name"],"people"=>$row["people"]);
 					}
-					//$sql="select * from ( select N.groupid,N.name, max(people) as people FROM (SELECT g.groupid, g.name, count(p.groupid) as people FROM `people` as p right outer join `tgroup` as g on p.groupid = g.groupid WHERE g.deleted=0 GROUP BY g.groupid, p.cameraid,p.frameid  ORDER BY g.groupid) as N group by N.groupid)   as F order by F.people";
-					$sql="SELECT N.groupid, N.name, COUNT( N.groupid ) AS people FROM ( SELECT g.groupid, p.peopleid, g.name, COUNT( p.groupid ) FROM  `people` AS p RIGHT OUTER JOIN  `tgroup` AS g ON p.groupid = g.groupid WHERE g.deleted=0 GROUP BY p.groupid, p.peopleid ORDER BY p.groupid ) AS N GROUP BY N.groupid";
+					$sql="SELECT N.groupid, N.name, COUNT( N.groupid ) AS people FROM ( SELECT g.groupid, p.peopleid, g.name, COUNT( p.groupid ) FROM  `people` AS p RIGHT OUTER JOIN  `groups` AS g ON p.groupid = g.groupid WHERE g.deleted=0 GROUP BY p.groupid, p.peopleid ORDER BY p.groupid ) AS N GROUP BY N.groupid";
 
 					$result=mysql_query($sql) or $group_del = array();
 					while ($row = mysql_fetch_array($result)){
@@ -276,7 +257,7 @@
 		 * Find a group that can be removed
 		 */
 		case "get-deletable":
-			$sql="SELECT g.groupid, count(p.groupid) as people FROM `people` as p right outer join `tgroup` as g on p.groupid = g.groupid WHERE g.userid='".$_SESSION["user"]."' AND g.deleted=0 GROUP BY g.groupid ORDER BY g.groupid ";
+			$sql="SELECT g.groupid, count(p.groupid) as people FROM `people` as p right outer join `groups` as g on p.groupid = g.groupid WHERE g.userid=".$_SESSION["user"]." AND g.deleted=0 GROUP BY g.groupid ORDER BY g.groupid ";
 			$result=mysql_query($sql) or
 			$group = array();
 			if ( mysql_num_rows($result)==0 ) $group = array();
@@ -319,29 +300,28 @@
 			$bbV->height = 30;
 			
 		    //Query indicator: if true the query has been done
-			$done = true;
-
+			$done = true;			
 			if (isset($_REQUEST["people_id"])){
 				$sql = "INSERT INTO `people` (`peopleid`,`frameid`, `cameraid`, `bb_x`, `bb_y`, `bb_width`, `bb_height`, `bbV_x`, `bbV_y`, `bbV_width`, `bbV_height`, `gazeAngle_face`, `gazeAngle_face_z`, `gazeAngle_body`, `gazeAngle_body_z`,`color`, `poiid`, `userid`, `groupid`) VALUES
-					(".$_REQUEST["people_id"].", 'F".$_SESSION["frame_id"]."', '".$_SESSION["camera_id"]."', ".$bb->x.", ".$bb->y.", ".$bb->width.", ".$bb->height.", ".$bbV->x.", ".$bbV->y.", ".$bbV->width.", ".$bbV->height.", 0, 0, 0, 0,'".$hex."', 'O0', '".$_SESSION["user"]."', 'G0');";
+					(".$_REQUEST["people_id"].", ".$_SESSION["frame_id"].", ".$_SESSION["camera_id"].", ".$bb->x.", ".$bb->y.", ".$bb->width.", ".$bb->height.", ".$bbV->x.", ".$bbV->y.", ".$bbV->width.", ".$bbV->height.", 0, 0, 0, 0,'".$hex."', 0, ".$_SESSION["user"].", 0);";
 			
 				$result = mysql_query($sql) or $done = false;
 				if ($done){
-					$person = array("id"=>$_REQUEST["people_id"], "color"=>$hex,"angle_face"=>0,"angle_face_z"=>0,"angle_body"=>0,"angle_body_z"=>0,"group"=>'G0',"artwork"=>'O0', "prev_frame"=>true, "bb"=>array($bb->x, $bb->y, $bb->width, $bb->height),"bbV"=>array($bbV->x, $bbV->y, $bbV->width, $bbV->height));
+					$person = array("id"=>$_REQUEST["people_id"], "color"=>$hex,"angle_face"=>0,"angle_face_z"=>0,"angle_body"=>0,"angle_body_z"=>0,"group"=>0,"artwork"=>0, "prev_frame"=>true, "bb"=>array($bb->x, $bb->y, $bb->width, $bb->height),"bbV"=>array($bbV->x, $bbV->y, $bbV->width, $bbV->height));
 				}
 			} else {
-			    $sql="INSERT INTO `tgroup` (`groupid`,`name`,`deleted`,`userid`) VALUES ('G0', 'no group',0,'".$_SESSION["user"]."');";
+			    $sql="INSERT INTO `groups` (`groupid`,`name`,`deleted`,`userid`) VALUES (0, 'No group', 0,".$_SESSION["user"].");";
 				$result = mysql_query($sql);
-
-				$sql="INSERT INTO `real_people` (`face`,`face_z`,`image`) VALUES (0,0,'../img/real_people/default.png');";
+				
+				$sql="INSERT INTO `real_people` (`face`,`face_z`,`image`) VALUES (0,0,'../img/real_people/default.png')";
 				$result = mysql_query($sql) or $done = false;
 				if($done){
 					$my_id = mysql_insert_id();
 					$sql="INSERT INTO `people` (`peopleid`,`frameid`, `cameraid`, `bb_x`, `bb_y`, `bb_width`, `bb_height`, `bbV_x`, `bbV_y`, `bbV_width`, `bbV_height`, `gazeAngle_face`, `gazeAngle_face_z`, `gazeAngle_body`, `gazeAngle_body_z`, `color`, `poiid`, `userid`, `groupid`) VALUES
-						(".$my_id.", 'F".$_SESSION["frame_id"]."', '".$_SESSION["camera_id"]."', ".$bb->x.", ".$bb->y.", ".$bb->width.", ".$bb->height.", ".$bbV->x.", ".$bbV->y.", ".$bbV->width.", ".$bbV->height.", 0, 0, 0, 0, '".$hex."', 'O0', '".$_SESSION["user"]."', 'G0');";
+						(".$my_id.", ".$_SESSION["frame_id"].", ".$_SESSION["camera_id"].", ".$bb->x.", ".$bb->y.", ".$bb->width.", ".$bb->height.", ".$bbV->x.", ".$bbV->y.", ".$bbV->width.", ".$bbV->height.", 0, 0, 0, 0, '".$hex."', 0, ".$_SESSION["user"].", 0);";
 					$result=mysql_query($sql) or $done = false;
 					if ($done){
-						$person = array("id"=>$my_id,"color"=>$hex,"angle_face"=>0,"angle_face_z"=>0,"angle_body"=>0,"angle_body_z"=>0,"group"=>'G0',"artwork"=>'O0', "prev_frame"=>true, "bb"=>array($bb->x, $bb->y, $bb->width, $bb->height),"bbV"=>array($bbV->x, $bbV->y, $bbV->width, $bbV->height));
+						$person = array("id"=>$my_id,"color"=>$hex,"angle_face"=>0,"angle_face_z"=>0,"angle_body"=>0,"angle_body_z"=>0,"group"=>0,"artwork"=>0, "prev_frame"=>true, "bb"=>array($bb->x, $bb->y, $bb->width, $bb->height),"bbV"=>array($bbV->x, $bbV->y, $bbV->width, $bbV->height));
 					}
 				}
 			}
@@ -349,43 +329,45 @@
 			jecho($person);
 		break;
 
-		//Person attributes update - DB
+		/** 
+		 * Updates person attributes
+		 * **/
 		case "update-person-attribute":
+			
 			$success=true;
 			if( !isset($_REQUEST['id']) ){
 				error_500("missing id");
 				jecho(0);
 			}
 			
+			$log = '';
+			
 			if( isset($_REQUEST['color']) ){
 				if(check_person($_REQUEST['id']) == 1){
 
-					$sql="UPDATE `people` SET `color`='".$_REQUEST['color']."' ,userid='".$_SESSION["user"]."' WHERE  `peopleid`=".$_REQUEST['id']." AND `frameid` = 'F".$_SESSION["frame_id"]."' AND `cameraid` = '".$_SESSION["camera_id"]."'";
+					$sql="UPDATE `people` SET `color`='".$_REQUEST['color']."' ,userid='".$_SESSION["user"]."' WHERE  `peopleid`=".$_REQUEST['id']." AND `frameid` = ".$_SESSION["frame_id"]." AND `cameraid` = ".$_SESSION["camera_id"]."";
 
-					$result=mysql_query($sql) or
-					$success=false;
-				}else{
+					$result=mysql_query($sql) or $success=false;
+				} else {
 					$sql="INSERT INTO `people` (`peopleid`,`frameid`, `cameraid`, `bb_x`, `bb_y`, `bb_width`, `bb_height`, `bbV_x`, `bbV_y`, `bbV_width`, `bbV_height`, `gazeAngle_face`, `gazeAngle_face_z`, `gazeAngle_body`, `gazeAngle_body_z`, `color`, `poiid`, `userid`, `groupid`) VALUES
-					(".intval($_REQUEST["id"]).", 'F".$_SESSION["frame_id"]."', '".$_SESSION["camera_id"]."', 300, 200, 20, 30, 300, 200, 20, 30, 0, 0, 0, 0, '".$_REQUEST['color']."', 'O0', '".$_SESSION["user"]."', 'G0');";
+						(".intval($_REQUEST["id"]).", ".$_SESSION["frame_id"].", ".$_SESSION["camera_id"].", 300, 200, 20, 30, 300, 200, 20, 30, 0, 0, 0, 0, '".$_REQUEST['color']."', 0, ".$_SESSION["user"].", 0);";
 
-					$result=mysql_query($sql) or
-					$success = false;
+					$result=mysql_query($sql) or $success = false;
 				}
 			}
 			
 			if( isset($_REQUEST['group_id']) ){
 				if(check_person($_REQUEST['id']) == 1){
 
-					$sql="UPDATE `people` SET `groupid`='".$_REQUEST['group_id']."', userid='".$_SESSION["user"]."' WHERE  `peopleid`='".$_REQUEST['id']."' AND `frameid` = 'F".$_SESSION["frame_id"]."' AND `cameraid` = '".$_SESSION["camera_id"]."'";
+					$sql="UPDATE `people` SET `groupid`='".$_REQUEST['group_id']."', userid='".$_SESSION["user"]."' WHERE  `peopleid`=".$_REQUEST['id']." AND `frameid` = ".$_SESSION["frame_id"]." AND `cameraid` = ".$_SESSION["camera_id"]."";
 
-					$result=mysql_query($sql) or
-					$success=false;		
-				}else{
+					$result=mysql_query($sql) or $success=false;	
+
+				} else {
 					$sql="INSERT INTO `people` (`peopleid`,`frameid`, `cameraid`, `bb_x`, `bb_y`, `bb_width`, `bb_height`, `bbV_x`, `bbV_y`, `bbV_width`, `bbV_height`, `gazeAngle_face`, `gazeAngle_face_z`, `gazeAngle_body`, `gazeAngle_body_z`, `color`, `poiid`, `userid`, `groupid`) VALUES
-					(".intval($_REQUEST["id"]).", 'F".$_SESSION["frame_id"]."', '".$_SESSION["camera_id"]."', 300, 200, 20, 30, 300, 200, 20, 30, 0, 0, 0, 0, '#000000', 'O0', '".$_SESSION["user"]."', '".$_REQUEST['group_id']."');";
+						(".intval($_REQUEST["id"]).", ".$_SESSION["frame_id"].", ".$_SESSION["camera_id"].", 300, 200, 20, 30, 300, 200, 20, 30, 0, 0, 0, 0, '#000000', 0, ".$_SESSION["user"].", ".$_REQUEST['group_id'].");";
 
-					$result=mysql_query($sql) or
-					$success = false;
+					$result=mysql_query($sql) or $success = false;
 				}
 			}	
 			
@@ -394,18 +376,15 @@
 					$bb = array();
 					$bb = $_REQUEST['bb'];
 
-					$sql="UPDATE `people` SET `bb_x`=".$bb[0].",`bb_y`=".$bb[1].",`bb_width`=".$bb[2].",`bb_height`=".$bb[3].", userid='".$_SESSION["user"]."' WHERE  `peopleid`=".$_REQUEST['id']." AND `frameid` = 'F".$_SESSION["frame_id"]."' AND `cameraid` = '".$_SESSION["camera_id"]."'";
+					$sql="UPDATE `people` SET `bb_x`=".$bb[0].",`bb_y`=".$bb[1].",`bb_width`=".$bb[2].",`bb_height`=".$bb[3].", userid=".$_SESSION["user"]." WHERE  `peopleid`=".$_REQUEST['id']." AND `frameid` = ".$_SESSION["frame_id"]." AND `cameraid` = ".$_SESSION["camera_id"]."";
 
-					$result=mysql_query($sql) or
-					$success=false;
+					$result=mysql_query($sql) or $success=false;
 				}else{
 					$bb = array();
 					$bb = $_REQUEST['bb'];
-					$sql="INSERT INTO `people` (`peopleid`,`frameid`, `cameraid`, `bb_x`, `bb_y`, `bb_width`, `bb_height`, `bbV_x`, `bbV_y`, `bbV_width`, `bbV_height`, `gazeAngle_face`, `gazeAngle_face_z`, `gazeAngle_body`, `gazeAngle_body_z`, `color`, `poiid`, `userid`, `groupid`) VALUES 					(".$_REQUEST["id"].", 'F".$_SESSION["frame_id"]."', '".$_SESSION["camera_id"]."', ".$bb[0].", ".$bb[1].", ".$bb[2].", ".$bb[3].", 300, 200, 20, 30, 0, 0, 0, 0, '#000000', 'O0', '".$_SESSION["user"]."', 'G0');";
+					$sql="INSERT INTO `people` (`peopleid`,`frameid`, `cameraid`, `bb_x`, `bb_y`, `bb_width`, `bb_height`, `bbV_x`, `bbV_y`, `bbV_width`, `bbV_height`, `gazeAngle_face`, `gazeAngle_face_z`, `gazeAngle_body`, `gazeAngle_body_z`, `color`, `poiid`, `userid`, `groupid`) VALUES (".$_REQUEST["id"].", ".$_SESSION["frame_id"].", ".$_SESSION["camera_id"].", ".$bb[0].", ".$bb[1].", ".$bb[2].", ".$bb[3].", 300, 200, 20, 30, 0, 0, 0, 0, '#000000', 0, ".$_SESSION["user"].", 0);";
 
-
-					$result=mysql_query($sql) or
-					$success = false;
+					$result=mysql_query($sql) or $success = false;
 				}
 		    }
 			
@@ -414,18 +393,15 @@
 					 $bbV = array();
 					 $bbV = $_REQUEST['bbV'];
 
-					 $sql="UPDATE `people` SET `bbV_x`=".$bbV[0].",`bbV_y`=".$bbV[1].",`bbV_width`=".$bbV[2].",`bbV_height`=".$bbV[3].", userid='".$_SESSION["user"]."' WHERE  `peopleid`=".$_REQUEST['id']." AND `frameid` = 'F".$_SESSION["frame_id"]."' AND `cameraid` = '".$_SESSION["camera_id"]."'";
+					 $sql="UPDATE `people` SET `bbV_x`=".$bbV[0].",`bbV_y`=".$bbV[1].",`bbV_width`=".$bbV[2].",`bbV_height`=".$bbV[3].", userid=".$_SESSION["user"]." WHERE  `peopleid`=".$_REQUEST['id']." AND `frameid` = ".$_SESSION["frame_id"]." AND `cameraid` = ".$_SESSION["camera_id"]."";
 
-					 $result=mysql_query($sql) or
-					 $success=false;
-				}else{
+					 $result=mysql_query($sql) or $success=false;
+				} else {
 					$bbV = array();
 					$bbV = $_REQUEST['bbV'];
 					$sql="INSERT INTO `people` (`peopleid`,`frameid`, `cameraid`, `bb_x`, `bb_y`, `bb_width`, `bb_height`, `bbV_x`, `bbV_y`, `bbV_width`, `bbV_height`, `gazeAngle_face`, `gazeAngle_face_z`, `gazeAngle_body`, `gazeAngle_body_z`, `color`, `poiid`, `userid`, `groupid`) VALUES
-					(".$_REQUEST["id"].", 'F".$_SESSION["frame_id"]."', '".$_SESSION["camera_id"]."', 300, 200, 20, 30, ".$bbV[0].", ".$bbV[1].", ".$bbV[2].", ".$bbV[3].", 0, 0, 0, 0, '#000000', 'O0', '".$_SESSION["user"]."', 'G0');";
-					$result=mysql_query($sql) or
-					$success = false;
-				
+						(".$_REQUEST["id"].", ".$_SESSION["frame_id"].", ".$_SESSION["camera_id"].", 300, 200, 20, 30, ".$bbV[0].", ".$bbV[1].", ".$bbV[2].", ".$bbV[3].", 0, 0, 0, 0, '#000000', 0, ".$_SESSION["user"].", 0);";
+					$result=mysql_query($sql) or $success = false;
 				}
 				if ($success == true){
 					$success = create_avatar($_REQUEST['bbV'], $_REQUEST['id']);
@@ -435,16 +411,14 @@
 			if( isset($_REQUEST['angle_face']) && isset($_REQUEST['angle_face_z'])  ){
 				if(check_person($_REQUEST['id']) == 1){
 
-					 $sql="UPDATE `people` SET `gazeAngle_face`=".$_REQUEST['angle_face'].", `gazeAngle_face_z`=".$_REQUEST['angle_face_z'].", userid='".$_SESSION["user"]."'   WHERE  peopleid=".$_REQUEST['id']." AND `frameid` = 'F".$_SESSION["frame_id"]."' AND `cameraid` = '".$_SESSION["camera_id"]."'";
+					 $sql="UPDATE `people` SET `gazeAngle_face`='".$_REQUEST['angle_face']."', `gazeAngle_face_z`='".$_REQUEST['angle_face_z']."', `userid`='".$_SESSION["user"]."'   WHERE  `peopleid` = '".$_REQUEST['id']."' AND `frameid` = '".$_SESSION["frame_id"]."' AND `cameraid` = ".$_SESSION["camera_id"]."";
 
-					 $result=mysql_query($sql) or
-					 $success=false;
+					 $result=mysql_query($sql) or $success=false;
 				}else{
 					$sql="INSERT INTO `people` (`peopleid`,`frameid`, `cameraid`, `bb_x`, `bb_y`, `bb_width`, `bb_height`, `bbV_x`, `bbV_y`, `bbV_width`, `bbV_height`, `gazeAngle_face`, `gazeAngle_face_z`, `gazeAngle_body`, `gazeAngle_body_z`, `color`, `poiid`, `userid`, `groupid`) VALUES
-					(".intval($_REQUEST["id"]).", 'F".$_SESSION["frame_id"]."', '".$_SESSION["camera_id"]."', 300, 200, 20, 30, 300, 200, 20, 30,".$_REQUEST['angle_face'].",".$_REQUEST['angle_face_z'].", 0, 0, '#000000', 'O0', '".$_SESSION["user"]."', 'G0');";
+					(".intval($_REQUEST["id"]).", ".$_SESSION["frame_id"].", ".$_SESSION["camera_id"].", 300, 200, 20, 30, 300, 200, 20, 30,".$_REQUEST['angle_face'].",".$_REQUEST['angle_face_z'].", 0, 0, '#000000', 0, ".$_SESSION["user"].", 0);";
 
-					$result=mysql_query($sql) or
-					$success = false;
+					$result=mysql_query($sql) or $success = false;
 				}
 			}
 			
@@ -452,32 +426,27 @@
 			if( isset($_REQUEST['angle_body']) && isset($_REQUEST['angle_body_z'])  ){
 				if(check_person($_REQUEST['id']) == 1){
 
-					 $sql="UPDATE `people` SET `gazeAngle_body`=".$_REQUEST['angle_body'].", `gazeAngle_body_z`=".$_REQUEST['angle_body_z'].", userid='".$_SESSION["user"]."'  WHERE   peopleid=".$_REQUEST['id']." AND `frameid` = 'F".$_SESSION["frame_id"]."' AND `cameraid` = '".$_SESSION["camera_id"]."'";
+					 $sql="UPDATE `people` SET `gazeAngle_body`='".$_REQUEST['angle_body']."', `gazeAngle_body_z`='".$_REQUEST['angle_body_z']."', `userid`='".$_SESSION["user"]."'  WHERE   peopleid=".$_REQUEST['id']." AND `frameid` = ".$_SESSION["frame_id"]." AND `cameraid` = ".$_SESSION["camera_id"]."";
 
-					 $result=mysql_query($sql) or
-					 $success=false;
+					 $result=mysql_query($sql) or $success=false;
 				}else{
 					$sql="INSERT INTO `people` (`peopleid`,`frameid`, `cameraid`, `bb_x`, `bb_y`, `bb_width`, `bb_height`, `bbV_x`, `bbV_y`, `bbV_width`, `bbV_height`, `gazeAngle_face`, `gazeAngle_face_z`, `gazeAngle_body`, `gazeAngle_body_z`, `color`, `poiid`, `userid`, `groupid`) VALUES
-					(".intval($_REQUEST["id"]).", 'F".$_SESSION["frame_id"]."', '".$_SESSION["camera_id"]."', 300, 200, 20, 30, 300, 200, 20, 30, 0, 0, ".$_REQUEST['angle_body'].",".$_REQUEST['angle_body_z'].", '#000000', 'O0', '".$_SESSION["user"]."', 'G0');";
-
-					$result=mysql_query($sql) or
-					$success = false;
+					(".intval($_REQUEST["id"]).", ".$_SESSION["frame_id"].", ".$_SESSION["camera_id"].", 300, 200, 20, 30, 300, 200, 20, 30, 0, 0, ".$_REQUEST['angle_body'].",".$_REQUEST['angle_body_z'].", '#000000', 0, ".$_SESSION["user"].", 0);";
+					$result=mysql_query($sql) or $success = false;
 				}
 			}
 			
 			if( isset($_REQUEST['opera_id']) ){
 				if(check_person($_REQUEST['id']) == 1){
 
-					$sql="UPDATE `people` SET `poiid`='".$_REQUEST['opera_id']."', userid='".$_SESSION["user"]."' WHERE `peopleid`='".$_REQUEST['id']."' AND `frameid` = 'F".$_SESSION["frame_id"]."' AND `cameraid` = '".$_SESSION["camera_id"]."'";
+					$sql="UPDATE `people` SET `poiid`='".$_REQUEST['opera_id']."', `userid`='".$_SESSION["user"]."' WHERE `peopleid`='".$_REQUEST['id']."' AND `frameid` = ".$_SESSION["frame_id"]." AND `cameraid` = ".$_SESSION["camera_id"]."";
 
-					$result=mysql_query($sql) or
-					$success=false;	
-				}else{	
+					$result=mysql_query($sql) or $success=false;	
+				} else {	
 					$sql="INSERT INTO `people` (`peopleid`,`frameid`, `cameraid`, `bb_x`, `bb_y`, `bb_width`, `bb_height`, `bbV_x`, `bbV_y`, `bbV_width`, `bbV_height`, `gazeAngle_face`, `gazeAngle_face_z`, `gazeAngle_body`, `gazeAngle_body_z`, `color`, `poiid`, `userid`, `groupid`) VALUES
-					(".intval($_REQUEST["id"]).", 'F".$_SESSION["frame_id"]."', '".$_SESSION["camera_id"]."', 300, 200, 20, 30, 300, 200, 20, 30, 0, 0, 0, 0, '#000000', '".$_REQUEST['opera_id']."', '".$_SESSION["user"]."', 'G0');";
+					(".intval($_REQUEST["id"]).", ".$_SESSION["frame_id"].", ".$_SESSION["camera_id"].", 300, 200, 20, 30, 300, 200, 20, 30, 0, 0, 0, 0, '#000000', ".$_REQUEST['opera_id'].", ".$_SESSION["user"].", 0);";
 
-					$result=mysql_query($sql) or
-					$success = false;
+					$result=mysql_query($sql) or $success = false;
 				}
 				
 			}	
@@ -495,7 +464,7 @@
 		 */
 		case "remove-person":
 			if(isset($_REQUEST['id'])){
-				$sql="DELETE FROM `people` WHERE cameraid='".$_SESSION["camera_id"]."' AND peopleid=".$_REQUEST['id']." AND frameid='F".$_SESSION["frame_id"]."'";
+				$sql="DELETE FROM `people` WHERE cameraid=".$_SESSION["camera_id"]." AND peopleid=".$_REQUEST['id']." AND frameid=".$_SESSION["frame_id"]."";
 				$result=mysql_query($sql) or
 				die ("Errore comando select: ".mysql_error());						
 				jecho(1); //or false (error)
@@ -511,20 +480,17 @@
 				error_500("Missing parameter");
 			}
 
-			$sql="SELECT MAX(CONVERT(SUBSTRING(groupid,2),SIGNED INTEGER)) as id FROM `tgroup`";
-			$result=mysql_query($sql) or
-			jecho($group);
-			while ($row=mysql_fetch_array($result) )
-			{
+			$sql="SELECT MAX(groupid) as id FROM `groups`";
+			$result=mysql_query($sql) or jecho($group);
+			while ($row=mysql_fetch_array($result) ){
 				$idvalue = $row["id"];
 			}
 
-			$sql="INSERT INTO `tgroup` (`groupid`, `name`, `userid`) VALUES
-			('G".(intval($idvalue)+1)."', '".$_REQUEST['name']."', '".$_SESSION["user"]."');";
+			$sql="INSERT INTO `groups` (`groupid`, `name`, `userid`) VALUES (".(intval($idvalue) + 1).", '".$_REQUEST['name']."', ".$_SESSION["user"].");";
 			$result=mysql_query($sql) or
 			jecho($group);
 			
-			$group = array("id"=>"G".(intval($idvalue)+1),"text"=>$_REQUEST['name'],"people"=>0);			
+			$group = array("id"=>(intval($idvalue) + 1),"text"=>$_REQUEST['name'],"people"=>0);			
 			jecho($group);
 		break;
 
@@ -536,7 +502,7 @@
 			if(!isset($_REQUEST['id']))
 				error_500("id mancante");			
 
-			$sql="DELETE FROM `tgroup` WHERE  groupid='".$_REQUEST['id']."'";
+			$sql="DELETE FROM `groups` WHERE  groupid=".$_REQUEST['id']."";
 			$result=mysql_query($sql) or $done=false;
 			if($done==true){
 				jecho(1);
@@ -554,13 +520,13 @@
 			$done = true;
 
 			if( !isset($_REQUEST["frame_id"])){
-				$myframe=sprintf("F%06d",$_SESSION["frame_id"]);
+				$myframe = $_SESSION["frame_id"];
 
 			}else{
-				$myframe=sprintf("F%06d",$_REQUEST["frame_id"]);
-                                $_SESSION["frame_id"] = sprintf("%06d",$_REQUEST["frame_id"]);
+				$myframe = $_REQUEST["frame_id"];
+				$_SESSION["frame_id"] = $_REQUEST["frame_id"];
 			}
-			$sql="SELECT * FROM `video` WHERE `frameid`='".$myframe."' AND `cameraid`='".$_SESSION["camera_id"]."'";
+			$sql="SELECT * FROM `video` WHERE `frameid`=".$myframe." AND `cameraid`=".$_SESSION["camera_id"]."";
 			$result=mysql_query($sql) or
 			$done = false;
 			if ($done == true){
@@ -579,7 +545,7 @@
 		case "get-artworks":
 			$artwork = array();
 			if (isset($_REQUEST['query']) && strlen($_REQUEST['query']) > 0){	
-					$sql="SELECT * FROM `poi` WHERE name LIKE '%".$_REQUEST['query']."%' AND cameraid='".$_SESSION["camera_id"]."' ORDER BY poiid";
+					$sql="SELECT * FROM `poi` WHERE name LIKE '%".$_REQUEST['query']."%' AND cameraid=".$_SESSION["camera_id"]." ORDER BY poiid";
 					$result=mysql_query($sql) or
 					die ("Error: ".mysql_error());
 					if ( mysql_num_rows($result)==0 ) $artwork = array();
@@ -587,7 +553,7 @@
 						$artwork[] = array("id"=>$row["poiid"],"cameraid"=>$row["cameraid"],"location_x"=>$row["location_x"],"location_y"=>$row["location_y"],"width"=>$row["width"],"height"=>$row["height"],"text"=>$row["name"] );
 					}
 			}else {
-					$sql="SELECT * FROM `poi` WHERE cameraid='".$_SESSION["camera_id"]."'";
+					$sql="SELECT * FROM `poi` WHERE cameraid=".$_SESSION["camera_id"]."";
 					$result=mysql_query($sql) or
 					die ("Error: ".mysql_error());
 					if ( mysql_num_rows($result)==0 ) $artwork = array();
@@ -605,7 +571,7 @@
 		case "get-realpeople":			
 			$realpeople = array();	
 
-			$sql_1 = "SELECT r.* FROM `real_people` as r WHERE (r.peopleid not in (SELECT p2.peopleid FROM `people` as p2 WHERE p2.frameid='F".$_SESSION["frame_id"]."' AND p2.cameraid='".$_SESSION["camera_id"]."'))";
+			$sql_1 = "SELECT r.* FROM `real_people` as r WHERE (r.peopleid not in (SELECT p2.peopleid FROM `people` as p2 WHERE p2.frameid=".$_SESSION["frame_id"]." AND p2.cameraid=".$_SESSION["camera_id"]."))";
 			$result=mysql_query($sql_1) or
 			$realpeople = array();	
 			if ( mysql_num_rows($result)==0 ) $realpeople = array();	
@@ -641,23 +607,22 @@
 				error_500("Missing information");
 			}
 			
-			$frame_id = intval(substr($_SESSION['frame_id'], 1));
+			$frame_id = intval($_SESSION['frame_id']);
 			$output->current = $frame_id;
 		
 			//Retrieving previous and next frames
 			if(isset($_REQUEST['limit'])){
 				$sql = "SELECT frameid FROM video
-                  WHERE (CAST(SUBSTRING(frameid,2) as UNSIGNED) >= ".($frame_id - $_REQUEST['limit']).")
-                  		and (CAST(SUBSTRING(frameid,2) as UNSIGNED) <= ".($frame_id + $_REQUEST['limit']).")
+                  WHERE frameid >= ".($frame_id - $_REQUEST['limit'])."
+                  		and frameid <= ".($frame_id + $_REQUEST['limit'])."
                   		and cameraid = '".$_SESSION['camera_id']."';";
 			} else {
-				$sql = "SELECT frameid FROM video WHERE cameraid = '".$_SESSION['camera_id']."';";
+				$sql = "SELECT frameid FROM video WHERE cameraid = ".$_SESSION['camera_id'].";";
 			}
 			$result=mysql_query($sql) or $done = false;
 			while ($row = mysql_fetch_array($result) ){
 				$frame = new stdClass();
 				$frame->id = $row["frameid"];
-				$frame->number =  intval(substr($row['frameid'], 1));
 				array_push($frames, $frame);
 			}
 			
@@ -665,7 +630,7 @@
 			foreach ($frames as $frame){
 				$people = array();
 				$sql = "SELECT * FROM `people` 
-						WHERE cameraid='".$_SESSION["camera_id"]."' AND frameid='".$frame->id."'";
+						WHERE cameraid=".$_SESSION["camera_id"]." AND frameid=".$frame->id."";
 				$result = mysql_query($sql) or $done = false;
 				while ($row = mysql_fetch_array($result) ){
 					$person = new stdClass();
@@ -693,8 +658,8 @@
 			$output = fopen('php://output', 'w');		
 
 			$people = array();	
-//			$sql_1 = "SELECT p.peopleid,p.frameid,p.cameraid, p.bb_x, p.bb_y, p.bb_width, p.bb_height, p.bbV_x, p.bbV_y, p.bbV_width, p.bbV_height, bbV_height , p.gazeAngle_face, p.gazeAngle_face_z, p.gazeAngle_body, p.gazeAngle_body_z,  v.path , poi.name , g.groupid FROM people as p, video as v, poi, tgroup as g  WHERE p.frameid = v.frameid AND p.poiid=poi.poiid and p.groupid=g.groupid";
-			$sql_1 = "SELECT p.peopleid,p.frameid,p.cameraid, p.bb_x, p.bb_y, p.bb_width, p.bb_height, p.bbV_x, p.bbV_y, p.bbV_width, p.bbV_height, p.gazeAngle_face, p.gazeAngle_face_z, p.gazeAngle_body, p.gazeAngle_body_z,  v.path , poi.name , g.groupid FROM people as p  LEFT JOIN video as v ON p.frameid = v.frameid and p.cameraid=v.cameraid LEFT JOIN poi ON p.poiid=poi.poiid and p.cameraid=poi.cameraid LEFT JOIN tgroup as g ON p.groupid=g.groupid;";
+//			$sql_1 = "SELECT p.peopleid,p.frameid,p.cameraid, p.bb_x, p.bb_y, p.bb_width, p.bb_height, p.bbV_x, p.bbV_y, p.bbV_width, p.bbV_height, bbV_height , p.gazeAngle_face, p.gazeAngle_face_z, p.gazeAngle_body, p.gazeAngle_body_z,  v.path , poi.name , g.groupid FROM people as p, video as v, poi, groups as g  WHERE p.frameid = v.frameid AND p.poiid=poi.poiid and p.groupid=g.groupid";
+			$sql_1 = "SELECT p.peopleid,p.frameid,p.cameraid, p.bb_x, p.bb_y, p.bb_width, p.bb_height, p.bbV_x, p.bbV_y, p.bbV_width, p.bbV_height, p.gazeAngle_face, p.gazeAngle_face_z, p.gazeAngle_body, p.gazeAngle_body_z,  v.path , poi.name , g.groupid FROM people as p  LEFT JOIN video as v ON p.frameid = v.frameid and p.cameraid=v.cameraid LEFT JOIN poi ON p.poiid=poi.poiid and p.cameraid=poi.cameraid LEFT JOIN groups as g ON p.groupid=g.groupid;";
 
 			$result=mysql_query($sql_1) or
 			$people = array();
@@ -724,8 +689,8 @@
 		$beta = 1-($alpha+$gamma);
 		// recover person avatar...
 		$sql="SELECT * FROM `real_people` WHERE `peopleid`=".$id;
-		$result=mysql_query($sql) or
-		$done = false;
+		$result=mysql_query($sql) or $done = false;
+		
 		if ($done == true){
 			while ($row=mysql_fetch_array($result) )
 			{
@@ -741,10 +706,10 @@
 			}
 		}
 	
-		$sql="SELECT gazeAngle_face, gazeAngle_face_z FROM `people` WHERE `peopleid`=".$id." AND cameraid = '".$_SESSION['camera_id']."' AND frameid = 'F".$_SESSION['frame_id']."'";
+		$sql="SELECT gazeAngle_face, gazeAngle_face_z FROM `people` WHERE `peopleid`=".$id." AND cameraid = ".$_SESSION['camera_id']." AND frameid = ".$_SESSION['frame_id']."";
 	
-		$result=mysql_query($sql) or
-		$done = false;
+		$result=mysql_query($sql) or $done = false;
+
 		if ($done == true){
 			while ($row=mysql_fetch_array($result) )
 			{
@@ -757,9 +722,9 @@
 		$new_value = 1/($bbV[2]*$bbV[3]);
 	
 		if ( $new_value < $old_value ){
-			$sql="SELECT path FROM `video` WHERE `frameid`='F".$_SESSION["frame_id"]."' AND `cameraid`='".$_SESSION["camera_id"]."'";
-			$result=mysql_query($sql) or
-			$done = false;
+			$sql="SELECT path FROM `video` WHERE `frameid`=".$_SESSION["frame_id"]." AND `cameraid`=".$_SESSION["camera_id"]."";
+			$result=mysql_query($sql) or $done = false;
+
 			if ($done == true){
 				while ($row=mysql_fetch_array($result) )
 				{
@@ -781,18 +746,35 @@
 				}
 	
 				$sql="UPDATE `real_people` SET face=".$face_people.", face_z=".$face_z_people." WHERE peopleid=".$id;
-				$result=mysql_query($sql) or
-				$done=false;
+				$result=mysql_query($sql) or $done=false;
+
 			}
 				
 			if ($first_change == true){
 				$sql="UPDATE `real_people` SET `image`='../img/real_people/".$id.".jpg' WHERE peopleid=".$id;
-				$result=mysql_query($sql) or
-				$done=false;
+				$result=mysql_query($sql) or $done=false;
+
 			}
 		}
-	
 		return $done;
+	}
+	
+
+	// check if a person already exists in the DB
+	function check_person($id){
+		$var = 0;
+	
+		$sql_1="SELECT * FROM `people` WHERE cameraid=".$_SESSION["camera_id"]." AND frameid=".$_SESSION["frame_id"]." AND peopleid = ".$id;
+	
+		$result=mysql_query($sql_1) or
+		$var = 0;
+		if ( mysql_num_rows($result)==0 ) {
+			$var = 0;
+		}else{
+			$var = 1;
+		}
+	
+		return $var;
 	}
    
 

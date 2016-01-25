@@ -92,7 +92,7 @@
 		 */
 	    addPerson : function(person){
 	    	timelineFrames[currentFrame - 1].people.push(person);
-	    	loadPeople(timelineFrames[currentFrame - 1].people)
+	    	loadPeople(timelineFrames[currentFrame - 1].people);
 	    },
 	    /**
 		 * Remove person from the current frame in timeline with the given id
@@ -237,11 +237,11 @@
 		for (var i in frames) {
 			var frame = $('<div></div>')
 				.addClass('timeline-frame')
-				.attr('id', 'timeline-frame-' + frames[i].number)
-				.attr('data-id', frames[i].number)
+				.attr('id', 'timeline-frame-' + frames[i].id)
+				.attr('data-id', frames[i].id)
 				.append('<div class="timeline-frame-indicator"></div>')
-				.append('<span class="timeline-frame-number">' + frames[i].number + '</span>');
-			if(frames[i].number == currentFrame){
+				.append('<span class="timeline-frame-number">' + frames[i].id + '</span>');
+			if(frames[i].id == currentFrame){
 				frame.addClass('current');
 				loadPeople(frames[i].people)
 			}
@@ -266,20 +266,20 @@
 	function extendTimelineFrame(direction){
 		var frame;
 		var id;
-		var start = displayedFrames[0].number;
-		var end = displayedFrames[displayedFrames.length - 1].number;
+		var start = displayedFrames[0].id;
+		var end = displayedFrames[displayedFrames.length - 1].id;
 		if(direction == 'right'){
 			frame = displayedFrames[0];
-			if (frame.number <= 1) return;
+			if (frame.id <= 1) return;
 			$('#timeline-frame-' + end).remove();
-			id = frame.number - 1;
+			id = frame.id - 1;
 			start = start - 1;
 			end = end - 1;
 		} else {
 			frame = displayedFrames[displayedFrames.length - 1];
-			if(frame.number >= timelineFrames[timelineFrames.length - 1].number) return;
+			if(frame.id >= timelineFrames[timelineFrames.length - 1].id) return;
 			$('#timeline-frame-' + start).remove();
-			id = frame.number + 1;
+			id = frame.id + 1;
 			start = start + 1;
 			end = end + 1;
 		}
@@ -344,6 +344,7 @@
 		$('.timeline-frame.current').removeClass('current');
 		$('#timeline-frame-' + id).addClass('current');
 		$('.timeline-annotation').remove();
+		currentFrame = id;
 		updateCursor();
 		methods.onFrameSelected(id);
 		loadPeople(timelineFrames[id - 1].people)
@@ -366,52 +367,60 @@
 	
 	//Displaying annotation duration for a selected person
 	function selectPerson(person){
-		if(!$('#timeline-person-' + person.id).hasClass('selected')){
-			$('#timeline-person-' + person.id).addClass('selected');
-			$('.timeline-annotation-' + person.id).remove();
-			var matches = [];
-			for ( var i in timelineFrames) {
-				if(timelineFrames[i].people.length > 0){
-					for ( var j in timelineFrames[i].people) {
-						if(timelineFrames[i].people[j].id == person.id){
-							matches.push(parseInt(i) + 1);
+		
+		if($('#timeline-person-' + person.id).length == 0){
+			methods.addPerson(person);
+		}
+
+			//Person is already present in timeline
+			if(!$('#timeline-person-' + person.id).hasClass('selected')){
+				$('#timeline-person-' + person.id).addClass('selected');
+				$('.timeline-annotation-' + person.id).remove();
+				var matches = [];
+				for ( var i in timelineFrames) {
+					if(timelineFrames[i].people.length > 0){
+						for ( var j in timelineFrames[i].people) {
+							if(timelineFrames[i].people[j].id == person.id){
+								matches.push(parseInt(i) + 1);
+							}
 						}
 					}
 				}
-			}
-			
-			var intervals = [];
-			var start = matches[0];
-			var end = 0;
-			for (var k = 0; k < matches.length; k++){
-				if(matches[k] + 1 != matches[k + 1]){
-					end = matches[k];
-					intervals.push({start: start, end: end});
-					start = matches[k + 1];
+				
+				var intervals = [];
+				var start = matches[0];
+				var end = 0;
+				for (var k = 0; k < matches.length; k++){
+					if(matches[k] + 1 != matches[k + 1]){
+						end = matches[k];
+						intervals.push({start: start, end: end});
+						start = matches[k + 1];
+					}
 				}
+				
+				var annotationContainer = $('<div></div>')
+					.addClass('timeline-annotation-container')
+					.addClass('timeline-annotation-' + person.id);
+				
+				for ( var i in intervals) {
+					var over = $('<div></div>')
+						.addClass('timeline-annotation')
+						.css({
+							'background-color': person.color,
+							'width' : $('#timeline-frame-' + intervals[i].start).width() * (intervals[i].end - intervals[i].start)
+									+ $('#timeline-frame-' + intervals[i].start).width(),
+							'left' : $('#timeline-frame-' + intervals[i].start).position().left,
+							'top' :  10 + $('.timeline-annotation-container').length * 20
+						});
+					annotationContainer.append(over);
+				}
+				$('.timeline-frames-container').prepend(annotationContainer);
+			} else {
+				$('#timeline-person-' + person.id).removeClass('selected');
+				$('.timeline-annotation-' + person.id).remove();
 			}
-			
-			var annotationContainer = $('<div></div>')
-				.addClass('timeline-annotation-container')
-				.addClass('timeline-annotation-' + person.id);
-			
-			for ( var i in intervals) {
-				var over = $('<div></div>')
-					.addClass('timeline-annotation')
-					.css({
-						'background-color': person.color,
-						'width' : $('#timeline-frame-' + intervals[i].start).width() * (intervals[i].end - intervals[i].start)
-								+ $('#timeline-frame-' + intervals[i].start).width(),
-						'left' : $('#timeline-frame-' + intervals[i].start).position().left,
-						'top' :  10 + $('.timeline-annotation-container').length * 20
-					});
-				annotationContainer.append(over);
-			}
-			$('.timeline-frames-container').prepend(annotationContainer);
-		} else {
-			$('#timeline-person-' + person.id).removeClass('selected');
-			$('.timeline-annotation-' + person.id).remove();
-		}
+		
+
 	}
 	
 	//Deselect all people

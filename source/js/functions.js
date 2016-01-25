@@ -211,7 +211,7 @@ function updateDeletable(table_id){
 		success: function(response){
 			console.log("[get-deletable] returned");
 			for(var i in response){
-				if(response[i]["id"] != "G0"){
+				if(response[i]["id"] != 0){
 					var table = $(table_id).DataTable(); 
 					var id = "tr-"+response[i]["id"]+"-grp"; 
 					for(var j in table.fnGetNodes()){ 
@@ -236,7 +236,7 @@ function updateNPeople(table_id){
 			success: function(response){ 
 				console.log("[get-groups] returned"); 
 				for(var i in response){ 
-						if(response[i]["id"] != "G0"){ 
+						if(response[i]["id"] != 0){ 
 							var table = $(table_id).DataTable(); 
 							var id = "tr-"+response[i]["id"]+"-grp"; 
 							for(var j in table.fnGetNodes()){ 

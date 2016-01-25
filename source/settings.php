@@ -1,5 +1,6 @@
 <html>
     <head>
+    <title>WATTS - Settings</title>
 	<meta name="description" content="Video tagging and results comparison">
 	<meta name="keywords" content="Video, Ground truth, Keyboard, Automatic">
 	<meta charset="UTF-8">
@@ -13,10 +14,6 @@
 
     <body>
     
-    	<?php
-    	include 'php/config.php';
-		?>
-    	
 		<nav class="navbar navbar-default" role="navigation">
 			  <div class="container-fluid">
 
@@ -36,9 +33,10 @@
 		    	<h1>Settings</h1>
 		    	<div class="clearfix"></div>
 		    	<div class="settings row">
+		    	  
+		    	  <!-- Database connection -->
 				  <div class="col-xs-6 col-sm-4">
-				  <!-- Database connection -->
-					    <div class="settings-panel panel panel-default">
+					    <div id="db-connection-settings" class="settings-panel panel panel-default">
 						  <div class="panel-heading">
 						    <h3 class="panel-title">Database connection</h3>
 						  </div>
@@ -47,47 +45,61 @@
 							  <div class="form-group">
 							    <label for="db-user" class="col-sm-3 control-label">User</label>
 							    <div class="col-sm-8">
-							      <input type="text" class="form-control" id="db-user" placeholder="User" value="<?php echo $dbConnection["user"];?>">
+							      <input type="text" class="form-control" id="db-user" placeholder="User">
 							    </div>
 							  </div>
 							  <div class="form-group">
 							    <label for="db-password" class="col-sm-3 control-label">Password</label>
 							    <div class="col-sm-8">
-							      <input type="text" class="form-control" id="db-password" placeholder="Password" value="<?php echo $dbConnection["password"];?>">
+							      <input type="text" class="form-control" id="db-password" placeholder="Password">
 							    </div>
 							  </div>
 							  <div class="form-group">
 							    <label for="db-host" class="col-sm-3 control-label">Host</label>
 							    <div class="col-sm-8">
-							      <input type="text" class="form-control" id="db-host" placeholder="Host" value="<?php echo $dbConnection["host"];?>">
+							      <input type="text" class="form-control" id="db-host" placeholder="Host" >
 							    </div>
 							  </div>
 							  <div class="form-group">
 							    <label for="db-database" class="col-sm-3 control-label">Database</label>
 							    <div class="col-sm-8">
-							      <input type="text" class="form-control" id="db-database" placeholder="Database" value="<?php echo $dbConnection["db"];?>">
+							      <input type="text" class="form-control" id="db-database" placeholder="Database" >
 							    </div>
 							  </div>
-							  <div class="col-sm-offset-8 col-sm-10">
+							  <div class="col-sm-offset-6 col-sm-10">
+							  	  <button id="db-test" type="button" class="btn btn-default">Test</button>
 							      <button type="submit" class="btn btn-primary">Save</button>
 							    </div>	
 							</form>
+							<div class="clearfix"></div>
 						  </div>
-						</div>
-						<!-- end of database settings -->
-				  
-				  
+						</div>				
 				  </div>
+				  <!-- end of database settings -->
+				  
+				  <!-- Users settings -->
 				  <div class="col-xs-6 col-sm-4">
-				  	<div class="settings-panel panel panel-default">
+				  	<div id="user-settings" class="settings-panel panel panel-default">
 						  <div class="panel-heading">
 						    <h3 class="panel-title">Users</h3>
 						  </div>
 						  <div class="panel-body">
+						  	<form id="add-user-form" class="form-inline">
+							  <div class="form-group">
+							    <input type="text" class="form-control" id="user" placeholder="Username">
+							  </div>
+							  <button type="submit" class="btn btn-primary">Add user</button>
+							</form>
+							<div class="scrllable-container">
+								<div class="scrollable"></div>
+							</div>
 						  </div>
 						</div>
 				  
 				  </div>
+				  <!-- end users settings -->
+				  
+				  <!-- Cameras settings -->
 				  <div class="col-xs-6 col-sm-4">
 				  	<div class="settings-panel panel panel-default">
 						  <div class="panel-heading">
@@ -96,15 +108,11 @@
 						  <div class="panel-body">
 						    
 						  </div>
-						</div>
-				  
-				  </div>
-				</div>
-		    	
-		    
-		   		
-		    
-		    </div>
+					</div>
+				  </div>		    	
+		    	 <!-- end of camera setting -->
+			</div>
+		 </div>
 		 <!-- jQuery (necessary for Bootstrap's JavaScript plugins) -->
 	    <script src="js/jquery-1.11.1.min.js"></script>
 	    <!-- Include all compiled plugins (below), or include individual files as needed -->

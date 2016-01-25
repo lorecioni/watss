@@ -247,7 +247,7 @@ $('#goto-frame').on('change', function(){
 		type: "POST",
 		url: "../php/api.php",
 		data: {action:"get-frame",
-				frame_id: $("#goto-frame").select2("data").id.replace("F","")},
+				frame_id: $("#goto-frame").select2("data").id},
 		success: function(response){
 			console.log("[get-frame] returned");
 			setFrame(response);
@@ -332,7 +332,7 @@ function checkLogin(){
 							type: "POST",
 							url: "../php/api.php",
 							data: {action:"get-frame",
-									frame_id: numberFormat(id, 6)},
+									frame_id: id},
 							success: function(response){
 								setFrame(response);
 							}
@@ -423,19 +423,3 @@ function loadInfo(){
 		});
 	}
 }
-
-
-/**
- * Number format
- * @param number
- * @param digits : number of target digits
- * @returns {String}
- */
-function numberFormat(number, digits) {
-    var output = number + '';
-    while (output.length < digits) {
-        output = '0' + output;
-    }
-    return output;
-}
-
