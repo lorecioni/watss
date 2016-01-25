@@ -103,6 +103,7 @@
 					timelineFrames[currentFrame - 1].people.splice(i, 1);
 				}
 			}
+	    	$('.timeline-annotation-' + id).remove();
 	    	loadPeople(timelineFrames[currentFrame - 1].people)
 	    }
 	};
