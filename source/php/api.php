@@ -1,19 +1,33 @@
 <?php
 	//Include utils functions
 	require_once 'utils.php';
+	require_once 'queries.php';
 	
 	//error_reporting(E_ALL);
 	//ini_set("display_errors",1);
 	session_start();
 
-	$conFile=parse_ini_file("./connection.ini");
-	$conn=mysql_connect($conFile["host"],$conFile["user"],$conFile["password"]);
-    if (! $conn) exit("Error: ".mysql_error());
+	/**
+	 * Database connection
+	 */
+	$conFile = parse_ini_file("./connection.ini");
+	$conn = mysql_connect($conFile["host"],$conFile["user"],$conFile["password"]);
+    if (!$conn) exit("Error: ".mysql_error());
 	mysql_select_db($conFile['db']) or exit("Wrong Database");
+	
+	/**
+	 * Checking requested action
+	 */
 
 	if( !isset($_REQUEST['action']) )
 		error_500("missing action");
 
+	/**
+	 * Initializing queries utilities
+	 */
+	$QUERIES = new Queries();
+	
+	
 	switch( $_REQUEST['action'] ) {
 
 		/**
@@ -27,7 +41,7 @@
 			if (!isset($_SESSION["user"])){
 				if($_REQUEST["user"]!="" &&  $_REQUEST["camera_id"]!="" && 
 					($_REQUEST["frame_id"]!="number" || $_REQUEST["frame_number"]!="")){
-						$sql="SELECT userid FROM user WHERE name='".mysql_real_escape_string($_REQUEST["user"])."'";
+						$sql = $QUERIES->getUserIdFromName($_REQUEST['user']);
 						$result=mysql_query($sql) or die ("Error: ".mysql_error());
 						if ( mysql_num_rows($result)==0 ) {					
 							$to_return = false;
@@ -35,34 +49,34 @@
 							while ($row=mysql_fetch_array($result) ){
 								$_SESSION["user"] = $row["userid"];
 								$_SESSION["camera_id"] = $_REQUEST["camera_id"];
-								$sql="SELECT g.groupid FROM `groups` as g, `user` as u WHERE g.userid=u.userid AND u.name='".$_REQUEST["user"]."' AND g.groupid=0";
+								
+								$sql = $QUERIES->countNoGroupsByUserName($_REQUEST['user']);
 								$result_zero = mysql_query($sql) or $to_return = false;
 								if (mysql_num_rows($result_zero) == 0) {
-									$sql_1= "SELECT `userid` FROM `user` WHERE `name`='".$_REQUEST["user"]."'";
+									
+									$sql_1= $QUERIES->getUserIdFromName($_REQUEST['user']);
 									$result_1 = mysql_query($sql_1) or $to_return = false;
 									while ($returned_id=mysql_fetch_array($result_1) ){							
-										$sql_2="INSERT INTO `groups` (0, `name`, `userid`) VALUES
-											(0, 'No group', '".$returned_id["userid"]."');";
+										$sql_2 = $QUERIES->insertGroup(0, 'No group',  $returned_id["userid"]);
 										$final_result=mysql_query($sql_2) or $to_return = false;
 									}
 								}
-								$sql="SELECT g.groupid FROM `groups` as g, `user` as u WHERE g.userid=u.userid AND u.name='".$_REQUEST["user"]."' AND g.groupid=0";
 							}
 						}
 						if ($_REQUEST["frame_id"] == 'first'){
-								$sql= "SELECT MIN(n) as id FROM (SELECT frameid as n FROM video ) as tab";
+								$sql= $QUERIES->getFirstFrameId();
 								$result_2 = mysql_query($sql) or $to_return = false;						
 								while ($final_res=mysql_fetch_array($result_2) ){
 									$_SESSION["frame_id"] = intval($final_res["id"]);
 								}					
 						}else{
 							if ($_REQUEST["frame_id"] == 'FUF'){
-								$sql= "SELECT MIN(frameid) as id FROM video WHERE frameid not in (SELECT frameid FROM people WHERE userid=".$_SESSION["user"]." AND cameraid=".$_SESSION["camera_id"].")";
+								$sql= $QUERIES->getFirstUntaggedFrame($_SESSION['user'], $_SESSION['camera_id']);
 								$result_2 = mysql_query($sql) or $to_return = false;						
 								while ($final_res=mysql_fetch_array($result_2) ){
 									$_SESSION["frame_id"] = intval($final_res["id"]);									
 								}				
-							}else{
+							} else {
 								if ($_REQUEST["frame_id"] == 'number'){
 									$_SESSION["frame_id"] = intval($_REQUEST["frame_number"]);
 								}
@@ -80,7 +94,7 @@
 		 */
 		case "get-cameras":
 			$camera = array();
-			$sql="SELECT c.cameraid FROM `camera` as c";
+			$sql = $QUERIES->getCameras();
 			$result=mysql_query($sql) or
 			die ("Error: ".mysql_error());
 			while ($row=mysql_fetch_array($result)){
@@ -104,7 +118,7 @@
 		 */
 		case "get-user":
 			$done = true;
-			$sql="SELECT name FROM `user` WHERE userid=".$_SESSION["user"]."";
+			$sql = $QUERIES->getUserNameById($_SESSION['user']);
 			$result=mysql_query($sql) or $done = false;
 			if($done)
 				while ($row=mysql_fetch_array($result))
@@ -125,122 +139,109 @@
 		/**
 		 * Returning frame list for navigation, limited by the query and the number of restults
 		 */
-		
-		//FIXME da rivedere
 		case "get-frames":
 			$frames = array();
 			if (isset($_REQUEST['query']) && strlen($_REQUEST['query']) > 0){
-
-				$sql="SELECT `frameid` as id, `frameid` as txt FROM `video` WHERE `cameraid` = ".$_SESSION["camera_id"]." AND `frameid` LIKE '%".$_REQUEST["query"]."%' ORDER BY CAST(SUBSTRING(`frameid`,2) as unsigned) ASC LIMIT ".$_REQUEST["limit"];
-				$result=mysql_query($sql) or
+				$sql = $QUERIES->getFramesByQuery($_SESSION['camera_id'], $_REQUEST['query'], $_REQUEST['limit']);
+				$result = mysql_query($sql) or
 				$frames = array();
-				while ($row=mysql_fetch_array($result)){
-					$frames[] = array("id"=>$row["id"],"text"=>$row["txt"]);
+				while ($row = mysql_fetch_array($result)){
+					array_push($frames, array("id"=>$row["id"],"text"=>$row["txt"]));
 				}
 				jecho($frames);
 			} else {
-				$sql="SELECT `frameid` as id, `frameid` as txt FROM `video` WHERE `cameraid` = ".$_SESSION["camera_id"]." ORDER BY CAST(SUBSTRING(`frameid`,2) as unsigned) ASC LIMIT ".$_REQUEST["limit"];
-				$result=mysql_query($sql) or
+				$sql = $QUERIES->getFramesForSelect($_SESSION['camera_id'], $_REQUEST['limit']);
+				$result = mysql_query($sql) or
 				$frames = array();
 				while ($row=mysql_fetch_array($result)){
-					$frames[] = array("id"=>$row["id"],"text"=>$row["txt"]);
+					array_push($frames, array("id"=>$row["id"],"text"=>$row["txt"]));
 				}
 				jecho($frames);
 			}
 			break;
 
-		// List of persons - DB
+		/**
+		 * Get people list for the current frame. Retrieve all people of the current frame and generate proposals based
+		 * on previous and next frame annotation
+		 */
 		case "get-people":			
-			$people = array();	
-			$people_2 = array();
-			$people_add = array();
+			$people = array();
+			$sql = $QUERIES->getPeople($_SESSION['camera_id'], $_SESSION['frame_id'], true);
+			$result = mysql_query($sql) or $people = array();	
 
-			$sql_1="SELECT * FROM `people` WHERE cameraid=".$_SESSION["camera_id"]." AND frameid=".$_SESSION["frame_id"]."";
-
-			$result=mysql_query($sql_1) or
-			$people = array();	
-			if ( mysql_num_rows($result)==0 ) $people = array();	
-			while ($row=mysql_fetch_array($result) )
-			{
-				$people[] = array("id"=>$row["peopleid"],"color"=>$row["color"],"angle_face"=>$row["gazeAngle_face"],"angle_face_z"=>$row["gazeAngle_face_z"],"angle_body"=>$row["gazeAngle_body"],"angle_body_z"=>$row["gazeAngle_body_z"],"group"=>$row["groupid"],"artwork"=>$row["poiid"],"prev_frame"=>true, "bb"=>array(intval($row["bb_x"]), intval($row["bb_y"]),intval($row["bb_width"]),intval($row["bb_height"])),"bbV"=>array(intval($row["bbV_x"]), intval($row["bbV_y"]), intval($row["bbV_width"]), intval($row["bbV_height"])));
-			}
-
-			if ((intval($_SESSION["frame_id"])-1)>0){
-				$prev_frame_id = $_SESSION["frame_id"] - 1;
-
-				$sql_2="SELECT * FROM `people` WHERE cameraid=".$_SESSION["camera_id"]." AND frameid=".$prev_frame_id."";
-
-				$result=mysql_query($sql_2) or
-				$people_2 = array();
-				if ( mysql_num_rows($result)==0 ) $people_2 = array();
-				while ($row=mysql_fetch_array($result) )
-				{
-					$people_2[] = array("id"=>$row["peopleid"],"color"=>$row["color"],"angle_face"=>$row["gazeAngle_face"],"angle_face_z"=>$row["gazeAngle_face_z"],"angle_body"=>$row["gazeAngle_body"],"angle_body_z"=>$row["gazeAngle_body_z"],"group"=>$row["groupid"],"artwork"=>$row["poiid"],"prev_frame"=>false, "bb"=>array(intval($row["bb_x"]), intval($row["bb_y"]),intval($row["bb_width"]),intval($row["bb_height"])),"bbV"=>array(intval($row["bbV_x"]), intval($row["bbV_y"]), intval($row["bbV_width"]), intval($row["bbV_height"])));
+			while ($row = mysql_fetch_array($result)){
+				$previous = true;
+				if($row["previous"] == 0){
+					//Person in previous frame but not in current, it is a proposal
+					$previous = false;
 				}
 				
-				foreach ($people_2 as $person_2){
-					$found = false;
-					for ($i=0; $i < count($people); $i++){					
-						if (intval($people[$i]["id"]) == intval($person_2["id"])){
-							$found = true;
-							$people[$i]["prev_frame"] = true;
-						}
-					}
-					if (!$found){
-						$people_add[] = $person_2;
-					}
-				}
-				
-				$people = array_merge($people, $people_add);
+				$person = array( 
+					"id" => $row["peopleid"], 
+					"color" => $row["color"], 
+					"angle_face" => $row["gazeAngle_face"], 
+					"angle_face_z"=>$row["gazeAngle_face_z"],
+					"angle_body" => $row["gazeAngle_body"],
+					"angle_body_z" => $row["gazeAngle_body_z"],
+					"group" => $row["groupid"],
+					"artwork" => $row["poiid"],
+					"prev_frame" => $previous, 
+					"bb" => array(
+							intval($row["bb_x"]),
+							intval($row["bb_y"]),
+							intval($row["bb_width"]),
+							intval($row["bb_height"])
+						),
+					"bbV" => array(
+							intval($row["bbV_x"]), 
+							intval($row["bbV_y"]), 
+							intval($row["bbV_width"]), 
+							intval($row["bbV_height"])
+						)
+					);
+				array_push($people, $person);
 			}
 			jecho($people);
 			break;
 
-		// List of groups - DB
+		/**
+		 * Retrieving group list from database
+		 */
 		case "get-groups":
 
 			$group = array();
 			$group_del = array();
 			$group_merge = array();
 			if (isset($_REQUEST['query']) && strlen($_REQUEST['query']) > 0){	
+				$sql = $QUERIES->getGroups(false, $_REQUEST['query']);
+				$result = mysql_query($sql) or	$group = array();
+				while ($row=mysql_fetch_array($result)){
+					$group[] = array("id"=>$row["groupid"],"text"=>$row["name"],"people"=>$row["people"]);
+				}
 
-					$sql="SELECT N.groupid, N.name, COUNT( N.groupid ) AS people FROM ( SELECT g.groupid, p.peopleid, g.name, COUNT( p.groupid ) FROM  `people` AS p RIGHT OUTER JOIN  `groups` AS g ON p.groupid = g.groupid WHERE  g.name LIKE '%".$_REQUEST['query']."%' GROUP BY p.groupid, p.peopleid ORDER BY p.groupid ) AS N GROUP BY N.groupid";
-
-					$result=mysql_query($sql) or
-					$group = array();
-					if ( mysql_num_rows($result)==0 ) $group = array();
-					while ($row=mysql_fetch_array($result)){
-						$group[] = array("id"=>$row["groupid"],"text"=>$row["name"],"people"=>$row["people"]);
-					}
-
-					$sql="SELECT N.groupid, N.name, COUNT( N.groupid ) AS people FROM ( SELECT g.groupid, p.peopleid, g.name, COUNT( p.groupid ) FROM  `people` AS p RIGHT OUTER JOIN  `groups` AS g ON p.groupid = g.groupid WHERE   g.name LIKE '%".$_REQUEST['query']."%' AND g.deleted=0 GROUP BY p.groupid, p.peopleid ORDER BY p.groupid ) AS N GROUP BY N.groupid";
-
-					$result=mysql_query($sql) or
-					$group_del = array();
-					while ($row=mysql_fetch_array($result) )
-					{
-						$group_del[] = array("id"=>$row["groupid"],"text"=>$row["name"],"people"=>0);
-					}					
+				$sql = $sql = $QUERIES->getGroups(true, $_REQUEST['query']);
+				$result = mysql_query($sql) or $group_del = array();
+				while ($row=mysql_fetch_array($result)){
+					$group_del[] = array("id"=>$row["groupid"],"text"=>$row["name"],"people"=>0);
+				}					
 			} else {
+				$sql = $QUERIES->getGroups(false, null);
+				$result = mysql_query($sql) or $group = array();
 
-					$sql="SELECT N.groupid, N.name, COUNT( N.groupid ) AS people FROM ( SELECT g.groupid, p.peopleid, g.name, COUNT( p.groupid ) FROM  `people` AS p RIGHT OUTER JOIN  `groups` AS g ON p.groupid = g.groupid GROUP BY p.groupid, p.peopleid ORDER BY p.groupid ) AS N GROUP BY N.groupid";
-					$result=mysql_query($sql) or
-					$group = array();
-					if ( mysql_num_rows($result)==0 ) $group = array();
-					while ($row=mysql_fetch_array($result) ){
-						$group[] = array("id"=>$row["groupid"],"text"=>$row["name"],"people"=>$row["people"]);
-					}
-					$sql="SELECT N.groupid, N.name, COUNT( N.groupid ) AS people FROM ( SELECT g.groupid, p.peopleid, g.name, COUNT( p.groupid ) FROM  `people` AS p RIGHT OUTER JOIN  `groups` AS g ON p.groupid = g.groupid WHERE g.deleted=0 GROUP BY p.groupid, p.peopleid ORDER BY p.groupid ) AS N GROUP BY N.groupid";
-
-					$result=mysql_query($sql) or $group_del = array();
-					while ($row = mysql_fetch_array($result)){
-						$group_del[] = array("id"=>$row["groupid"],"text"=>$row["name"],"people"=>0);
-					}
+				while ($row = mysql_fetch_array($result) ){
+					$group[] = array("id" => $row["groupid"], "text" => $row["name"], "people" => $row["people"]);
+				}
+				
+				$sql = $QUERIES->getGroups(true, null);
+				$result = mysql_query($sql) or $group_del = array();
+				while ($row = mysql_fetch_array($result)){
+					$group_del[] = array("id" => $row["groupid"], "text" => $row["name"], "people" => 0);
+				}
 			}
 			foreach ($group_del as $g){
-				$found=false;
-				for ($i=0; $i<count($group); $i++){
-					if ($group[$i]["id"]==$g["id"]){
+				$found = false;
+				for ($i = 0; $i < count($group); $i++){
+					if ($group[$i]["id"] == $g["id"]){
 						$found=true;								
 					}
 				}
@@ -253,23 +254,21 @@
 			jecho($group);			
 			break;
 			
+			
 		/**
-		 * Find a group that can be removed
+		 * Find groups that can be removed
 		 */
 		case "get-deletable":
-			$sql="SELECT g.groupid, count(p.groupid) as people FROM `people` as p right outer join `groups` as g on p.groupid = g.groupid WHERE g.userid=".$_SESSION["user"]." AND g.deleted=0 GROUP BY g.groupid ORDER BY g.groupid ";
-			$result=mysql_query($sql) or
 			$group = array();
-			if ( mysql_num_rows($result)==0 ) $group = array();
-			while ($row=mysql_fetch_array($result) )
-			{
+			$sql = $QUERIES->getDeletableGroups($_SESSION['user']);
+			$result = mysql_query($sql) or $group = array();
+			while ($row=mysql_fetch_array($result) ){
 				if (intval($row["people"])>0){
 					$deletable=false;
 				}else{
 					$deletable=true;
 				}
-					
-				$group[] = array("id"=>$row["groupid"],"deletable"=>$deletable);
+				array_push($group, array("id"=>$row["groupid"],"deletable"=>$deletable));
 			}
 			jecho($group);
 		break;
