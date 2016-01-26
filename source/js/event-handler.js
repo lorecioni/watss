@@ -314,9 +314,8 @@ function checkLogin(){
 				
 				//Loading timeline
 				$('#timeline-container').timeline({
-					getFrames: function(limit){
+					getFrames: function(){
 						var self = $(this);
-						//FIXME handle limit if undefined
 						$.ajax({
 							type: "POST",
 							url: "../php/api.php",
@@ -337,6 +336,10 @@ function checkLogin(){
 								setFrame(response);
 							}
 						});
+					},
+					onPersonSelected: function(id){
+						console.log('Selecting person ' + id);
+						$('#video-box #box-' + id).click();
 					}
 				});
 
