@@ -61,7 +61,7 @@
 									$sql_1= $QUERIES->getUserIdFromName($_REQUEST['user']);
 									$result_1 = mysql_query($sql_1) or $to_return = false;
 									while ($returned_id=mysql_fetch_array($result_1) ){							
-										$sql_2 = $QUERIES->insertGroup(0, 'No group',  $returned_id["userid"]);
+										$sql_2 = $QUERIES->insertGroup(0, 'No group', 0, $returned_id["userid"]);
 										$final_result=mysql_query($sql_2) or $to_return = false;
 									}
 								}
@@ -299,23 +299,29 @@
 						
 				$result = mysql_query($sql) or $done = false;
 				if ($done){
-					$person = array("id" => $_REQUEST["people_id"], "color"=>$hex,"angle_face"=>0,"angle_face_z"=>0,"angle_body"=>0,"angle_body_z"=>0,
-							"group"=>0,"artwork"=>0, "prev_frame"=>true, "bb"=>array($bb->x, $bb->y, $bb->width, $bb->height),
-							"bbV"=>array($bbV->x, $bbV->y, $bbV->width, $bbV->height));
+					$person = array("id" => $_REQUEST["people_id"], "color" => $hex,
+							"angle_face"=>0,"angle_face_z"=>0,"angle_body"=>0,"angle_body_z"=>0,
+							"group" => 0,"artwork" => 0, "prev_frame" => true, 
+							"bb" => array($bb->x, $bb->y, $bb->width, $bb->height),
+							"bbV" => array($bbV->x, $bbV->y, $bbV->width, $bbV->height));
 				}
 			} else {
-			    $sql="INSERT INTO `groups` (`groupid`,`name`,`deleted`,`userid`) VALUES (0, 'No group', 0,".$_SESSION["user"].");";
+			    $sql = $QUERIES->insertGroup(0, 'No group', 0, $_SESSION['user']);
 				$result = mysql_query($sql);
 				
-				$sql="INSERT INTO `real_people` (`face`,`face_z`,`image`) VALUES (0, 0,'../img/real_people/default.png')";
+				$sql = $QUERIES->insertRealPeople(0, 0, "../img/real_people/default.png");
 				$result = mysql_query($sql) or $done = false;
 				if($done){
 					$my_id = mysql_insert_id();
-					$sql="INSERT INTO `people` (`peopleid`,`frameid`, `cameraid`, `bb_x`, `bb_y`, `bb_width`, `bb_height`, `bbV_x`, `bbV_y`, `bbV_width`, `bbV_height`, `gazeAngle_face`, `gazeAngle_face_z`, `gazeAngle_body`, `gazeAngle_body_z`, `color`, `poiid`, `userid`, `groupid`) VALUES
-						(".$my_id.", ".$_SESSION["frame_id"].", ".$_SESSION["camera_id"].", ".$bb->x.", ".$bb->y.", ".$bb->width.", ".$bb->height.", ".$bbV->x.", ".$bbV->y.", ".$bbV->width.", ".$bbV->height.", 0, 0, 0, 0, '".$hex."', 0, ".$_SESSION["user"].", 0);";
-					$result=mysql_query($sql) or $done = false;
+					$sql = $QUERIES->insertPerson($my_id, $_SESSION['frame_id'], $_SESSION['camera_id'], $bb->x, $bb->y, $bb->width, $bb->height,
+							$bbV->x, $bbV->y, $bbV->width, $bbV->height, 0, 0, 0, 0, $hex, 0, $_SESSION['user'], 0);
+					$result = mysql_query($sql) or $done = false;
 					if ($done){
-						$person = array("id"=>$my_id,"color"=>$hex,"angle_face"=>0,"angle_face_z"=>0,"angle_body"=>0,"angle_body_z"=>0,"group"=>0,"artwork"=>0, "prev_frame"=>true, "bb"=>array($bb->x, $bb->y, $bb->width, $bb->height),"bbV"=>array($bbV->x, $bbV->y, $bbV->width, $bbV->height));
+						$person = array("id"=>$my_id,"color"=>$hex,"angle_face"=>0,
+								"angle_face_z"=>0,"angle_body"=>0,"angle_body_z"=>0,
+								"group"=>0,"artwork"=>0, "prev_frame"=>true, 
+								"bb"=>array($bb->x, $bb->y, $bb->width, $bb->height),
+								"bbV"=>array($bbV->x, $bbV->y, $bbV->width, $bbV->height));
 					}
 				}
 			}

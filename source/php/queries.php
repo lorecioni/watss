@@ -20,8 +20,8 @@ class Queries {
 		return "SELECT g.groupid FROM `groups` as g, `user` as u WHERE g.userid=u.userid AND u.name='".$name."' AND g.groupid = 0";
 	}
 	
-	function insertGroup($id, $name, $userid){
-		return "INSERT INTO `groups` (0, `name`, `userid`) VALUES (".$id.", '".$name."', '".$userid."');";
+	function insertGroup($id, $name, $deleted, $userid){
+		return "INSERT INTO `groups` (`id`, `name`, deleted, `userid`) VALUES (".$id.", '".$name."', ".$deleted.", '".$userid."');";
 	}
 	
 	//Retrieving groups
@@ -106,7 +106,11 @@ class Queries {
 					(".$peopleid.", ".$frameid.", ".$cameraid.", ".$bbx.", ".$bby.", ".$bbw.", ".$bbh.", ".$bbVx.", ".$bbVy.", ".$bbVw.", ".$bbVh.", ".$gaf.", ".$gafz.", ".$gab.", ".$gabz.",'".$color."', ".$poiid.", ".$userid.", ".$groupid.");";
 	}
 	
+	/** Real people queries **/
 	
+	function insertRealPeople($face, $facez, $path){
+		return "INSERT INTO `real_people` (`face`,`face_z`,`image`) VALUES (".$face.", ".$facez.",'".$path."')";
+	}
 	
 
 }
