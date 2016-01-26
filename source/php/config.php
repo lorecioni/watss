@@ -230,8 +230,61 @@ if(isset($_REQUEST['action'])){
 					
 					jecho($success);
 					break;
-							
-		
+					
+				/**
+				 * Retrieving poi from db
+				 */
+				case "get-poi":
+					$success = true;
+					$sql = "SELECT * FROM poi";
+					$pois = array();
+					if($checkDatabaseConnection){
+						$result = mysql_query($sql) or $success = false;
+						if($success){
+							while ($row = mysql_fetch_array($result)){
+								$poi = new stdClass();
+								$poi->id = $row["poiid"];
+								$poi->cameraid = $row["cameraid"];
+								$poi->x = $row["location_x"];
+								$poi->y = $row["location_y"];
+								$poi->width = $row["width"];
+								$poi->height = $row["height"];
+								$poi->name = $row["name"];
+								array_push($pois, $poi);
+							}
+						}
+					}
+					jecho($pois);
+					break;							
+				
+				/**
+				 * Adding poi to db
+				 */
+					case "add-poi":
+					$success = true;
+					if (isset($_REQUEST['poiid']) && isset($_REQUEST['cameraid'])
+						&& isset($_REQUEST['name']) && isset($_REQUEST['x'])
+						&& isset($_REQUEST['y']) && isset($_REQUEST['width'])
+						&& isset($_REQUEST['height'])){
+														
+						if($checkDatabaseConnection){
+							$sql = "INSERT INTO `poi` (`poiid`, `cameraid`, `location_x`, `location_y`, `width`, `height`, `name`) 
+										VALUES ('".$_REQUEST['poiid']."', '".$_REQUEST['cameraid']."', '".$_REQUEST['x']."', 
+										'".$_REQUEST['y']."', '".$_REQUEST['width']."', '".$_REQUEST['height']."', '".$_REQUEST['name']."')";
+							$result = mysql_query($sql) or $success = false;
+						} else {
+							$success = false;
+						}
+					} else {
+						$success = false;
+					}
+					
+					$output = new stdClass();
+					$output->success = $success;
+					$output->id = mysql_insert_id();
+					
+					jecho($output);
+					break;		
 	}
 	
 }

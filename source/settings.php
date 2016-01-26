@@ -132,13 +132,35 @@
 						  <div class="panel-body">
 						  	<form id="add-poi-form" class="form-inline">
 							  <div class="form-group">
-							    <input type="text" class="form-control" id="add-poi-camera">							    
+							   <input type="number" class="form-control number" id="add-poi-id" placeholder="ID">
+							    <label for="add-poi-camera">Camera</label>
+							    <input type="number" class="form-control" id="add-poi-camera">
+							    <input type="text" class="form-control" id="add-poi-name" placeholder="Name">
+							    <input type="number" class="form-control number" id="add-poi-locx" placeholder="X">
+							    <input type="number" class="form-control number" id="add-poi-locy" placeholder="Y">
+							    <input type="number" class="form-control number" id="add-poi-width" placeholder="Width">	
+							    <input type="number" class="form-control number" id="add-poi-height" placeholder="Height">						    
 							  </div>
-							  <button type="submit" class="btn btn-primary">Add POI</button>
+							  <button type="submit" id="add-poi-submit" class="btn btn-primary">Add POI</button>
 							</form>
 							<div class="scrollable-container">
-								<div class="scrollable"></div>
-							</div>
+								<div class="scrollable">
+								<table class="table table-bordered">
+									<thead>
+											<tr>
+												<th>ID</th>
+												<th>Camera</th>
+												<th>Name</th>
+												<th>X</th>
+												<th>Y</th>
+												<th>Width</th>
+												<th>Height</th>
+											</tr>
+										</thead>
+										<tbody></tbody> 
+									</table>
+								</div>
+							</div>				
 						  </div>
 						</div>
 				  </div>		 

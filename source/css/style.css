@@ -127,7 +127,7 @@ div.dataTables_info {
 .settings-panel .scrollable {
     max-height: 182px;
     overflow-y: scroll;
-    width: 104.3%;
+    width: 100%;
 }
 
 .list-group span.badge {
@@ -156,4 +156,17 @@ img.panel-heading-loading {
 
 #camera-settings input.form-control.input-sm {
     width: 60px;
+}
+
+#add-poi-form input.number {
+    width: 90px;
+}
+
+input#add-poi-name {
+    width: 250px;
+    margin: 0 30px;
+}
+
+button#add-poi-submit {
+    margin-left: 20px;
 }

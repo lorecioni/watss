@@ -49,7 +49,7 @@ $(document).ready(function(){
 		multiple: false,
 		placeholder: 'Select a camera',
 		ajax : {
-			url : "php/api.php",
+			url : "php/config.php",
 			type : "POST",
 			dataType : 'json',
 			data : function ( term,page ) {
@@ -60,10 +60,37 @@ $(document).ready(function(){
 				};
 			},
 			results : function ( data, page ) {
-				console.log("[get-cameras] returned");
-				return {results : data};
+				var cameras = [];
+				for ( var i in data) {
+					cameras.push({id: data[i].id, text: data[i].id});
+				}
+				return {results : cameras};
 			}
 	  	}
+	});
+	
+	$('#add-poi-form').submit(function(e){
+		e.preventDefault();
+		var id = $('#add-poi-id').val();
+		var cameraid = $('#add-poi-camera').val();
+		var name = $('#add-poi-name').val();
+		var x = $('#add-poi-locx').val();
+		var y = $('#add-poi-locy').val();
+		var width = $('#add-poi-width').val();
+		var height = $('#add-poi-height').val();
+		
+		if(id.length > 0 && cameraid.length > 0
+				&& name.length > 0 && x.length > 0
+				&& y.length > 0 && width.length > 0
+				&& height.length > 0){
+			$('#add-poi-form input').val('');
+			var loading = $('<img></img>')
+				.addClass('panel-heading-loading')
+				.attr('src', 'img/loading.gif')
+				.attr('alt', 'loading');
+			$('#poi-settings .panel-heading').append(loading);
+			addPoi({id: id, cameraid: cameraid, name: name, x: x, y: y, width: width, height: height});
+		}
 	});
 
 });
@@ -96,6 +123,7 @@ function init(){
 			checkDatabaseConnection();
 			getUsers();
 			getCameras();
+			getPoi();
 		}
 	});	
 }
@@ -393,6 +421,74 @@ function addCamera(value){
 		},
 		error: function(){
 			console.log('Error adding camera');
+		}
+	});	
+}
+
+/**
+ * Retrieving poi from database
+ */
+function getPoi(){
+	console.log('Retrieving cameras');
+	$.ajax({
+		type: "POST",
+		url: "php/config.php",
+		data: {
+			action: "get-poi"
+		},
+		success: function(poi){
+			$('#poi-settings .panel-loading').remove();
+			$('#poi-settings .panel-body tbody').empty();
+			
+			for ( var i in poi) {
+				
+				var row = $('<tr></tr>');
+				row.append('<th scope="row">' + poi[i].id + '</th>');
+				row.append('<td>' + poi[i].cameraid + '</td>');
+				row.append('<td>' + poi[i].name + '</td>');
+				row.append('<td>' + poi[i].x + '</td>');
+				row.append('<td>' + poi[i].y + '</td>');
+				row.append('<td>' + poi[i].width + '</td>');
+				row.append('<td>' + poi[i].height + '</td>');
+				
+				$('#poi-settings .panel-body tbody').append(row);
+			}
+		},
+		error: function(){
+			$('#poi-settings .panel-loading').remove();
+		}
+	});	
+}
+
+/**
+ * Adding poi to database with given attributes
+ * @param poi
+ */
+function addPoi(poi){
+	$.ajax({
+		type: "POST",
+		url: "php/config.php",
+		data: {
+			action: "add-poi",
+			poiid: poi.id,
+			cameraid: poi.cameraid,
+			name: poi.name,
+			x: poi.x,
+			y: poi.y,
+			width: poi.width,
+			height: poi.height
+		},
+		success: function(response){
+			$('#poi-settings .panel-heading-loading').remove();
+			if(response.success){
+				console.log('Added poi');
+				getPoi();
+			} else {
+				console.log('Error adding poi');
+			}
+		},
+		error: function(){
+			console.log('Error adding poi');
 		}
 	});	
 }
