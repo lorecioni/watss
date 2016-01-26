@@ -64,7 +64,7 @@ span.timeline-cursor {
 }
 
 .current .timeline-frame-indicator {
-    background-color: #000;
+    background-color: #000 !important;
     width: 3px;
     border-radius: 2px;
 }
@@ -76,6 +76,14 @@ span.timeline-cursor {
 
 .timeline-frame:HOVER .timeline-frame-indicator {
     background-color: #9F9F9F;
+}
+
+.timeline-frame.people .timeline-frame-indicator {
+    background-color: rgba(129, 0, 0, 0.20);
+}
+
+.timeline-frame.people:HOVER .timeline-frame-indicator {
+    background-color: rgba(129, 0, 0, 0.50);
 }
 
 .timeline-frame:HOVER .timeline-frame-number {
@@ -149,7 +157,7 @@ div.people-list-error {
 .timeline-annotation {
     position: absolute;
     width: 100px;
-    height: 15px;
+    height: 18px;
     z-index: 100;
     border-radius: 4px;
     top: 10px;

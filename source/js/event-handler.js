@@ -337,10 +337,6 @@ function checkLogin(){
 							}
 						});
 					},
-					onPersonSelected: function(id){
-						console.log('Selecting person ' + id);
-						$('#video-box #box-' + id).click();
-					}
 				});
 
 			} else {

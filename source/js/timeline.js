@@ -34,7 +34,7 @@
 		showFrames : function(data) {
 			timelineFrames = data.frames;
 			currentFrame = data.current;
-			initTimelineFrames(timelineFrames);
+			showFrames(timelineFrames);
 		},
 	    /**
 		 * Go to the previous frame
@@ -90,11 +90,7 @@
 			}
 	    	$('.timeline-annotation-' + id).remove();
 	    	loadPeople(timelineFrames[currentFrame - 1].people)
-	    },
-	    /**
-		 * Callback on person selected (defined on timeline parameters)
-		 */
-	    onPersonSelected: function(id){}
+	    }
 	};
 	
 	/**
@@ -115,13 +111,11 @@
     			mouseScrolling: config.mouseScrolling,
     			loadedFrames: config.loadedFrames,
     			getFrames: function(){},
-    			onFrameSelected: function(){},
-    			onPersonSelected: function(id){}
+    			onFrameSelected: function(){}
     		}, value);
     		
     		loadedFrames = params.loadedFrames;
     		methods.onFrameSelected = params.onFrameSelected;
-    		methods.onPersonSelected = params.onPersonSelected;
         } else {
             $.error( 'Method ' +  value + ' does not exist on timeline' );
         }    
@@ -225,15 +219,21 @@
 	};
 	
 	//Build and display timeline frames
-	function initTimelineFrames(frames){
+	function showFrames(frames){
 		$('.timeline-frames-container').empty();
 		for (var i in frames) {
 			var frame = $('<div></div>')
 				.addClass('timeline-frame')
 				.attr('id', 'timeline-frame-' + frames[i].id)
 				.attr('data-id', frames[i].id)
+				.attr('title', 'Go to frame ' + frames[i].id)
 				.append('<div class="timeline-frame-indicator"></div>')
 				.append('<span class="timeline-frame-number">' + frames[i].id + '</span>');
+			
+			if(frames[i].people.length > 0){
+				frame.addClass('people');
+			}
+			
 			if(frames[i].id == currentFrame){
 				frame.addClass('current');
 				loadPeople(frames[i].people)
@@ -274,8 +274,7 @@
 				
 				person.click(function(){
 					//Callback on person selected (for updating interface)
-					methods.onPersonSelected($(this).data('id'));
-					selectPerson({id: $(this).data('id'), color: $(this).find('.pickthb').css('background-color')});
+					$('#video-box #box-' + $(this).data('id')).click();
 				});
 				
 				list.append(person);
@@ -315,6 +314,8 @@
 	
 	//Displaying annotation duration for a selected person
 	function selectPerson(person){
+		
+		deselectAll();
 		
 		if($('#timeline-person-' + person.id).length == 0){
 			methods.addPerson(person);
@@ -358,7 +359,7 @@
 						'width' : $('#timeline-frame-' + intervals[i].start).width() * (intervals[i].end - intervals[i].start)
 								+ $('#timeline-frame-' + intervals[i].start).width(),
 						'left' : $('#timeline-frame-' + intervals[i].start).position().left,
-						'top' :  10 + $('.timeline-annotation-container').length * 20
+						'top' :  '40px'
 					});
 				annotationContainer.append(over);
 			}
