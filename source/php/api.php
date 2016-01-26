@@ -349,6 +349,7 @@
 
 					$result=mysql_query($sql) or $success=false;
 				} else {
+					//If person is a proposal and it has been approved, insert it into frame people list
 					$sql="INSERT INTO `people` (`peopleid`,`frameid`, `cameraid`, `bb_x`, `bb_y`, `bb_width`, `bb_height`, `bbV_x`, `bbV_y`, `bbV_width`, `bbV_height`, `gazeAngle_face`, `gazeAngle_face_z`, `gazeAngle_body`, `gazeAngle_body_z`, `color`, `poiid`, `userid`, `groupid`) VALUES
 						(".intval($_REQUEST["id"]).", ".$_SESSION["frame_id"].", ".$_SESSION["camera_id"].", 300, 200, 20, 30, 300, 200, 20, 30, 0, 0, 0, 0, '".$_REQUEST['color']."', 0, ".$_SESSION["user"].", 0);";
 
