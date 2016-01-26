@@ -288,16 +288,16 @@
 			//Initial bounding box settings
   			//Full bounding box
 			$bb = new stdClass(); 
-			$bb->x = 500;
-			$bb->y = 300;
-			$bb->width = 50;
-			$bb->height = 90;		
+			$bb->x = -100;
+			$bb->y = -100;
+			$bb->width = 80;
+			$bb->height = 120;		
 			//Visible bounding box
 			$bbV = new stdClass(); 
-			$bbV->x = 500;
-			$bbV->y = 300;
-			$bbV->width = 30;
-			$bbV->height = 30;
+			$bbV->x = -100;
+			$bbV->y = -100;
+			$bbV->width = 40;
+			$bbV->height = 50;
 			
 		    //Query indicator: if true the query has been done
 			$done = true;			

@@ -417,12 +417,13 @@ function pagination(table_id, people_per_page){
  * @param people
  */
 function addBoundingBox(people){
-	var videoBoxWidth = jQuery('#video-box').width();
-	var videoBoxHeight = jQuery('#video-box').height();
+	var videoBoxWidth = $('#video-box').width();
+	var videoBoxHeight = $('#video-box').height();
 	var videoWidth = $("#video-box").data("width");
 	var videoHeight = $("#video-box").data("height");
-	
+		
 	for(var i in people){
+		
 		//Updates bounding box coordinates
 		people[i]["bb"][0] = people[i]["bb"][0]*videoBoxWidth/videoWidth;
 		people[i]["bb"][1] = people[i]["bb"][1]*videoBoxHeight/videoHeight;
@@ -436,7 +437,7 @@ function addBoundingBox(people){
 		people[i]["bbV"][3] = people[i]["bbV"][3]*videoBoxHeight/videoHeight;
 
 		//Bounding box
-		var boundingBox = jQuery('<div></div>')
+		var boundingBox = $('<div></div>')
 			.addClass('draggable not-update bb')
 			.css({'top': people[i]["bb"][1],
 				'left' : people[i]["bb"][0],
@@ -449,7 +450,7 @@ function addBoundingBox(people){
 			.attr('data-id',  people[i]["id"])
 			.attr('data-mode', 'bb');
 		
-		var boundingBoxVisible = jQuery('<div></div>')
+		var boundingBoxVisible = $('<div></div>')
 			.addClass('not-update bbV')
 			.css({'top': people[i]["bbV"][1],
 				'left' : people[i]["bbV"][0],
@@ -463,7 +464,7 @@ function addBoundingBox(people){
 			.attr('data-id',  people[i]["id"]);
 		
 		//Bounding box face
-		var boundingBoxFace = jQuery('<div></div>')
+		var boundingBoxFace = $('<div></div>')
 			.addClass('not-update face')
 			.css({'top': people[i]["bb"][1],
 				'left' : people[i]["bb"][0],
@@ -480,12 +481,46 @@ function addBoundingBox(people){
 			.attr('data-body', people[i]["angle_body"])
 			.attr('data-bodyz', people[i]["angle_body_z"]);
 		
+		//Detecting new bounding box, append it to mouse
+		if(people[i]["bb"][0] < 0 || people[i]["bb"][1] < 0 ){
+			boundingBox.addClass('init');
+		}
+		
 		$("#video-box").append(boundingBox);
 		$("#video-box").append(boundingBoxVisible);
 		$("#video-box").append(boundingBoxFace);
 		setDragResize(boundingBox, boundingBoxVisible, boundingBoxFace)
 		
 	}
+	
+	/**
+	 * Enabling bounding box creation, bb is atteched to the pointer
+	 * until click on a frame position
+	 */
+	$('#video-box').mousemove(function(e){
+		if($('.bb.init').length > 0){
+			var addedId = $('.bb.init').first().data('id');
+			var x = e.pageX - $('#video-box').offset().left;
+			var y = e.pageY - $('#video-box').offset().top;
+			
+			$('#video-box #box-' + addedId).css({
+				'left': x,
+				'top': y
+			});
+			$('#video-box #box-' + addedId + '-bbV').css({
+				'left': x,
+				'top': y
+			});
+			$('#video-box #box-' + addedId + '-face').css({
+				'left': x,
+				'top': y
+			});
+		}	
+	}).click(function(e){
+		e.preventDefault();
+		$('.bb.init').removeClass('init');
+	});
+	
 	
 	if(people.length == 1){
 		$(".bb:last, .bbV:last, .face:last").click(function(){

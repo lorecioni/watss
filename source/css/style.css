@@ -50,6 +50,7 @@ div#content-wrapper {
 #video-box{
 	position: absolute;
 	height: 425px;
+	overflow: hidden;
 }
 
 .bb{
