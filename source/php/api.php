@@ -348,6 +348,11 @@
 					$sql="UPDATE `people` SET `color`='".$_REQUEST['color']."' ,userid='".$_SESSION["user"]."' WHERE  `peopleid`=".$_REQUEST['id']." AND `frameid` = ".$_SESSION["frame_id"]." AND `cameraid` = ".$_SESSION["camera_id"]."";
 
 					$result=mysql_query($sql) or $success=false;
+				} else {
+					$sql="INSERT INTO `people` (`peopleid`,`frameid`, `cameraid`, `bb_x`, `bb_y`, `bb_width`, `bb_height`, `bbV_x`, `bbV_y`, `bbV_width`, `bbV_height`, `gazeAngle_face`, `gazeAngle_face_z`, `gazeAngle_body`, `gazeAngle_body_z`, `color`, `poiid`, `userid`, `groupid`) VALUES
+						(".intval($_REQUEST["id"]).", ".$_SESSION["frame_id"].", ".$_SESSION["camera_id"].", 300, 200, 20, 30, 300, 200, 20, 30, 0, 0, 0, 0, '".$_REQUEST['color']."', 0, ".$_SESSION["user"].", 0);";
+
+					$result=mysql_query($sql) or $success = false;
 				}
 			}
 			
@@ -358,6 +363,11 @@
 
 					$result=mysql_query($sql) or $success=false;	
 
+				} else {
+					$sql="INSERT INTO `people` (`peopleid`,`frameid`, `cameraid`, `bb_x`, `bb_y`, `bb_width`, `bb_height`, `bbV_x`, `bbV_y`, `bbV_width`, `bbV_height`, `gazeAngle_face`, `gazeAngle_face_z`, `gazeAngle_body`, `gazeAngle_body_z`, `color`, `poiid`, `userid`, `groupid`) VALUES
+						(".intval($_REQUEST["id"]).", ".$_SESSION["frame_id"].", ".$_SESSION["camera_id"].", 300, 200, 20, 30, 300, 200, 20, 30, 0, 0, 0, 0, '#000000', 0, ".$_SESSION["user"].", ".$_REQUEST['group_id'].");";
+
+					$result=mysql_query($sql) or $success = false;
 				}
 			}	
 			
@@ -369,6 +379,12 @@
 					$sql="UPDATE `people` SET `bb_x`=".$bb[0].",`bb_y`=".$bb[1].",`bb_width`=".$bb[2].",`bb_height`=".$bb[3].", userid=".$_SESSION["user"]." WHERE  `peopleid`=".$_REQUEST['id']." AND `frameid` = ".$_SESSION["frame_id"]." AND `cameraid` = ".$_SESSION["camera_id"]."";
 
 					$result=mysql_query($sql) or $success=false;
+				}else{
+					$bb = array();
+					$bb = $_REQUEST['bb'];
+					$sql="INSERT INTO `people` (`peopleid`,`frameid`, `cameraid`, `bb_x`, `bb_y`, `bb_width`, `bb_height`, `bbV_x`, `bbV_y`, `bbV_width`, `bbV_height`, `gazeAngle_face`, `gazeAngle_face_z`, `gazeAngle_body`, `gazeAngle_body_z`, `color`, `poiid`, `userid`, `groupid`) VALUES (".$_REQUEST["id"].", ".$_SESSION["frame_id"].", ".$_SESSION["camera_id"].", ".$bb[0].", ".$bb[1].", ".$bb[2].", ".$bb[3].", 300, 200, 20, 30, 0, 0, 0, 0, '#000000', 0, ".$_SESSION["user"].", 0);";
+
+					$result=mysql_query($sql) or $success = false;
 				}
 		    }
 			
@@ -380,7 +396,13 @@
 					 $sql="UPDATE `people` SET `bbV_x`=".$bbV[0].",`bbV_y`=".$bbV[1].",`bbV_width`=".$bbV[2].",`bbV_height`=".$bbV[3].", userid=".$_SESSION["user"]." WHERE  `peopleid`=".$_REQUEST['id']." AND `frameid` = ".$_SESSION["frame_id"]." AND `cameraid` = ".$_SESSION["camera_id"]."";
 
 					 $result=mysql_query($sql) or $success=false;
-				} 
+				} else {
+					$bbV = array();
+					$bbV = $_REQUEST['bbV'];
+					$sql="INSERT INTO `people` (`peopleid`,`frameid`, `cameraid`, `bb_x`, `bb_y`, `bb_width`, `bb_height`, `bbV_x`, `bbV_y`, `bbV_width`, `bbV_height`, `gazeAngle_face`, `gazeAngle_face_z`, `gazeAngle_body`, `gazeAngle_body_z`, `color`, `poiid`, `userid`, `groupid`) VALUES
+						(".$_REQUEST["id"].", ".$_SESSION["frame_id"].", ".$_SESSION["camera_id"].", 300, 200, 20, 30, ".$bbV[0].", ".$bbV[1].", ".$bbV[2].", ".$bbV[3].", 0, 0, 0, 0, '#000000', 0, ".$_SESSION["user"].", 0);";
+					$result=mysql_query($sql) or $success = false;
+				}
 				if ($success == true){
 					$success = create_avatar($_REQUEST['bbV'], $_REQUEST['id']);
 				}
@@ -392,6 +414,11 @@
 					 $sql="UPDATE `people` SET `gazeAngle_face`='".$_REQUEST['angle_face']."', `gazeAngle_face_z`='".$_REQUEST['angle_face_z']."', `userid`='".$_SESSION["user"]."'   WHERE  `peopleid` = '".$_REQUEST['id']."' AND `frameid` = '".$_SESSION["frame_id"]."' AND `cameraid` = ".$_SESSION["camera_id"]."";
 
 					 $result=mysql_query($sql) or $success=false;
+				}else{
+					$sql="INSERT INTO `people` (`peopleid`,`frameid`, `cameraid`, `bb_x`, `bb_y`, `bb_width`, `bb_height`, `bbV_x`, `bbV_y`, `bbV_width`, `bbV_height`, `gazeAngle_face`, `gazeAngle_face_z`, `gazeAngle_body`, `gazeAngle_body_z`, `color`, `poiid`, `userid`, `groupid`) VALUES
+					(".intval($_REQUEST["id"]).", ".$_SESSION["frame_id"].", ".$_SESSION["camera_id"].", 300, 200, 20, 30, 300, 200, 20, 30,".$_REQUEST['angle_face'].",".$_REQUEST['angle_face_z'].", 0, 0, '#000000', 0, ".$_SESSION["user"].", 0);";
+
+					$result=mysql_query($sql) or $success = false;
 				}
 			}
 			
@@ -402,6 +429,10 @@
 					 $sql="UPDATE `people` SET `gazeAngle_body`='".$_REQUEST['angle_body']."', `gazeAngle_body_z`='".$_REQUEST['angle_body_z']."', `userid`='".$_SESSION["user"]."'  WHERE   peopleid=".$_REQUEST['id']." AND `frameid` = ".$_SESSION["frame_id"]." AND `cameraid` = ".$_SESSION["camera_id"]."";
 
 					 $result=mysql_query($sql) or $success=false;
+				}else{
+					$sql="INSERT INTO `people` (`peopleid`,`frameid`, `cameraid`, `bb_x`, `bb_y`, `bb_width`, `bb_height`, `bbV_x`, `bbV_y`, `bbV_width`, `bbV_height`, `gazeAngle_face`, `gazeAngle_face_z`, `gazeAngle_body`, `gazeAngle_body_z`, `color`, `poiid`, `userid`, `groupid`) VALUES
+					(".intval($_REQUEST["id"]).", ".$_SESSION["frame_id"].", ".$_SESSION["camera_id"].", 300, 200, 20, 30, 300, 200, 20, 30, 0, 0, ".$_REQUEST['angle_body'].",".$_REQUEST['angle_body_z'].", '#000000', 0, ".$_SESSION["user"].", 0);";
+					$result=mysql_query($sql) or $success = false;
 				}
 			}
 			
@@ -411,6 +442,11 @@
 					$sql="UPDATE `people` SET `poiid`='".$_REQUEST['opera_id']."', `userid`='".$_SESSION["user"]."' WHERE `peopleid`='".$_REQUEST['id']."' AND `frameid` = ".$_SESSION["frame_id"]." AND `cameraid` = ".$_SESSION["camera_id"]."";
 
 					$result=mysql_query($sql) or $success=false;	
+				} else {	
+					$sql="INSERT INTO `people` (`peopleid`,`frameid`, `cameraid`, `bb_x`, `bb_y`, `bb_width`, `bb_height`, `bbV_x`, `bbV_y`, `bbV_width`, `bbV_height`, `gazeAngle_face`, `gazeAngle_face_z`, `gazeAngle_body`, `gazeAngle_body_z`, `color`, `poiid`, `userid`, `groupid`) VALUES
+					(".intval($_REQUEST["id"]).", ".$_SESSION["frame_id"].", ".$_SESSION["camera_id"].", 300, 200, 20, 30, 300, 200, 20, 30, 0, 0, 0, 0, '#000000', ".$_REQUEST['opera_id'].", ".$_SESSION["user"].", 0);";
+
+					$result=mysql_query($sql) or $success = false;
 				}
 				
 			}	
