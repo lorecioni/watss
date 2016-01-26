@@ -49,7 +49,7 @@ $(document).ready(function(){
 		multiple: false,
 		placeholder: 'Select a camera',
 		ajax : {
-			url : "php/config.php",
+			url : "php/settings.php",
 			type : "POST",
 			dataType : 'json',
 			data : function ( term,page ) {
@@ -110,7 +110,7 @@ function init(){
 	
 	$.ajax({
 		type: "POST",
-		url: "php/config.php",
+		url: "php/settings.php",
 		data: {
 			action: "init",
 		},
@@ -145,7 +145,7 @@ function checkDatabaseConnection(){
 		$('#db-connection-settings .panel-heading').append(loading);		
 		$.ajax({
 			type: "POST",
-			url: "php/config.php",
+			url: "php/settings.php",
 			data: {
 				action: "test-database-connection",
 				user: $('#db-user').val(),
@@ -192,7 +192,7 @@ function updateDatabaseConfig(user, password, host, db){
 	console.log('Updating database configuration file');
 	$.ajax({
 		type: "POST",
-		url: "php/config.php",
+		url: "php/settings.php",
 		data: {
 			action: "update-database-connection",
 			user: user,
@@ -234,7 +234,7 @@ function getUsers(){
 	console.log('Retrieving users');
 	$.ajax({
 		type: "POST",
-		url: "php/config.php",
+		url: "php/settings.php",
 		data: {
 			action: "get-users"
 		},
@@ -275,7 +275,7 @@ function getUsers(){
 function addUser(name){
 	$.ajax({
 		type: "POST",
-		url: "php/config.php",
+		url: "php/settings.php",
 		data: {
 			action: "add-user",
 			name: name
@@ -317,7 +317,7 @@ function addUser(name){
 function removeUser(id){
 	$.ajax({
 		type: "POST",
-		url: "php/config.php",
+		url: "php/settings.php",
 		data: {
 			action: "remove-user",
 			userid: id
@@ -343,7 +343,7 @@ function getCameras(){
 	console.log('Retrieving cameras');
 	$.ajax({
 		type: "POST",
-		url: "php/config.php",
+		url: "php/settings.php",
 		data: {
 			action: "get-cameras"
 		},
@@ -372,7 +372,7 @@ function getCameras(){
 				
 				calib.editable({
 					type: 'text',
-				    url: 'php/config.php',
+				    url: 'php/settings.php',
 				    mode: 'inline',
 					params: function(params) {
 						params.action = "set-camera-calibration";
@@ -405,7 +405,7 @@ function getCameras(){
 function addCamera(value){
 	$.ajax({
 		type: "POST",
-		url: "php/config.php",
+		url: "php/settings.php",
 		data: {
 			action: "add-camera",
 			calibration: value
@@ -432,7 +432,7 @@ function getPoi(){
 	console.log('Retrieving cameras');
 	$.ajax({
 		type: "POST",
-		url: "php/config.php",
+		url: "php/settings.php",
 		data: {
 			action: "get-poi"
 		},
@@ -467,7 +467,7 @@ function getPoi(){
 function addPoi(poi){
 	$.ajax({
 		type: "POST",
-		url: "php/config.php",
+		url: "php/settings.php",
 		data: {
 			action: "add-poi",
 			poiid: poi.id,
