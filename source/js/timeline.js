@@ -283,6 +283,13 @@
 		} else {
 			$('.timeline-people .scrollable').html('<div class="people-list-error">No people in this frame</div>');
 		}
+		
+		//Updating frame color in timeline
+		if($('.timeline-person').length > 0){
+			$('#timeline-frame-' + currentFrame).addClass('people');
+		} else {
+			$('#timeline-frame-' + currentFrame).removeClass('people');
+		}
 
 	}
 	
