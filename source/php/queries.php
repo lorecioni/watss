@@ -59,7 +59,6 @@ class Queries {
 	}
 	
 	
-	
 	/** Frames queries **/
 	
 	function getFirstFrameId($cameraid){
@@ -100,6 +99,11 @@ class Queries {
 		} else {
 			return $this->getPeopleFrame($cameraid, $frameid);
 		}
+	}
+	
+	function insertPerson($peopleid, $frameid, $cameraid, $bbx, $bby, $bbw, $bbh, $bbVx, $bbVy, $bbVw, $bbVh, $gaf, $gafz, $gab, $gabz, $color, $poiid, $userid, $groupid){
+		return "INSERT INTO `people` (`peopleid`,`frameid`, `cameraid`, `bb_x`, `bb_y`, `bb_width`, `bb_height`, `bbV_x`, `bbV_y`, `bbV_width`, `bbV_height`, `gazeAngle_face`, `gazeAngle_face_z`, `gazeAngle_body`, `gazeAngle_body_z`,`color`, `poiid`, `userid`, `groupid`) VALUES
+					(".$peopleid.", ".$frameid.", ".$cameraid.", ".$bbx.", ".$bby.", ".$bbw.", ".$bbh.", ".$bbVx.", ".$bbVy.", ".$bbVw.", ".$bbVh.", ".$gaf.", ".$gafz.", ".$gab.", ".$gabz.",'".$color."', ".$poiid.", ".$userid.", ".$groupid.");";
 	}
 	
 	
