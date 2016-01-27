@@ -139,3 +139,19 @@ header img#logo {
     display: block;
     margin: 0 auto;
 }
+
+.data-container h5 {
+    font-size: 14pt;
+    margin: 30px 0 20px;
+}
+
+.bootstrap-tagsinput {
+    width: 100%;
+    font-size: 15pt;
+    line-height: 23pt;
+}
+
+.bootstrap-tagsinput .label{
+	font-weight: normal;
+	line-height: 24pt;
+}

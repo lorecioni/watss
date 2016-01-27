@@ -8,9 +8,7 @@
 <!-- CSS -->
 <link rel="stylesheet" href="css/bootstrap.min.css">
 <link rel="stylesheet" href="css/bootstrap-theme.min.css">
-<link rel="stylesheet" href="css/bootstrap-editable.css">
-<link rel="stylesheet" href="css/select2.css">
-<link rel="stylesheet" href="css/select2-bootstrap.css">
+<link rel="stylesheet" href="css/bootstrap-tagsinput.css">
 <link rel="stylesheet" href="css/setup.css">
 <!--<script src="js/event-handler"></script>-->
 </head>
@@ -117,7 +115,10 @@
 				      <input type="text" class="form-control" id="db-name" placeholder="Name">
 				    </div>
 				  </div>
-				  <div class="clearfix"></div>	
+				  <div class="clearfix"></div>
+				  	<h5>Users</h5>
+					<p>Set the user list. Type username and press enter or comma to add user.</p>
+					<input type="text" id="user-list-input" value="Root" data-role="tagsinput" />	
 				</div>
 				
 				
@@ -136,7 +137,7 @@
 					  </div>	
 		            <div class="clearfix"></div>
 		            <div class="alert alert-warning" role="alert">No SQL script selected.</div>
-					
+				
 				</div>
 			</section>
 			
@@ -163,8 +164,7 @@
 	    <script src="js/jquery-1.11.1.min.js"></script>
 	    <!-- Include all compiled plugins (below), or include individual files as needed -->
 	    <script src="js/bootstrap.min.js"></script>
-	    <script src="js/bootstrap-editable.js"></script>
-	    <script src="js/select2.js"></script>
+	    <script src="js/bootstrap-tagsinput.js"></script>
 	    <script src="js/setup.js"></script>
 	</body>
 </html>
