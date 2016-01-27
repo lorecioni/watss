@@ -37,7 +37,7 @@ if(isset($_REQUEST['action'])){
 						if(!$f || $f[0] == '.') {
 							continue; // Ignore hidden files
 						}
-						if(is_dir($dir . '/' . $f)) {
+						if(is_dir($dir . '/' . $f) && is_numeric($f)) {
 							array_push($cameras, $f);
 						}
 					}

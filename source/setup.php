@@ -18,7 +18,8 @@
 <body>
 		<div id="setup-wrapper">
 			<header>
-				<h1>WATSS Setup</h1>
+				<img src="img/logo.png" alt="WATSS" id="logo">
+				<h1>Setup</h1>
 			</header>
 
 		    <!-- Welcome section -->
@@ -83,6 +84,12 @@
 				  </div>	
 				  <div class="clearfix"></div>
 				  <div class="alert alert-warning" role="alert">No frame folder selected.</div>
+				  
+				  <!-- Cameras calibration -->
+				  <div id="camera-settings">
+				  	<h4>Cameras calibration</h4>
+				  	<div id="camera-settings-container"></div>
+				  </div>
 				</form>
 			</section>
 			
@@ -90,6 +97,47 @@
 			<section>
 				<h3>Data</h3>
 				<p>Import data or creating new database.</p>
+				<div class="radio">
+				  <label>
+				    <input type="radio" name="import-data" id="create-new-data" value="new" checked>
+				   	Create new data.
+				  </label>
+				</div>
+				<div class="radio">
+				  <label>
+				    <input type="radio" name="import-data" id="import-data" value="import">
+				    Import data from script.
+				  </label>
+				</div>
+				<div class="clearfix"></div>
+				<div id="new-data-container" class="data-container">
+				  <div class="form-group">
+				    <label for="db-name" class="col-sm-3 control-label">Database name</label>
+				    <div class="col-sm-8">
+				      <input type="text" class="form-control" id="db-name" placeholder="Name">
+				    </div>
+				  </div>
+				  <div class="clearfix"></div>	
+				</div>
+				
+				
+				<div id="importing-data-container" class="data-container">
+					<p>Import SQL script for loading data.</p>
+					<div class="input-group">
+		                <span class="input-group-btn" >
+		                    <span class="btn btn-primary btn-file">
+		                        Browse&hellip; <input id="input-file" type="file">
+		                    </span>
+		                </span>
+		                <input id="filename" type="text" class="form-control" readonly>
+		            </div>
+		            <div class="col-sm-offset-2 col-sm-10 form-button" id="input-script-check">
+					  	<button id="verify-script" type="button" class="btn btn-default">Verify script</button>
+					  </div>	
+		            <div class="clearfix"></div>
+		            <div class="alert alert-warning" role="alert">No SQL script selected.</div>
+					
+				</div>
 			</section>
 			
 			
