@@ -618,7 +618,10 @@ function deselectBox(el){
 	changeBoxMode("#box-"+row_el.data("id"),"bb")
 }
 
-/* DESELECT ALL BOX */
+/**
+ * Deselect all bounding box
+ * @param table_id
+ */
 function deselectAllBox(table_id){
 	var table = $(table_id).DataTable();
 	if(table.$('tr.info').length){
