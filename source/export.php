@@ -17,9 +17,10 @@
 		<div>
 			<nav class="navbar navbar-default" role="navigation">
 			  <div class="container-fluid">
-
-				<!-- Collect the nav links, forms, and other content for toggling -->
 				<div class="collapse navbar-collapse main-nav">
+				<a class="navbar-brand" href="index.php">
+			        <img alt="Brand" src="img/logo_small.png">
+			      </a>
 				  <ul class="nav navbar-nav">
 					<li><a href="index.php">Home</a></li>
 					<li><a href="gt-making/gt-making.php">GT Making</a></li>

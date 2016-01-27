@@ -25,6 +25,9 @@
 			<div class="container-fluid">
 				<!-- Collect the nav links, forms, and other content for toggling -->
 				<div class="collapse navbar-collapse">
+					<a class="navbar-brand" href="../index.php">
+				        <img alt="Brand" src="../img/logo_small.png">
+				      </a>
 					<ul class="nav navbar-nav main-nav">
 						<li><a href="../index.php">Home</a></li>
 						<li class="active"><a href="#">GT Making</a></li>

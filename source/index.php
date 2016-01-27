@@ -18,6 +18,9 @@
 
 				<!-- Collect the nav links, forms, and other content for toggling -->
 				<div class="collapse navbar-collapse">
+				 <a class="navbar-brand" href="#">
+			        <img alt="Brand" src="img/logo_small.png">
+			      </a>
 				  <ul class="nav navbar-nav main-nav">
 					<li class="active"><a href="#">Home</a></li>
 					<li><a href="gt-making/gt-making.php">GT Making</a></li>

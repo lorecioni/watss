@@ -16,6 +16,10 @@ div#content-wrapper {
 	font-weight: bold;
 }
 
+.navbar-brand img {
+    height: 100%;
+}
+
 /** Panels **/
 
 .panel-heading {
