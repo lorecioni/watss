@@ -73,17 +73,16 @@
 				
 				<form id="cameras-form" class="form-horizontal">
 				  <div class="form-group">
-				    <label for="frame-folder" class="col-sm-3 control-label">Frames folder</label>
+				    <label for="frame-folder-name" class="col-sm-3 control-label">Frames folder</label>
 				    <div class="col-sm-8">
-				      <input type="text" autocomplete="off" class="form-control" id="frame-folder" placeholder="Name">
+				      <input type="text" autocomplete="off" class="form-control" id="frame-folder-name" placeholder="Name">
 				    </div>
 				  </div>
 				  <div class="col-sm-offset-2 col-sm-10 form-button">
-				  	<button type="submit" class="btn btn-default">Verify folder</button>
-				  	<div class="clearfix"></div>
+				  	<button id="verify-frame-folder" type="button" class="btn btn-default">Verify folder</button>
 				  </div>	
-				  
-				  <p id="camera-number-message">No cameras detected on selected folder.</p>
+				  <div class="clearfix"></div>
+				  <div class="alert alert-warning" role="alert">No frame folder selected.</div>
 				</form>
 			</section>
 			

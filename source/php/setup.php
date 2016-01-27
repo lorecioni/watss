@@ -24,6 +24,28 @@ if(isset($_REQUEST['action'])){
 			$dbConnection = mysql_connect($host, $user, $password) or $checkDatabaseConnection = false;
 			jecho($checkDatabaseConnection);
 			break;
+			
+		/**
+		 * Get cameras list
+		 */
+		case 'get-cameras':
+			$cameras = array();
+			if(isset($_REQUEST['folder'])){
+				$dir = '../'.$_REQUEST['folder'];
+				if(file_exists($dir)){
+					foreach(scandir($dir) as $f) {
+						if(!$f || $f[0] == '.') {
+							continue; // Ignore hidden files
+						}
+						if(is_dir($dir . '/' . $f)) {
+							array_push($cameras, $f);
+						}
+					}
+				}
+			}
+			
+			jecho($cameras);
+			break;
 
 	}
 	

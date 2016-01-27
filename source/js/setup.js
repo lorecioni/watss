@@ -13,6 +13,10 @@ $(document).ready(function(){
 		e.preventDefault();
 		checkDatabaseConnection();
 	});
+	
+	$('#verify-frame-folder').click(function(){
+		getCameras($('#frame-folder-name').val());
+	});
 
 });
 
@@ -69,214 +73,19 @@ function checkDatabaseConnection(){
 }
 
 /**
- * Updates atabase connection configuration file 
- * @param user
- * @param password
- * @param host
- * @param db
- */
-function updateDatabaseConfig(user, password, host, db){
-	console.log('Updating database configuration file');
-	$.ajax({
-		type: "POST",
-		url: "php/settings.php",
-		data: {
-			action: "update-database-connection",
-			user: user,
-			password: password,
-			host: host,
-			db: db
-		},
-		success: function(response){
-			if(response){
-				displayMessage($('#db-form').parent(), 'Configuration file updated correctly', 'success');
-			} else {
-				displayMessage($('#db-form').parent(), 'Error updating configuration file', 'error');
-			}
-		},
-		error: function(){
-			displayMessage($('#db-form').parent(), 'Error updating configuration file', 'error');
-		}
-	});	
-}
-
-/**
- * Function for displaying alert message
- * @param container : jQuery object to append message
- * @param message
- * @param type : error or success
- */
-function displayMessage(container, message, type){
-	var alert = $('<div></div>')
-		.addClass('alert alert-' + type)
-		.attr('role', 'alert')
-		.append(message);
-	container.append(alert);
-}
-
-/**
- * Retrieving users from database
- */
-function getUsers(){
-	console.log('Retrieving users');
-	$.ajax({
-		type: "POST",
-		url: "php/settings.php",
-		data: {
-			action: "get-users"
-		},
-		success: function(users){
-			$('#user-settings .panel-loading').remove();
-			var list = $('<ul></ul>')
-				.addClass('list-group');
-			
-			for ( var i in users) {
-				var item = $('<li></li>')
-					.addClass('list-group-item')
-					.attr('id', 'user-' + users[i].id)
-					.attr('data-id', users[i].id);
-				var badge = $('<span></span>')
-					.addClass('badge')
-					.append('<span class="glyphicon glyphicon-remove" ' +
-							'aria-hidden="true">');	
-				badge.click(function(){
-					var id = $(this).parent().data('id');
-					removeUser(id);
-				});
-				item.append(badge);
-				item.append(users[i].name);
-				list.append(item);
-			}
-			$('#user-settings .panel-body .scrollable').append(list);
-		},
-		error: function(){
-			$('#user-settings .panel-loading').remove();
-		}
-	});	
-}
-
-/**
- * Adding user to database with given name
- * @param name
- */
-function addUser(name){
-	$.ajax({
-		type: "POST",
-		url: "php/settings.php",
-		data: {
-			action: "add-user",
-			name: name
-		},
-		success: function(response){
-			$('#user-settings .panel-heading-loading').remove();
-			if(response.success){
-				console.log('Added user');
-				var item = $('<li></li>')
-					.addClass('list-group-item')
-					.attr('data-id', response.id)
-					.attr('id', 'user-' + response.id);
-				var badge = $('<span></span>')
-					.addClass('badge')
-					.append('<span class="glyphicon glyphicon-remove" ' +
-							'aria-hidden="true">');
-				badge.click(function(){
-					var id = $(this).parent().data('id');
-					removeUser(id);
-				});
-				item.append(badge);
-				item.append(name);
-				
-				$('#user-settings .panel-body .scrollable').prepend(item);
-			} else {
-				console.log('Error adding user');
-			}
-		},
-		error: function(){
-			console.log('Error adding user');
-		}
-	});	
-}
-
-/**
- * Removing user to database with given id
- * @param id
- */
-function removeUser(id){
-	$.ajax({
-		type: "POST",
-		url: "php/settings.php",
-		data: {
-			action: "remove-user",
-			userid: id
-		},
-		success: function(response){
-			if(response){
-				console.log('Removed user');
-				$('#user-' + id).remove();
-			} else {
-				console.log('Error removing user');
-			}
-		},
-		error: function(){
-			console.log('Error removing user');
-		}
-	});	
-}
-
-/**
  * Retrieving cameras from database
  */
-function getCameras(){
+function getCameras(folderName){
 	console.log('Retrieving cameras');
 	$.ajax({
 		type: "POST",
-		url: "php/settings.php",
+		url: "php/setup.php",
 		data: {
-			action: "get-cameras"
+			action: "get-cameras",
+			folder: folderName
 		},
 		success: function(cameras){
-			$('#camera-settings .panel-loading').remove();
-			$('#camera-settings .panel-body .scrollable').empty();
-			var list = $('<ul></ul>')
-				.addClass('list-group');
-			
-			for ( var i in cameras) {
-				
-				var item = $('<li></li>')
-					.addClass('list-group-item')
-					.attr('id', 'camera-' + cameras[i].id)
-					.attr('data-id', cameras[i].id);
-				
-				var calib = $('<a></a>')
-					.attr('href', '#')
-					.attr('id', 'calibration-' + cameras[i].id)
-					.addClass('editable editable-click')
-					.append('Calibration: ' + cameras[i].calibration)
-					.attr('data-type', 'text')
-					.attr('data-title', 'Set calibration')
-					.attr('data-value', 0)
-					.attr('data-pk', cameras[i].id);
-				
-				calib.editable({
-					type: 'text',
-				    url: 'php/settings.php',
-				    mode: 'inline',
-					params: function(params) {
-						params.action = "set-camera-calibration";
-						params.cameraid = params.pk;
-						params.calibration = params.value;
-						return params;
-					},
-					success: function(response, newValue) {		
-							console.log(response);
-					}
-				});
-
-				item.append(calib);
-				item.append(cameras[i].id);
-				list.append(item);
-			}
-			$('#camera-settings .panel-body .scrollable').append(list);
+			console.log(cameras);
 		},
 		error: function(){
 			$('#camera-settings .panel-loading').remove();
