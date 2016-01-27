@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
 	<head>
-	    <title>WATTS - GT Making</title>
+	    <title>WATSS - GT Making</title>
 		<meta name="description" content="Video tagging and results comparison">
 		<meta name="keywords" content="Video, Ground truth, Keyboard, Automatic">
 		<meta charset="UTF-8">

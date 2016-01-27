@@ -1,0 +1,36 @@
+@CHARSET "UTF-8";
+
+body {
+    background-color: rgba(0, 0, 0, 0.06);
+}
+
+div#setup-wrapper {
+    margin: 20px auto 40px;
+    width: 60%;
+    background-color: white;
+    padding: 2em;
+    border-radius: 3px;
+    border: 1px solid rgba(0, 0, 0, 0.2);
+}
+
+#setup-wrapper header h1 {
+    text-align: center;
+}
+
+header {
+    margin-bottom: 80px;
+}
+
+section {
+    margin-bottom: 50px;
+}
+
+section h3 {
+    border-bottom: 1px solid rgba(0, 0, 0, 0.24);
+    padding-bottom: 10px;
+    margin-bottom: 20px;
+}
+
+section p {
+    margin-bottom: 25px;
+}

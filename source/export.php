@@ -1,6 +1,6 @@
 <html>
     <head>
-    <title>WATTS - Export</title>
+    <title>WATSS - Export</title>
 	<meta name="description" content="Video tagging and results comparison">
 	<meta name="keywords" content="Video, Ground truth, Keyboard, Automatic">
 	<meta charset="UTF-8">

@@ -1,6 +1,6 @@
 <html>
     <head>
-    <title>WATTS - Home</title>
+    <title>WATSS - Home</title>
 	<meta name="description" content="Video tagging and results comparison">
 	<meta name="keywords" content="Video, Ground truth, Keyboard, Automatic">
 	<meta charset="UTF-8">
@@ -32,7 +32,6 @@
 		    <h1>WATSS: Web Annotation Tool for Surveillance Scenarios</h1>
 		    <h4>This tool is designed to annotate person and group bounding boxes, visible area, head gaze, body gaze and observed points of interest (poi) on surveillance datasets.</h4> 
 	     	    <h5>You may  try it on sequences acquired from the Bargello Museum, Go to <i>GT Making</i> section and enter with the user <i>Guest</i>.</h5>
-		    <img src="home_page.png" id="home-screenshot" alt="Screenshot of Watss">	
 		</div>
  <!-- jQuery (necessary for Bootstrap's JavaScript plugins) -->
 	    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.0/jquery.min.js"></script>
