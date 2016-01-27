@@ -10,11 +10,11 @@
 	}
 
 	session_start();
-
+	
 	/**
 	 * Database connection
 	 */
-	
+		
 	$conFile = parse_ini_file($config->connection);
 	$conn = mysql_connect($conFile["host"],$conFile["user"],$conFile["password"]);
     if (!$conn) exit("Error: ".mysql_error());
@@ -41,45 +41,45 @@
 		 * @return boolean : true if user can proceed
 		 */
 		case "check-gt-login":
-			$to_return = true;
-			if (!isset($_SESSION["user"])){
+			$to_return = true;	
+			if (!isset($_SESSION["user"])){			
 				if($_REQUEST["user"]!="" &&  $_REQUEST["camera_id"]!="" && 
 					($_REQUEST["frame_id"]!="number" || $_REQUEST["frame_number"]!="")){
 						$sql = $QUERIES->getUserIdFromName($_REQUEST['user']);
-						$result=mysql_query($sql) or die ("Error: ".mysql_error());
-						if ( mysql_num_rows($result)==0 ) {					
+						$result=mysql_query($sql) or $to_return = false;						
+						if ( mysql_num_rows($result) == 0 ) {					
 							$to_return = false;
 						} else{
 							while ($row=mysql_fetch_array($result) ){
 								$_SESSION["user"] = $row["userid"];
 								$_SESSION["camera_id"] = $_REQUEST["camera_id"];
-								
 								$sql = $QUERIES->countNoGroupsByUserName($_REQUEST['user']);
 								$result_zero = mysql_query($sql) or $to_return = false;
+								
 								if (mysql_num_rows($result_zero) == 0) {
-									
 									$sql_1= $QUERIES->getUserIdFromName($_REQUEST['user']);
 									$result_1 = mysql_query($sql_1) or $to_return = false;
-									while ($returned_id=mysql_fetch_array($result_1) ){							
+									while ($returned_id = mysql_fetch_array($result_1) ){							
 										$sql_2 = $QUERIES->insertGroup(0, 'No group', 0, $returned_id["userid"]);
 										$final_result=mysql_query($sql_2) or $to_return = false;
 									}
 								}
 							}
-						}
+						}						
+						
 						if ($_REQUEST["frame_id"] == 'first'){
-								$sql= $QUERIES->getFirstFrameId();
+								$sql= $QUERIES->getFirstFrameId($_SESSION['camera_id']);
 								$result_2 = mysql_query($sql) or $to_return = false;						
 								while ($final_res=mysql_fetch_array($result_2) ){
 									$_SESSION["frame_id"] = intval($final_res["id"]);
-								}					
+								}
 						}else{
 							if ($_REQUEST["frame_id"] == 'FUF'){
-								$sql= $QUERIES->getFirstUntaggedFrame($_SESSION['user'], $_SESSION['camera_id']);
-								$result_2 = mysql_query($sql) or $to_return = false;						
+								$sql= $QUERIES->getFirstUntaggedFrameId($_SESSION['user'], $_SESSION['camera_id']);
+								$result_2 = mysql_query($sql) or $to_return = false;
 								while ($final_res=mysql_fetch_array($result_2) ){
 									$_SESSION["frame_id"] = intval($final_res["id"]);									
-								}				
+								}		
 							} else {
 								if ($_REQUEST["frame_id"] == 'number'){
 									$_SESSION["frame_id"] = intval($_REQUEST["frame_number"]);
@@ -90,6 +90,7 @@
 					$to_return = false;
 				}
 			}
+			
 			jecho($to_return);
 			break;
 
@@ -309,7 +310,7 @@
 			    $sql = $QUERIES->insertGroup(0, 'No group', 0, $_SESSION['user']);
 				$result = mysql_query($sql);
 				
-				$sql = $QUERIES->insertRealPeople(0, 0, "../img/real_people/default.png");
+				$sql = $QUERIES->insertRealPeople(0, 0, $config->realPeopleDefaultImg);
 				$result = mysql_query($sql) or $done = false;
 				if($done){
 					$my_id = mysql_insert_id();
@@ -317,11 +318,11 @@
 							$bbV->x, $bbV->y, $bbV->width, $bbV->height, 0, 0, 0, 0, $hex, 0, $_SESSION['user'], 0);
 					$result = mysql_query($sql) or $done = false;
 					if ($done){
-						$person = array("id"=>$my_id,"color"=>$hex,"angle_face"=>0,
-								"angle_face_z"=>0,"angle_body"=>0,"angle_body_z"=>0,
-								"group"=>0,"artwork"=>0, "prev_frame"=>true, 
-								"bb"=>array($bb->x, $bb->y, $bb->width, $bb->height),
-								"bbV"=>array($bbV->x, $bbV->y, $bbV->width, $bbV->height));
+						$person = array("id" => $my_id, "color" => $hex, "angle_face" => 0,
+								"angle_face_z" => 0, "angle_body" => 0, "angle_body_z" => 0,
+								"group" => 0,"artwork" => 0, "prev_frame" => true, 
+								"bb" => array($bb->x, $bb->y, $bb->width, $bb->height),
+								"bbV" => array($bbV->x, $bbV->y, $bbV->width, $bbV->height));
 					}
 				}
 			}
@@ -344,31 +345,29 @@
 			
 			if( isset($_REQUEST['color']) ){
 				if(checkPerson($_REQUEST['id']) == 1){
-
-					$sql="UPDATE `people` SET `color`='".$_REQUEST['color']."' ,userid='".$_SESSION["user"]."' WHERE  `peopleid`=".$_REQUEST['id']." AND `frameid` = ".$_SESSION["frame_id"]." AND `cameraid` = ".$_SESSION["camera_id"]."";
-
+					$sql = $QUERIES->updatePersonColor($_REQUEST['color'], $_SESSION['user'], $_REQUEST['id'], $_SESSION['frame_id'], $_SESSION['camera_id']);
 					$result=mysql_query($sql) or $success=false;
 				} else {
+					$bb = $config->bb;
+					$bbV = $config->bbV;
 					//If person is a proposal and it has been approved, insert it into frame people list
-					$sql="INSERT INTO `people` (`peopleid`,`frameid`, `cameraid`, `bb_x`, `bb_y`, `bb_width`, `bb_height`, `bbV_x`, `bbV_y`, `bbV_width`, `bbV_height`, `gazeAngle_face`, `gazeAngle_face_z`, `gazeAngle_body`, `gazeAngle_body_z`, `color`, `poiid`, `userid`, `groupid`) VALUES
-						(".intval($_REQUEST["id"]).", ".$_SESSION["frame_id"].", ".$_SESSION["camera_id"].", 300, 200, 20, 30, 300, 200, 20, 30, 0, 0, 0, 0, '".$_REQUEST['color']."', 0, ".$_SESSION["user"].", 0);";
-
+					$sql = $QUERIES->insertPerson(intval($_REQUEST["id"]), $_SESSION['frame_id'], $_SESSION['camera_id'], $bb->x, $bb->y, $bb->width, $bb->height, 
+							$bbV->x, $bbV->y, $bbV->width, $bbV->height, 0, 0, 0, 0, $_REQUEST['color'], 0, $_SESSION['user'], 0);	
 					$result=mysql_query($sql) or $success = false;
 				}
 			}
 			
 			if( isset($_REQUEST['group_id']) ){
 				if(checkPerson($_REQUEST['id']) == 1){
-
-					$sql="UPDATE `people` SET `groupid`='".$_REQUEST['group_id']."', userid='".$_SESSION["user"]."' WHERE  `peopleid`=".$_REQUEST['id']." AND `frameid` = ".$_SESSION["frame_id"]." AND `cameraid` = ".$_SESSION["camera_id"]."";
-
-					$result=mysql_query($sql) or $success=false;	
-
+					$sql = $QUERIES->updatePersonGroup($_REQUEST['group_id'], $_SESSION['user'], $_REQUEST['id'], $_SESSION['frame_id'], $_SESSION['camera_id']);
+					$result = mysql_query($sql) or $success=false;
 				} else {
-					$sql="INSERT INTO `people` (`peopleid`,`frameid`, `cameraid`, `bb_x`, `bb_y`, `bb_width`, `bb_height`, `bbV_x`, `bbV_y`, `bbV_width`, `bbV_height`, `gazeAngle_face`, `gazeAngle_face_z`, `gazeAngle_body`, `gazeAngle_body_z`, `color`, `poiid`, `userid`, `groupid`) VALUES
-						(".intval($_REQUEST["id"]).", ".$_SESSION["frame_id"].", ".$_SESSION["camera_id"].", 300, 200, 20, 30, 300, 200, 20, 30, 0, 0, 0, 0, '#000000', 0, ".$_SESSION["user"].", ".$_REQUEST['group_id'].");";
-
-					$result=mysql_query($sql) or $success = false;
+					$bb = $config->bb;
+					$bbV = $config->bbV;
+					//If person is a proposal and it has been approved, insert it into frame people list
+					$sql = $QUERIES->insertPerson(intval($_REQUEST["id"]), $_SESSION['frame_id'], $_SESSION['camera_id'], $bb->x, $bb->y, $bb->width, $bb->height,
+							$bbV->x, $bbV->y, $bbV->width, $bbV->height, 0, 0, 0, 0, '#000000', 0, $_SESSION['user'], $_REQUEST['group_id']);
+					$result = mysql_query($sql) or $success = false;
 				}
 			}	
 			
@@ -376,32 +375,32 @@
 				if(checkPerson($_REQUEST['id']) == 1){
 					$bb = array();
 					$bb = $_REQUEST['bb'];
-
-					$sql="UPDATE `people` SET `bb_x`=".$bb[0].",`bb_y`=".$bb[1].",`bb_width`=".$bb[2].",`bb_height`=".$bb[3].", userid=".$_SESSION["user"]." WHERE  `peopleid`=".$_REQUEST['id']." AND `frameid` = ".$_SESSION["frame_id"]." AND `cameraid` = ".$_SESSION["camera_id"]."";
-
-					$result=mysql_query($sql) or $success=false;
+					$sql = $QUERIES->updatePersonBB($bb, $_SESSION['user'], $_REQUEST['id'], $_SESSION['frame_id'], $_SESSION['camera_id']);
+					$result = mysql_query($sql) or $success=false;
 				}else{
 					$bb = array();
 					$bb = $_REQUEST['bb'];
-					$sql="INSERT INTO `people` (`peopleid`,`frameid`, `cameraid`, `bb_x`, `bb_y`, `bb_width`, `bb_height`, `bbV_x`, `bbV_y`, `bbV_width`, `bbV_height`, `gazeAngle_face`, `gazeAngle_face_z`, `gazeAngle_body`, `gazeAngle_body_z`, `color`, `poiid`, `userid`, `groupid`) VALUES (".$_REQUEST["id"].", ".$_SESSION["frame_id"].", ".$_SESSION["camera_id"].", ".$bb[0].", ".$bb[1].", ".$bb[2].", ".$bb[3].", 300, 200, 20, 30, 0, 0, 0, 0, '#000000', 0, ".$_SESSION["user"].", 0);";
-
-					$result=mysql_query($sql) or $success = false;
-				}
+					$bbV = $config->bbV;
+					//If person is a proposal and it has been approved, insert it into frame people list
+					$sql = $QUERIES->insertPerson(intval($_REQUEST["id"]), $_SESSION['frame_id'], $_SESSION['camera_id'], $bb[0], $bb[1], $bb[2], $bb[3],
+							$bbV->x, $bbV->y, $bbV->width, $bbV->height, 0, 0, 0, 0, '#000000', 0, $_SESSION['user'], 0);
+					$result = mysql_query($sql) or $success = false;
+					}
 		    }
 			
 			if( isset($_REQUEST['bbV']) ){
 				if(checkPerson($_REQUEST['id']) == 1){					
 					 $bbV = array();
 					 $bbV = $_REQUEST['bbV'];
-
-					 $sql="UPDATE `people` SET `bbV_x`=".$bbV[0].",`bbV_y`=".$bbV[1].",`bbV_width`=".$bbV[2].",`bbV_height`=".$bbV[3].", userid=".$_SESSION["user"]." WHERE  `peopleid`=".$_REQUEST['id']." AND `frameid` = ".$_SESSION["frame_id"]." AND `cameraid` = ".$_SESSION["camera_id"]."";
-
+					 $sql = $QUERIES->updatePersonBB($bbV, $_SESSION['user'], $_REQUEST['id'], $_SESSION['frame_id'], $_SESSION['camera_id']);
 					 $result=mysql_query($sql) or $success=false;
 				} else {
+					$bb = $config->bb;
 					$bbV = array();
 					$bbV = $_REQUEST['bbV'];
-					$sql="INSERT INTO `people` (`peopleid`,`frameid`, `cameraid`, `bb_x`, `bb_y`, `bb_width`, `bb_height`, `bbV_x`, `bbV_y`, `bbV_width`, `bbV_height`, `gazeAngle_face`, `gazeAngle_face_z`, `gazeAngle_body`, `gazeAngle_body_z`, `color`, `poiid`, `userid`, `groupid`) VALUES
-						(".$_REQUEST["id"].", ".$_SESSION["frame_id"].", ".$_SESSION["camera_id"].", 300, 200, 20, 30, ".$bbV[0].", ".$bbV[1].", ".$bbV[2].", ".$bbV[3].", 0, 0, 0, 0, '#000000', 0, ".$_SESSION["user"].", 0);";
+					//If person is a proposal and it has been approved, insert it into frame people list
+					$sql = $QUERIES->insertPerson(intval($_REQUEST["id"]), $_SESSION['frame_id'], $_SESSION['camera_id'],$bb->x, $bb->y, $bb->width, $bb->height,
+							$bbV[0], $bbV[1], $bbV[2], $bbV[3], 0, 0, 0, 0, '#000000', 0, $_SESSION['user'], 0);
 					$result=mysql_query($sql) or $success = false;
 				}
 				if ($success == true){
@@ -411,53 +410,49 @@
 			
 			if( isset($_REQUEST['angle_face']) && isset($_REQUEST['angle_face_z'])  ){
 				if(checkPerson($_REQUEST['id']) == 1){
-
-					 $sql="UPDATE `people` SET `gazeAngle_face`='".$_REQUEST['angle_face']."', `gazeAngle_face_z`='".$_REQUEST['angle_face_z']."', `userid`='".$_SESSION["user"]."'   WHERE  `peopleid` = '".$_REQUEST['id']."' AND `frameid` = '".$_SESSION["frame_id"]."' AND `cameraid` = ".$_SESSION["camera_id"]."";
-
+					 $sql = $QUERIES->updatePersonAngleFace($_REQUEST['angle_face'], $_REQUEST['angle_face_z'], $_SESSION['user'], $_REQUEST['id'], $_SESSION['frame_id'], $_SESSION['camera_id']);
 					 $result=mysql_query($sql) or $success=false;
-				}else{
-					$sql="INSERT INTO `people` (`peopleid`,`frameid`, `cameraid`, `bb_x`, `bb_y`, `bb_width`, `bb_height`, `bbV_x`, `bbV_y`, `bbV_width`, `bbV_height`, `gazeAngle_face`, `gazeAngle_face_z`, `gazeAngle_body`, `gazeAngle_body_z`, `color`, `poiid`, `userid`, `groupid`) VALUES
-					(".intval($_REQUEST["id"]).", ".$_SESSION["frame_id"].", ".$_SESSION["camera_id"].", 300, 200, 20, 30, 300, 200, 20, 30,".$_REQUEST['angle_face'].",".$_REQUEST['angle_face_z'].", 0, 0, '#000000', 0, ".$_SESSION["user"].", 0);";
-
-					$result=mysql_query($sql) or $success = false;
+				} else {
+					$bb = $config->bb;
+					$bbV = $config->bbV;
+					//If person is a proposal and it has been approved, insert it into frame people list
+					$sql = $QUERIES->insertPerson(intval($_REQUEST["id"]), $_SESSION['frame_id'], $_SESSION['camera_id'], $bb->x, $bb->y, $bb->width, $bb->height,
+							$bbV->x, $bbV->y, $bbV->width, $bbV->height, $_REQUEST['angle_face'], $_REQUEST['angle_face_z'], 0, 0, '#000000', 0, $_SESSION['user'], 0);
+					$result = mysql_query($sql) or $success = false;
 				}
 			}
 			
 			
 			if( isset($_REQUEST['angle_body']) && isset($_REQUEST['angle_body_z'])  ){
 				if(checkPerson($_REQUEST['id']) == 1){
-
-					 $sql="UPDATE `people` SET `gazeAngle_body`='".$_REQUEST['angle_body']."', `gazeAngle_body_z`='".$_REQUEST['angle_body_z']."', `userid`='".$_SESSION["user"]."'  WHERE   peopleid=".$_REQUEST['id']." AND `frameid` = ".$_SESSION["frame_id"]." AND `cameraid` = ".$_SESSION["camera_id"]."";
-
-					 $result=mysql_query($sql) or $success=false;
+  					 $sql = $QUERIES->updatePersonAngleBody($_REQUEST['angle_body'], $_REQUEST['angle_body_z'], $_SESSION['user'], $_REQUEST['id'], $_SESSION['frame_id'], $_SESSION['camera_id']);
+					 $result = mysql_query($sql) or $success = false;
 				}else{
-					$sql="INSERT INTO `people` (`peopleid`,`frameid`, `cameraid`, `bb_x`, `bb_y`, `bb_width`, `bb_height`, `bbV_x`, `bbV_y`, `bbV_width`, `bbV_height`, `gazeAngle_face`, `gazeAngle_face_z`, `gazeAngle_body`, `gazeAngle_body_z`, `color`, `poiid`, `userid`, `groupid`) VALUES
-					(".intval($_REQUEST["id"]).", ".$_SESSION["frame_id"].", ".$_SESSION["camera_id"].", 300, 200, 20, 30, 300, 200, 20, 30, 0, 0, ".$_REQUEST['angle_body'].",".$_REQUEST['angle_body_z'].", '#000000', 0, ".$_SESSION["user"].", 0);";
-					$result=mysql_query($sql) or $success = false;
+					$bb = $config->bb;
+					$bbV = $config->bbV;
+					//If person is a proposal and it has been approved, insert it into frame people list
+					$sql = $QUERIES->insertPerson(intval($_REQUEST["id"]), $_SESSION['frame_id'], $_SESSION['camera_id'], $bb->x, $bb->y, $bb->width, $bb->height,
+							$bbV->x, $bbV->y, $bbV->width, $bbV->height, 0, 0, $_REQUEST['angle_body'], $_REQUEST['angle_body_z'], '#000000', 0, $_SESSION['user'], 0);
+					$result = mysql_query($sql) or $success = false;
 				}
 			}
 			
 			if( isset($_REQUEST['opera_id']) ){
 				if(checkPerson($_REQUEST['id']) == 1){
-
-					$sql="UPDATE `people` SET `poiid`='".$_REQUEST['opera_id']."', `userid`='".$_SESSION["user"]."' WHERE `peopleid`='".$_REQUEST['id']."' AND `frameid` = ".$_SESSION["frame_id"]." AND `cameraid` = ".$_SESSION["camera_id"]."";
-
-					$result=mysql_query($sql) or $success=false;	
-				} else {	
-					$sql="INSERT INTO `people` (`peopleid`,`frameid`, `cameraid`, `bb_x`, `bb_y`, `bb_width`, `bb_height`, `bbV_x`, `bbV_y`, `bbV_width`, `bbV_height`, `gazeAngle_face`, `gazeAngle_face_z`, `gazeAngle_body`, `gazeAngle_body_z`, `color`, `poiid`, `userid`, `groupid`) VALUES
-					(".intval($_REQUEST["id"]).", ".$_SESSION["frame_id"].", ".$_SESSION["camera_id"].", 300, 200, 20, 30, 300, 200, 20, 30, 0, 0, 0, 0, '#000000', ".$_REQUEST['opera_id'].", ".$_SESSION["user"].", 0);";
-
-					$result=mysql_query($sql) or $success = false;
+					$sql = $QUERIES->updatePersonPoi($_REQUEST['opera_id'], $_SESSION['user'], $_REQUEST['id'], $_SESSION['frame_id'], $_SESSION['camera_id']);
+					$result = mysql_query($sql) or $success = false;	
+				} else {
+					$bb = $config->bb;
+					$bbV = $config->bbV;
+					//If person is a proposal and it has been approved, insert it into frame people list
+					$sql = $QUERIES->insertPerson(intval($_REQUEST["id"]), $_SESSION['frame_id'], $_SESSION['camera_id'], $bb->x, $bb->y, $bb->width, $bb->height,
+							$bbV->x, $bbV->y, $bbV->width, $bbV->height, 0, 0, 0, 0, '#000000', $_REQUEST['opera_id'], $_SESSION['user'], 0);
+					$result = mysql_query($sql) or $success = false;
 				}
 				
 			}	
 			
-			if ($success==true){
-					jecho(1);	
-			}else{
-					jecho(0);				
-			}
-			
+			jecho($success);			
 		break;
 
 		/**
@@ -465,100 +460,102 @@
 		 */
 		case "remove-person":
 			if(isset($_REQUEST['id'])){
-				$sql="DELETE FROM `people` WHERE cameraid=".$_SESSION["camera_id"]." AND peopleid=".$_REQUEST['id']." AND frameid=".$_SESSION["frame_id"]."";
-				$result=mysql_query($sql) or
-				die ("Errore comando select: ".mysql_error());						
-				jecho(1); //or false (error)
+				$success = true;
+				$sql = $QUERIES->removePersonById($_REQUEST['id'], $_SESSION["frame_id"], $_SESSION["camera_id"]);
+				$result = mysql_query($sql) or $success = false;					
+				jecho($success);
 			}
 		break;
 
 		/**
-		 * Add a group to DB - To appear a group must have at least one person associated
+		 * Add a group to database
+		 * To appear a group must have at least one person associated
 		 */
 		case "add-group":
+			$success = true;
 			$group = array();
+			
 			if(!isset($_REQUEST['name'])) {
-				error_500("Missing parameter");
+				error_500("Missing parameter: group name");
 			}
 
-			$sql="SELECT MAX(groupid) as id FROM `groups`";
-			$result=mysql_query($sql) or jecho($group);
-			while ($row=mysql_fetch_array($result) ){
+			$sql = $QUERIES->getMaxGroupId();
+			$result = mysql_query($sql) or jecho($group);
+			while ($row = mysql_fetch_array($result) ){
 				$idvalue = $row["id"];
 			}
 
-			$sql="INSERT INTO `groups` (`groupid`, `name`, `userid`) VALUES (".(intval($idvalue) + 1).", '".$_REQUEST['name']."', ".$_SESSION["user"].");";
-			$result=mysql_query($sql) or
-			jecho($group);
+			$sql = $QUERIES->insertGroup(intval($idvalue) + 1, $_REQUEST['name'], 0, $_SESSION["user"]);
+			$result=mysql_query($sql) or $success = false;
 			
-			$group = array("id"=>(intval($idvalue) + 1),"text"=>$_REQUEST['name'],"people"=>0);			
+			if($success){
+				$group = array("id" => (intval($idvalue) + 1),"text" => $_REQUEST['name'], "people" => 0);
+			}
+			
 			jecho($group);
 		break;
 
 		/**
-		 * Remove a group (DO NOT REMOVE FROM DB)
+		 * Remove a group from database
 		 */
 		case "remove-group":
 			$done=true;
 			if(!isset($_REQUEST['id']))
-				error_500("id mancante");			
+				error_500("Missing parameter: group id");			
 
-			$sql="DELETE FROM `groups` WHERE  groupid=".$_REQUEST['id']."";
-			$result=mysql_query($sql) or $done=false;
-			if($done==true){
-				jecho(1);
-			}else{
-				jecho(0);
-			}
+			$sql = $QUERIES->removeGroup($_REQUEST['id']);
+			$result = mysql_query($sql) or $done = false;
+			jecho(true);
 			break;
 		
 		/**
-		 * Return the frame based on its ID - DB
+		 * Return the frame based on its ID from database
 		 */
 		case "get-frame":
 			$dimension = array();
-			$img = array();	
+			$frame = array();	
 			$done = true;
 
 			if( !isset($_REQUEST["frame_id"])){
 				$myframe = $_SESSION["frame_id"];
 
-			}else{
+			} else {
 				$myframe = $_REQUEST["frame_id"];
 				$_SESSION["frame_id"] = $_REQUEST["frame_id"];
 			}
-			$sql="SELECT * FROM `video` WHERE `frameid`=".$myframe." AND `cameraid`=".$_SESSION["camera_id"]."";
-			$result=mysql_query($sql) or
-			$done = false;
+			
+			$sql = $QUERIES->getFrameById($myframe, $_SESSION['camera_id']);
+			$result = mysql_query($sql) or $done = false;
 			if ($done == true){
-				while ($row=mysql_fetch_array($result) ){
+				while ($row = mysql_fetch_array($result) ){
 					$dimension = getimagesize("../frames/".$row["path"]);
-					$img = array("background"=>"../frames/".$row["path"],"width"=>$dimension[0], "height"=>$dimension[1], "frame_id"=>$myframe);
-
+					$frame = array(
+						"background" => "../frames/".$row["path"],
+						"width" => $dimension[0], 
+						"height" => $dimension[1], 
+						"frame_id" => $myframe);
 				}
 			}
-			jecho($img);
+			jecho($frame);
 		break;
 		
 		/**
-		 * Returns the artworks list from the DB
+		 * Returns the artworks list from the database
 		 */
 		case "get-artworks":
 			$artwork = array();
 			if (isset($_REQUEST['query']) && strlen($_REQUEST['query']) > 0){	
-					$sql="SELECT * FROM `poi` WHERE name LIKE '%".$_REQUEST['query']."%' AND cameraid=".$_SESSION["camera_id"]." ORDER BY poiid";
-					$result=mysql_query($sql) or
-					die ("Error: ".mysql_error());
-					if ( mysql_num_rows($result)==0 ) $artwork = array();
-					while ($row=mysql_fetch_array($result) ){
+					$sql = $QUERIES->getPoisByQuery($_REQUEST['query'], $_SESSION["camera_id"]);
+					$result = mysql_query($sql) or die ("Error: ".mysql_error());
+					if ( mysql_num_rows($result) == 0 ) $artwork = array();
+					while ($row = mysql_fetch_array($result) ){
 						$artwork[] = array("id"=>$row["poiid"],"cameraid"=>$row["cameraid"],"location_x"=>$row["location_x"],"location_y"=>$row["location_y"],"width"=>$row["width"],"height"=>$row["height"],"text"=>$row["name"] );
 					}
-			}else {
-					$sql="SELECT * FROM `poi` WHERE cameraid=".$_SESSION["camera_id"]."";
-					$result=mysql_query($sql) or
-					die ("Error: ".mysql_error());
+			} else {
+					$sql = $QUERIES->getPois($_SESSION["camera_id"]);
+					$result = mysql_query($sql) or die ("Error: ".mysql_error());
 					if ( mysql_num_rows($result)==0 ) $artwork = array();
-					while ($row=mysql_fetch_array($result) ){
+					while ($row = mysql_fetch_array($result) ){
 						$artwork[] = array("id"=>$row["poiid"],"cameraid"=>$row["cameraid"],"location_x"=>$row["location_x"],"location_y"=>$row["location_y"],"width"=>$row["width"],"height"=>$row["height"],"text"=>$row["name"] );
 					}
 			}
@@ -571,17 +568,14 @@
 		 */
 		case "get-realpeople":			
 			$realpeople = array();	
-
-			$sql_1 = "SELECT r.* FROM `real_people` as r WHERE (r.peopleid not in (SELECT p2.peopleid FROM `people` as p2 WHERE p2.frameid=".$_SESSION["frame_id"]." AND p2.cameraid=".$_SESSION["camera_id"]."))";
-			$result=mysql_query($sql_1) or
-			$realpeople = array();	
-			if ( mysql_num_rows($result)==0 ) $realpeople = array();	
-			while ($row=mysql_fetch_array($result) )
-			{
+			$sql = $QUERIES->getRealPeopleList($_SESSION["frame_id"], $_SESSION["camera_id"]);
+			$result = mysql_query($sql) or $realpeople = array();	
+			if ( mysql_num_rows($result) == 0 ) $realpeople = array();	
+			while ($row = mysql_fetch_array($result) ){
 				if(end(explode("/", $row["image"])) != 'default.png'){
 					$url = implode(".", explode(".", $row["image"], -1));
 					$realpeople[] = array("id"=>$row["peopleid"],"image"=>$url."_100.jpg");
-				}else{
+				} else {
 					$realpeople[] = array("id"=>$row["peopleid"],"image"=>$row["image"]);
 				}
 			}
@@ -605,7 +599,7 @@
 				
 			//Check if params are valid
 			if( !isset($_SESSION["frame_id"])){
-				error_500("Missing information");
+				error_500("Missing information: frame id");
 			}
 			
 			$frame_id = intval($_SESSION['frame_id']);
@@ -613,14 +607,11 @@
 		
 			//Retrieving previous and next frames
 			if(isset($_REQUEST['limit'])){
-				$sql = "SELECT frameid FROM video
-                  WHERE frameid >= ".($frame_id - $_REQUEST['limit'])."
-                  		and frameid <= ".($frame_id + $_REQUEST['limit'])."
-                  		and cameraid = '".$_SESSION['camera_id']."';";
+				$sql = $QUERIES->getFrameIdList($_SESSION['camera_id'], $_REQUEST['limit'], $frame_id);
 			} else {
-				$sql = "SELECT frameid FROM video WHERE cameraid = ".$_SESSION['camera_id'].";";
+				$sql = $QUERIES->getFrameIdList($_SESSION['camera_id'], null, null);
 			}
-			$result=mysql_query($sql) or $done = false;
+			$result = mysql_query($sql) or $done = false;
 			while ($row = mysql_fetch_array($result) ){
 				$frame = new stdClass();
 				$frame->id = $row["frameid"];
@@ -630,8 +621,7 @@
 			//Loading people for each frame
 			foreach ($frames as $frame){
 				$people = array();
-				$sql = "SELECT * FROM `people` 
-						WHERE cameraid=".$_SESSION["camera_id"]." AND frameid=".$frame->id."";
+				$sql = $QUERIES->getPeopleFrame($_SESSION["camera_id"], $frame->id);
 				$result = mysql_query($sql) or $done = false;
 				while ($row = mysql_fetch_array($result) ){
 					$person = new stdClass();
@@ -651,31 +641,19 @@
 		 */
 		case "export":	
 			
-			// output headers so that the file is downloaded rather than displayed
+			//Output headers so that the file is downloaded rather than displayed
 			header('Content-Type: text/csv; charset=utf-8');
 			header('Content-Disposition: attachment; filename=data.csv');
 
-			// create a file pointer connected to the output stream	
+			//Create a file pointer connected to the output stream	
 			$output = fopen('php://output', 'w');		
 
 			$people = array();	
-//			$sql_1 = "SELECT p.peopleid,p.frameid,p.cameraid, p.bb_x, p.bb_y, p.bb_width, p.bb_height, p.bbV_x, p.bbV_y, p.bbV_width, p.bbV_height, bbV_height , p.gazeAngle_face, p.gazeAngle_face_z, p.gazeAngle_body, p.gazeAngle_body_z,  v.path , poi.name , g.groupid FROM people as p, video as v, poi, groups as g  WHERE p.frameid = v.frameid AND p.poiid=poi.poiid and p.groupid=g.groupid";
-			$sql_1 = "SELECT p.peopleid,p.frameid,p.cameraid, p.bb_x, p.bb_y, p.bb_width, p.bb_height, p.bbV_x, p.bbV_y, p.bbV_width, p.bbV_height, p.gazeAngle_face, p.gazeAngle_face_z, p.gazeAngle_body, p.gazeAngle_body_z,  v.path , poi.name , g.groupid FROM people as p  LEFT JOIN video as v ON p.frameid = v.frameid and p.cameraid=v.cameraid LEFT JOIN poi ON p.poiid=poi.poiid and p.cameraid=poi.cameraid LEFT JOIN groups as g ON p.groupid=g.groupid;";
+			$sql = $QUERIES->getExportQuery();
+			$result=mysql_query($sql) or $people = array();
 
-			$result=mysql_query($sql_1) or
-			$people = array();
-
-			// loop over the rows, outputting them
+			//Loop over the rows, outputting them
 			while ($row = mysql_fetch_assoc($result)) fputcsv($output, $row);	
-
-//			if ( mysql_num_rows($result)==0 ) $people = array();	
-//			while ($row=mysql_fetch_array($result) )
-//			{
-//				$people[] = array("id"=>$row["peopleid"],"frame"=>$row["path"], "angle_face"=>$row["gazeAngle_face"],"angle_face_z"=>$row["gazeAngle_face_z"],"angle_body"=>$row["gazeAngle_body"],"angle_body_z"=>$row["gazeAngle_body_z"],"group"=>$row["groupid"],"artwork"=>$row["poiid"], "frameid"=>$row["frameid"], "cameraid"=>$row["cameraid"], "userid"=>$row["userid"],"bb"=>array(intval($row["bb_x"]), intval($row["bb_y"]),intval($row["bb_width"]),intval($row["bb_height"])),"bbV"=>array(intval($row["bbV_x"]), intval($row["bbV_y"]), intval($row["bbV_width"]), intval($row["bbV_height"])));
-//			}
-//			header('Content-disposition: attachment; filename=results.json');
-//			header('Content-type: application/json');
-//			jecho($people);
             break;
 
 	}

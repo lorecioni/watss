@@ -23,3 +23,5 @@ $config->bbV->y = -100;
 $config->bbV->width = 40;
 $config->bbV->height = 50;
 
+//Real people
+$config->realPeopleDefaultImg = "../img/real_people/default.png";

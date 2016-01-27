@@ -7,7 +7,7 @@ class Queries {
 	
 	/** Users queries **/
 	function getUserIdFromName($name){
-		return "SELECT userid FROM user WHERE name='".mysql_real_escape_string($name)."'";
+		return "SELECT userid FROM `user` WHERE `name`='".mysql_real_escape_string($name)."'";
 	}
 	
 	function getUserNameById($userid){
@@ -50,6 +50,14 @@ class Queries {
 		}
 	}
 	
+	function getMaxGroupId(){
+		return "SELECT MAX(groupid) as id FROM `groups`";
+	}
+	
+	function removeGroup($id){
+		return "DELETE FROM `groups` WHERE  groupid = ".$id."";
+	}
+	
 	
 	//Find removable groups
 	function getDeletableGroups($userid){
@@ -66,7 +74,7 @@ class Queries {
 	}
 	
 	function getFirstUntaggedFrameId($userid, $cameraid){
-		"SELECT MIN(frameid) as id FROM video WHERE frameid not in (SELECT frameid FROM people WHERE userid=".$userid." AND cameraid=".$cameraid.")";
+		return "SELECT MIN(frameid) as id FROM video WHERE frameid not in (SELECT frameid FROM people WHERE userid=".$userid." AND cameraid=".$cameraid.")";
 	}
 	
 	function getFramesByQuery($cameraid, $term, $limit){
@@ -75,6 +83,21 @@ class Queries {
 	
 	function getFramesForSelect($cameraid, $limit){
 		return "SELECT `frameid` as id, `frameid` as txt FROM `video` WHERE `cameraid` = ".$cameraid." ORDER BY `frameid` ASC LIMIT ".$limit;	
+	}
+	
+	function getFrameById($frameid, $cameraid){
+		return "SELECT * FROM `video` WHERE `frameid`=".$frameid." AND `cameraid`=".$cameraid."";
+	}
+	
+	function getFrameIdList($cameraid, $limit, $current){
+		if($limit == null){
+			return "SELECT frameid FROM video WHERE cameraid = ".$cameraid.";";
+		} else {
+			return "SELECT frameid FROM video
+                  WHERE frameid >= ".($current - $limit)."
+                  		and frameid <= ".($current + $limit)."
+                  		and cameraid = '".$cameraid."';";
+		}
 	}
 	
 	/** Camera queries **/
@@ -106,12 +129,68 @@ class Queries {
 					(".$peopleid.", ".$frameid.", ".$cameraid.", ".$bbx.", ".$bby.", ".$bbw.", ".$bbh.", ".$bbVx.", ".$bbVy.", ".$bbVw.", ".$bbVh.", ".$gaf.", ".$gafz.", ".$gab.", ".$gabz.",'".$color."', ".$poiid.", ".$userid.", ".$groupid.");";
 	}
 	
+	function updatePersonColor($color, $userid, $peopleid, $frameid, $cameraid){
+		return 	"UPDATE `people` SET `color`='".$color."' ,userid='".$userid."' WHERE  `peopleid`=".$peopleid." AND `frameid` = ".$frameid." AND `cameraid` = ".$cameraid."";	
+	}
+	
+	function updatePersonGroup($groupid, $userid, $peopleid, $frameid, $cameraid){
+		return 	"UPDATE `people` SET `groupid`='".$groupid."' ,userid='".$userid."' WHERE  `peopleid`=".$peopleid." AND `frameid` = ".$frameid." AND `cameraid` = ".$cameraid."";
+	}
+	
+	function updatePersonBB($bb, $userid, $peopleid, $frameid, $cameraid){
+		return "UPDATE `people` SET `bb_x`=".$bb[0].",`bb_y`=".$bb[1].",`bb_width`=".$bb[2].",`bb_height`=".$bb[3].", userid=".$userid." WHERE  `peopleid`=".$peopleid." AND `frameid` = ".$frameid." AND `cameraid` = ".$cameraid."";
+	}
+	
+	function updatePersonBBV($bb, $userid, $peopleid, $frameid, $cameraid){
+		return "UPDATE `people` SET `bbV_x`=".$bb[0].",`bbV_y`=".$bb[1].",`bbV_width`=".$bb[2].",`bbV_height`=".$bb[3].", userid=".$userid." WHERE  `peopleid`=".$peopleid." AND `frameid` = ".$frameid." AND `cameraid` = ".$cameraid."";
+	}
+	
+	function updatePersonAngleFace($angle, $z, $userid, $peopleid, $frameid, $cameraid){
+		return "UPDATE `people` SET `gazeAngle_face`='".$angle."', `gazeAngle_face_z`='".$z."', `userid`='".$userid."'   WHERE  `peopleid` = '".$peopleid."' AND `frameid` = '".$frameid."' AND `cameraid` = ".$cameraid."";
+	}
+	
+	function updatePersonAngleBody($angle, $z, $userid, $peopleid, $frameid, $cameraid){
+		return "UPDATE `people` SET `gazeAngle_body`='".$angle."', `gazeAngle_body_z`='".$z."', `userid`='".$userid."'   WHERE  `peopleid` = '".$peopleid."' AND `frameid` = '".$frameid."' AND `cameraid` = ".$cameraid."";
+	}
+	
+	function updatePersonPoi($poiid, $userid, $peopleid, $frameid, $cameraid){
+		return "UPDATE `people` SET `poiid`='".$poiid."', `userid`='".$userid."'   WHERE  `peopleid` = '".$peopleid."' AND `frameid` = '".$frameid."' AND `cameraid` = ".$cameraid."";
+	}
+	
+	function removePersonById($peopleid, $frameid, $cameraid){
+		return "DELETE FROM `people` WHERE cameraid=".$cameraid." AND peopleid=".$peopleid." AND frameid=".$frameid."";
+	}
+	
+	
 	/** Real people queries **/
 	
 	function insertRealPeople($face, $facez, $path){
 		return "INSERT INTO `real_people` (`face`,`face_z`,`image`) VALUES (".$face.", ".$facez.",'".$path."')";
 	}
 	
+	function getRealPeopleList($frameid, $cameraid){
+		return "SELECT r.* FROM `real_people` as r WHERE (r.peopleid not in (SELECT p2.peopleid FROM `people` as p2 WHERE p2.frameid=".$frameid." AND p2.cameraid=".$cameraid."))";
+		
+	}
+	
+	/** POI queries **/
+	
+	function getPois($cameraid){
+		return "SELECT * FROM `poi` WHERE cameraid=".$cameraid."";
+	}
+	
+	function getPoisByQuery($query, $cameraid){
+		return "SELECT * FROM `poi` WHERE name LIKE '%".$query."%' AND cameraid=".$cameraid." ORDER BY poiid";
+	}
+	
+	/** Export query **/
+	
+	function getExportQuery(){
+		return "SELECT p.peopleid,p.frameid,p.cameraid, p.bb_x, p.bb_y, p.bb_width, p.bb_height, p.bbV_x, p.bbV_y, p.bbV_width, p.bbV_height, 
+				p.gazeAngle_face, p.gazeAngle_face_z, p.gazeAngle_body, p.gazeAngle_body_z,  v.path , poi.name , g.groupid FROM people as p  
+				LEFT JOIN video as v ON p.frameid = v.frameid and p.cameraid=v.cameraid LEFT JOIN poi ON p.poiid=poi.poiid and p.cameraid=poi.cameraid 
+				LEFT JOIN groups as g ON p.groupid=g.groupid;";
+	}
 
 }
 

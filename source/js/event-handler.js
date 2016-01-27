@@ -41,6 +41,9 @@ $(document).ready(function(){
 					camera_id: $("#cameras").select2("data").id},
 			success: function(response){
 				console.log("[set-camera] returned");
+			},
+			error: function(error){
+				console.log('[ERROR] set-camera: ' + error.responseText);
 			}
 		});
 	});
@@ -323,6 +326,9 @@ function checkLogin(){
 							success: function(data){
 								var current = data.current;
 								self.timeline('showFrames', {frames: data.frames, current: current});				
+							},
+							error: function(error){
+								console.log('[ERROR] get-timeline-frames: ' + error.responseText);
 							}
 						});	
 					},
@@ -334,6 +340,9 @@ function checkLogin(){
 									frame_id: id},
 							success: function(response){
 								setFrame(response);
+							},
+							error: function(error){
+								console.log('[ERROR] get-frames: ' + error.responseText);
 							}
 						});
 					},
@@ -342,6 +351,9 @@ function checkLogin(){
 			} else {
 				$("#checkInfoModal").modal("show");
 			}
+		},
+		error: function(error){
+			console.log('[ERROR] check-login: ' + error.responseText);
 		},
 		async: false
 	});
@@ -363,6 +375,9 @@ function loadInfo(){
 			groups = response
 			initGroupsTable(groups, "#groups-table", groups_per_page, groups_att);
 		},
+		error: function(error){
+			console.log('[ERROR] get-groups: ' + error.responseText);
+		},
 		async: false
 	});
 
@@ -374,6 +389,9 @@ function loadInfo(){
 		success: function(response){
 			console.log("[get-artworks] returned");
 			artworks = response;
+		},
+		error: function(error){
+			console.log('[ERROR] get-artworks: ' + error.responseText);
 		},
 		async: false
 	});
@@ -387,6 +405,9 @@ function loadInfo(){
 			console.log("[get-people] returned");
 			people = response;
 			initPeopleTable(response, groups, artworks, "#people-table", people_per_page, people_att);
+		},
+		error: function(error){
+			console.log('[ERROR] get-people: ' + error.responseText);
 		},
 		async: false
 	});
@@ -417,6 +438,9 @@ function loadInfo(){
 				console.log("[get-groups] returned");
 				groups = response
 				initGroupsTable(groups, "#groups-table", groups_per_page, groups_att);
+			},
+			error: function(error){
+				console.log('[ERROR] get-groups: ' + error.responseText);
 			},
 			async: false
 		});

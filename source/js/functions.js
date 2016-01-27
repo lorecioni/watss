@@ -154,7 +154,10 @@ function updateRemovePerson(table_id, last){
 				}else{
 					alert("Error: could not delete");
 				}
-			}
+			},
+			error: function(error){
+				console.log('[ERROR] remove-person: ' + error.responseText);
+			},
 		});	
 	});
 }
@@ -173,7 +176,7 @@ function initGroupsTable(groups, table_id, groups_per_page, att_list){
 			$(table_id).dataTable().fnDestroy();
 		to_append="";
 		for(var i in groups){
-			if(groups[i]["id"]!='G0'){
+			if(groups[i]["id"]!='0'){
 				to_append +='<tr id="tr-'+groups[i]["id"]+'-grp" class="grouptah" data-id="'+groups[i]["id"]+'">';	
 				for(var att in att_list){
 					to_append += "<td>"+groups[i][att_list[att]]+"</td>";
@@ -246,7 +249,10 @@ function updateNPeople(table_id){
 							} 
 						} 
 				} 
-			} 
+			},
+			error: function(error){
+				console.log('[ERROR] get-groups: ' + error.responseText);
+			}
 	}); 
 }
 
@@ -268,6 +274,9 @@ function updateRemoveGroup(table_id, last){
 				}else{
 					alert("Error: could not delete. The group may be not empty");
 				}
+			},
+			error: function(error){
+				console.log('[ERROR] remove-group: ' + error.responseText);
 			}
 		});	
 	});
@@ -299,6 +308,9 @@ function updateColor(elem, col){
 					$("#box-"+el.parent().parent().data('id')+"-bbV").css("border-color", col);
 					$("#box-"+el.parent().parent().data('id')+"-face").css("border-color", col);
 				}
+			},
+			error: function(error){
+				console.log('[ERROR] update-person-attribute: ' + error.responseText);
 			}
 		});	
 	});
@@ -642,11 +654,14 @@ function deselectAllBox(table_id){
 				if(response){
 					confirmBox(table.$('tr.info'));
 					updateNPeople('#groups-table');
-				}else{
+				} else {
 					errorBox(table.$('tr.info'));
 				}
 			
 			},
+			error: function(error){
+				console.log('[ERROR] update-person-attribute: ' + error.responseText);
+			},		
 			async: false
 		});
 	}	
