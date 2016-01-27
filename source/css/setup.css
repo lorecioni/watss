@@ -21,6 +21,10 @@ header {
     margin-bottom: 80px;
 }
 
+ul {
+    margin: 10px 0;
+}
+
 section {
     margin-bottom: 50px;
 }
@@ -33,4 +37,23 @@ section h3 {
 
 section p {
     margin-bottom: 25px;
+}
+
+section#users-section {
+	display: none;
+}
+
+.form-button {
+    position: relative;
+}
+
+.form-button img.loading {
+    position: absolute;
+    height: 100%;
+    top: 0;
+    left: 160px;
+}
+
+.form-button span {
+    margin-left: 20px;
 }

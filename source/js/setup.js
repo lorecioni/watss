@@ -2,131 +2,21 @@
  * Settings functions
  */
 
+var loading = $('<img></img>')
+	.addClass('loading')
+	.attr('src', 'img/loading.gif')
+	.attr('alt', 'loading');
+
 $(document).ready(function(){
 	
-	init();
-	
-	$('#db-form').submit(function(e){
+	$('#db-connection-form').submit(function(e){
 		e.preventDefault();
-		updateDatabaseConfig($('#db-user').val(), $('#db-password').val(), 
-				$('#db-host').val(), $('#db-database').val());
-	});
-	
-	$('#db-test').click(function(){
 		checkDatabaseConnection();
-	});
-	
-	$('#add-user-form').submit(function(e){
-		e.preventDefault();
-		var name = $('#add-user-name').val();
-		if(name.length > 0){
-			$('#add-user-name').val('');
-			var loading = $('<img></img>')
-				.addClass('panel-heading-loading')
-				.attr('src', 'img/loading.gif')
-				.attr('alt', 'loading');
-			$('#user-settings .panel-heading').append(loading);
-			addUser(name);
-		}
-	});
-	
-	
-	$('#add-camera-form').submit(function(e){
-		e.preventDefault();
-		var calib = $('#add-camera-calibration').val();
-		if(calib.length > 0){
-			$('#add-camera-calibration').val('');
-			var loading = $('<img></img>')
-				.addClass('panel-heading-loading')
-				.attr('src', 'img/loading.gif')
-				.attr('alt', 'loading');
-			$('#camera-settings .panel-heading').append(loading);
-			addCamera(calib);
-		}
-	});
-	
-	$('#add-poi-camera').select2({
-		multiple: false,
-		placeholder: 'Select a camera',
-		ajax : {
-			url : "php/settings.php",
-			type : "POST",
-			dataType : 'json',
-			data : function ( term,page ) {
-				console.log("[get-cameras] call query:"+term);
-				return {
-					action: 'get-cameras',
-					query : term
-				};
-			},
-			results : function ( data, page ) {
-				var cameras = [];
-				for ( var i in data) {
-					cameras.push({id: data[i].id, text: data[i].id});
-				}
-				return {results : cameras};
-			}
-	  	}
-	});
-	
-	$('#add-poi-form').submit(function(e){
-		e.preventDefault();
-		var id = $('#add-poi-id').val();
-		var cameraid = $('#add-poi-camera').val();
-		var name = $('#add-poi-name').val();
-		var x = $('#add-poi-locx').val();
-		var y = $('#add-poi-locy').val();
-		var width = $('#add-poi-width').val();
-		var height = $('#add-poi-height').val();
-		
-		if(id.length > 0 && cameraid.length > 0
-				&& name.length > 0 && x.length > 0
-				&& y.length > 0 && width.length > 0
-				&& height.length > 0){
-			$('#add-poi-form input').val('');
-			var loading = $('<img></img>')
-				.addClass('panel-heading-loading')
-				.attr('src', 'img/loading.gif')
-				.attr('alt', 'loading');
-			$('#poi-settings .panel-heading').append(loading);
-			addPoi({id: id, cameraid: cameraid, name: name, x: x, y: y, width: width, height: height});
-		}
 	});
 
 });
 
 
-/**
- * Init function
- */
-
-function init(){
-	var loading = $('<img></img>')
-		.addClass('panel-loading')
-		.attr('src', 'img/loading.gif')
-		.attr('alt', 'loading');
-	$('#user-settings .panel-body').append(loading);
-	$('#camera-settings .panel-body').append(loading);
-	
-	$.ajax({
-		type: "POST",
-		url: "php/settings.php",
-		data: {
-			action: "init",
-		},
-		success: function(response){
-			console.log('Loading configuration file');
-			$('#db-user').val(response.user);
-			$('#db-password').val(response.password);
-			$('#db-host').val(response.host);
-			$('#db-database').val(response.db);
-			checkDatabaseConnection();
-			getUsers();
-			getCameras();
-			getPoi();
-		}
-	});	
-}
 
 /**
  * Check database connection
@@ -134,18 +24,14 @@ function init(){
 function checkDatabaseConnection(){
 	console.log('Checking database connection');
 	if($('#db-user').val() != '' && $('#db-password').val() != ''
-			&& $('#db-host').val() != '' && $('#db-database').val() != ''){
-		
-		$('#db-connection-settings .panel-title .label').remove();
-		var loading = $('<img></img>')
-				.addClass('panel-loading')
-				.attr('src', 'img/loading.gif')
-				.attr('alt', 'loading');
-		
-		$('#db-connection-settings .panel-heading').append(loading);		
+			&& $('#db-host').val() != ''){
+
+		$('#db-connection-form .form-button .label').remove();
+		$('#db-connection-form .form-button').append(loading);
+
 		$.ajax({
 			type: "POST",
-			url: "php/settings.php",
+			url: "php/setup.php",
 			data: {
 				action: "test-database-connection",
 				user: $('#db-user').val(),
@@ -154,7 +40,8 @@ function checkDatabaseConnection(){
 				db: $('#db-database').val()
 			},
 			success: function(response){
-				$('#db-connection-settings .panel-loading').remove();
+				
+				$('#db-connection-form .loading').remove();
 				var label = $('<span></span>')
 					.addClass('label');
 				
@@ -167,15 +54,15 @@ function checkDatabaseConnection(){
 					label.addClass('label-danger')
 						.html('Error');
 				}
-				$('#db-connection-settings .panel-title').append(label);
+				$('#db-connection-form .form-button').append(label);
 			},
 			error: function(){
-				$('#db-connection-settings .panel-loading').remove();
+				$('#db-connection-form .loading').remove();
 				var label = $('<span></span>')
 					.addClass('label')
 					.addClass('label-danger')
 					.html('Error');
-				$('#db-connection-settings .panel-title').append(label);				
+				$('#db-connection-form .form-button').append(label);				
 			}
 		});	
 	}

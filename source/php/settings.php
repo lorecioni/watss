@@ -1,6 +1,6 @@
 <?php
 /**
- * Configuration script for retrieving information from database for the settings page
+ * Configuration API for retrieving information from database for the settings page
  */
 
 $dbIniFile = 'connection.ini';
