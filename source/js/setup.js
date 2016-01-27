@@ -26,7 +26,7 @@ function checkDatabaseConnection(){
 	if($('#db-user').val() != '' && $('#db-password').val() != ''
 			&& $('#db-host').val() != ''){
 
-		$('#db-connection-form .form-button .label').remove();
+		$('#db-connection-form .form-button .message').remove();
 		$('#db-connection-form .form-button').append(loading);
 
 		$.ajax({
@@ -43,25 +43,25 @@ function checkDatabaseConnection(){
 				
 				$('#db-connection-form .loading').remove();
 				var label = $('<span></span>')
-					.addClass('label');
+					.addClass('message glyphicon');
+				
 				
 				if(response){
 					console.log('Database connection success');
-					label.addClass('label-success')
-						.html('Connected');
+					label.addClass('glyphicon-ok');
 				} else {
 					console.log('Database connection error');
-					label.addClass('label-danger')
-						.html('Error');
+					label.addClass('glyphicon-remove');
 				}
+				$('#db-connection-form .form-button .message').remove();
 				$('#db-connection-form .form-button').append(label);
 			},
 			error: function(){
 				$('#db-connection-form .loading').remove();
 				var label = $('<span></span>')
-					.addClass('label')
-					.addClass('label-danger')
-					.html('Error');
+					.addClass('glyphicon')
+					.addClass('glyphicon-remove');
+				$('#db-connection-form .form-button .message').remove();
 				$('#db-connection-form .form-button').append(label);				
 			}
 		});	

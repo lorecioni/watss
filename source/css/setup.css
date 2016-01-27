@@ -57,3 +57,28 @@ section#users-section {
 .form-button span {
     margin-left: 20px;
 }
+
+.form-button span.message {
+    font-size: 12pt;
+}
+
+span.message.glyphicon.glyphicon-ok {
+    color: #006D0D;
+}
+
+span.message.glyphicon.glyphicon-remove {
+    color: #D20000;
+}
+
+.form-button span.message {
+    font-size: 16pt;
+    position: absolute;
+    top: 6px;
+    left: 150px;
+}
+
+#cameras-form .form-button {
+    position: relative;
+    margin-bottom: 30px;
+    margin-top: 20px;
+}

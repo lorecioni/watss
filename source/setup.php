@@ -80,8 +80,9 @@
 				  </div>
 				  <div class="col-sm-offset-2 col-sm-10 form-button">
 				  	<button type="submit" class="btn btn-default">Verify folder</button>
+				  	<div class="clearfix"></div>
 				  </div>	
-				  <div class="clearfix"></div>
+				  
 				  <p id="camera-number-message">No cameras detected on selected folder.</p>
 				</form>
 			</section>
