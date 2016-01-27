@@ -15,10 +15,13 @@ div#setup-wrapper {
 
 #setup-wrapper header h1 {
     text-align: center;
+    margin-top: 0;
+    font-weight: normal;
+    margin-bottom: 0;
 }
 
 header {
-    margin-bottom: 80px;
+    margin-bottom: 50px;
 }
 
 ul {
@@ -81,4 +84,58 @@ span.message.glyphicon.glyphicon-remove {
     position: relative;
     margin-bottom: 30px;
     margin-top: 20px;
+}
+
+section h4 {
+    margin-bottom: 30px;
+    font-style: italic;
+}
+
+#camera-settings {
+	display: none;
+}
+
+.btn-file {
+    position: relative;
+    overflow: hidden;
+}
+
+.btn-file input[type=file] {
+    position: absolute;
+    top: 0;
+    right: 0;
+    min-width: 100%;
+    min-height: 100%;
+    font-size: 100px;
+    text-align: right;
+    filter: alpha(opacity=0);
+    opacity: 0;
+    outline: none;
+    background: white;
+    cursor: inherit;
+    display: block;
+}
+
+input[readonly] {
+  background-color: white !important;
+  cursor: text !important;
+}
+
+#importing-data-container {
+	display: none;
+}
+
+div.data-container {
+    margin-top: 30px;
+}
+
+#input-script-check {
+	margin-top: 20px;
+	margin-bottom: 20px;
+}
+
+header img#logo {
+    width: 40%;
+    display: block;
+    margin: 0 auto;
 }
