@@ -249,7 +249,7 @@ function install(){
 		console.log('Installing WATSS');
 		
 		if(!$('#install-button').hasClass('disabled')){
-			$('#install-button').addClass('disabled');
+		//	$('#install-button').addClass('disabled');
 		}
 		
 		$('#install-progress').fadeIn('fast');

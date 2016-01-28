@@ -3,6 +3,9 @@
  * Setup API
  */
 
+$connectionIniPath = 'connection.ini';
+$createSchemaScript = '../database/createSchema.sql';
+
 if(isset($_REQUEST['action'])){
 	
 	require_once 'utils.php';
@@ -50,41 +53,50 @@ if(isset($_REQUEST['action'])){
 		/** Create connection ini function **/
 		case 'create-connection':
 			$data = $_REQUEST['data'];
-			$connectionIni = 'connection.ini';			
 			$dbUser = $data['user'];
 			$dbPass = $data['password'];
 			$dbHost = $data['host'];
 			$dbName = $data['name'];
 			
-			$success = createConnectionIniFile($connectionIni, $dbUser, $dbPass, $dbHost, $dbName);				
-			jecho($success);
+			$success = createConnectionIniFile($connectionIniPath, $dbUser, $dbPass, $dbHost, $dbName);				
+			
+			if($success){
+				jecho($success);
+			} else {
+				error_500('Cannot create connection ini file. Check folder permissions');
+			}
 			break;
 			
 		/** Create connection ini function **/
 		case 'create-schema':
 			$success = true;
+			$log ='';
+						
 			$data = $_REQUEST['data'];
 			$dbUser = $data['user'];
 			$dbPass = $data['password'];
 			$dbHost = $data['host'];
 			$dbName = $data['name'];
-			
 			$dbConnection = mysql_connect($dbHost, $dbUser, $dbPass) or $success = false;
 			if($success){
-				$sql = 'CREATE DATABASE `'.$dbName.'`';
+				$sql = "CREATE DATABASE IF NOT EXISTS `".$dbName."`";
 				$result = mysql_query($sql) or $success = false;
 				if($success){
 					mysql_select_db($dbName) or $success = false;
 					if($success){
-						$success = generateSchemaScript();
+						$log  .= generateSchema($dbConnection, $createSchemaScript);
 					}
+				} else {
+					$log .= mysql_error();
 				}
 			}
 				
-			jecho($success);
+			if($success){
+				jecho($log);
+			} else {
+				error_500($log);
+			}
 			break;
-		
-
 	}
 	
 }
@@ -114,8 +126,12 @@ function createConnectionIniFile($path, $user, $passwd, $host, $name){
  * Generate database schema
  * @return boolean
  */
-function generateSchemaScript(){
-	return true;
+function generateSchema($connection, $script){
+	$success = true;
+	$log = $script;
+	$sql = file_get_contents($script);
+	$log .= $sql;
+	return $log;
 }
 
 ?>
