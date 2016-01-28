@@ -241,7 +241,7 @@ function validateInstall(){
 
 /** install steps **/
 
-var installSteps = 5;
+var installSteps = 6;
 var currentStep = 0;
 
 function install(){
