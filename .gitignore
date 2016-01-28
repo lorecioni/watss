@@ -22,3 +22,5 @@ source/DB/insertData2DB.sql
 .settings/org.eclipse.wst.common.project.facet.core.xml
 
 .settings/org.eclipse.php.core.prefs
+
+.pydevproject

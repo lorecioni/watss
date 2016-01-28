@@ -36,14 +36,11 @@ section h3 {
     border-bottom: 1px solid rgba(0, 0, 0, 0.24);
     padding-bottom: 10px;
     margin-bottom: 20px;
+    font-size: 28px;
 }
 
 section p {
     margin-bottom: 25px;
-}
-
-section#users-section {
-	display: none;
 }
 
 .form-button {
@@ -65,10 +62,12 @@ section#users-section {
     font-size: 12pt;
 }
 
+span.icon.glyphicon.glyphicon-ok,
 span.message.glyphicon.glyphicon-ok {
     color: #006D0D;
 }
 
+span.icon.glyphicon.glyphicon-remove,
 span.message.glyphicon.glyphicon-remove {
     color: #D20000;
 }
@@ -154,4 +153,35 @@ header img#logo {
 .bootstrap-tagsinput .label{
 	font-weight: normal;
 	line-height: 24pt;
+}
+
+/** Install section **/
+section#install-section {
+    margin-top: 40px;
+}
+
+button#install-button {
+    display: block;
+    margin: 30px auto 30px;
+}
+
+#install-progress {
+    height: 30px;
+    display: none;
+}
+
+#install-progress .progress-bar {
+    line-height: 30px;
+    font-size: 10pt;
+}
+
+p.check-label {
+    font-style: italic;
+    margin-bottom: 15px;
+}
+
+p.check-label .icon {
+    display: inline-flex;
+    margin-left: 30px;
+    font-size: 20px;
 }

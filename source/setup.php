@@ -118,10 +118,11 @@
 				  <div class="clearfix"></div>
 				  	<h5>Users</h5>
 					<p>Set the user list. Type username and press enter or comma to add user.</p>
-					<input type="text" id="user-list-input" value="Root" data-role="tagsinput" />	
+					<input type="text" id="user-list-input" placeholder="Users" data-role="tagsinput" />
+					<div class="clearfix"></div>
 				</div>
 				
-				
+								
 				<div id="importing-data-container" class="data-container">
 					<p>Import SQL script for loading data.</p>
 					<div class="input-group">
@@ -136,29 +137,28 @@
 					  	<button id="verify-script" type="button" class="btn btn-default">Verify script</button>
 					  </div>	
 		            <div class="clearfix"></div>
-		            <div class="alert alert-warning" role="alert">No SQL script selected.</div>
-				
+		            <div class="alert alert-warning" role="alert">No SQL script selected.</div>			
 				</div>
-			</section>
-			
-			
-			<!-- Users section -->
-			<section id="users-section">
-				<h3>Users</h3>
-				<p>Provide users information below. Each user will be able to create new users.</p>
-				<form class="form-horizontal">
-				  <div class="form-group">
-				    <label for="database-user" class="col-sm-2 control-label">User</label>
-				    <div class="col-sm-10">
-				      <input type="text" autocomplete="off" class="form-control" value="root" id="database-user" placeholder="Name">
-				    </div>
-				  </div>
-				  <div class="col-sm-offset-2 col-sm-10">
-				  	<button type="submit" id="add-user-row" class="btn btn-default">Add new user</button>
-				  </div>				  
-				</form>
-				<div class="clearfix"></div>
-			</section>
+				</section>
+				
+				<!-- Install section  -->
+				<section id="install-section">
+					<h3>Install</h3>
+					<p>Check if all the provided information above are correct, then you are ready to install WATSS.</p>
+					<div id="checks-container">
+						<p class="check-label" id="check-db-connection">Database connection</p>
+						<p class="check-label" id="check-db-name">Database name</p>
+						<p class="check-label" id="check-frames-folder">Frames folder</p>
+						<p class="check-label" id="check-camera-settings">Cameras settings</p>
+						<p class="check-label" id="check-users">Users</p>
+					</div>
+					<button type="button" class="disabled btn btn-primary btn-lg" id="install-button">Install WATSS</button>
+					<div class="progress" id="install-progress">
+					  <div class="progress-bar progress-bar-success progress-bar-striped" role="progressbar"
+					  aria-valuenow="0" aria-valuemin="0" aria-valuemax="100" style="width:0%"></div>
+					</div>
+				</section>
+
 		</div>
 		<!-- jQuery (necessary for Bootstrap's JavaScript plugins) -->
 	    <script src="js/jquery-1.11.1.min.js"></script>
