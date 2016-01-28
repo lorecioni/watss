@@ -71,7 +71,7 @@ if(isset($_REQUEST['action'])){
 			
 			$dbConnection = mysql_connect($dbHost, $dbUser, $dbPass) or $success = false;
 			if($success){
-				$sql = 'CREATE DATABASE '.$dbName;
+				$sql = 'CREATE DATABASE `'.$dbName.'`';
 				$result = mysql_query($sql) or $success = false;
 				if($success){
 					mysql_select_db($dbName) or $success = false;
@@ -110,7 +110,10 @@ function createConnectionIniFile($path, $user, $passwd, $host, $name){
 	return $success;
 }
 
-
+/**
+ * Generate database schema
+ * @return boolean
+ */
 function generateSchemaScript(){
 	return true;
 }

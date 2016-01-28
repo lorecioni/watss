@@ -47,7 +47,7 @@
 				  <div class="form-group">
 				    <label for="db-host" class="col-sm-2 control-label">Host</label>
 				    <div class="col-sm-10">
-				      <input type="text" autocomplete="off" class="form-control" id="db-host" placeholder="Host">
+				      <input type="text" autocomplete="off" class="form-control" value="localhost" id="db-host" placeholder="Host">
 				    </div>
 				  </div>
 				  <div class="col-sm-offset-2 col-sm-10 form-button">
@@ -74,7 +74,7 @@
 				  <div class="form-group">
 				    <label for="frame-folder-name" class="col-sm-3 control-label">Frames folder</label>
 				    <div class="col-sm-8">
-				      <input type="text" autocomplete="off" class="form-control" id="frame-folder-name" placeholder="Name">
+				      <input type="text" value="frames" autocomplete="off" class="form-control" id="frame-folder-name" placeholder="Name">
 				    </div>
 				  </div>
 				  <div class="col-sm-offset-2 col-sm-10 form-button">
