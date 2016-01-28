@@ -185,3 +185,19 @@ p.check-label .icon {
     margin-left: 30px;
     font-size: 20px;
 }
+
+div#install-log-container {
+    margin-top: 30px;
+}
+
+p.install-log-entry {
+    margin: 10px 0 0;
+    font-size: .9em;
+}
+p.install-log-entry.success {
+    color: #006D0D;
+}
+
+p.install-log-entry.error {
+    color: #CD0000;
+}

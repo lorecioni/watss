@@ -1,15 +1,11 @@
-SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
-SET time_zone = "+00:00";
-
-
-CREATE TABLE `camera` (
+CREATE TABLE IF NOT EXISTS `camera` (
   `cameraid` int(11) NOT NULL AUTO_INCREMENT,
   `calibration` int(11) NOT NULL,
   PRIMARY KEY (`cameraid`)
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
 
-CREATE TABLE `groups` (
+CREATE TABLE IF NOT EXISTS `groups` (
   `groupid` int(11) NOT NULL AUTO_INCREMENT,
   `name` varchar(20) NOT NULL,
   `deleted` tinyint(1) NOT NULL DEFAULT '0',
@@ -19,7 +15,7 @@ CREATE TABLE `groups` (
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
 
-CREATE TABLE `people` (
+CREATE TABLE IF NOT EXISTS `people` (
   `peopleid` int(11) NOT NULL,
   `frameid` int(11) NOT NULL,
   `cameraid` int(11) NOT NULL,
@@ -49,7 +45,7 @@ CREATE TABLE `people` (
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
 
-CREATE TABLE `poi` (
+CREATE TABLE IF NOT EXISTS `poi` (
   `poiid` int(11) NOT NULL,
   `cameraid` int(11) NOT NULL,
   `location_x` int(11) NOT NULL,
@@ -63,7 +59,7 @@ CREATE TABLE `poi` (
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
 
-CREATE TABLE `real_people` (
+CREATE TABLE IF NOT EXISTS `real_people` (
   `peopleid` int(11) NOT NULL AUTO_INCREMENT,
   `face` int(11) NOT NULL,
   `face_z` int(11) NOT NULL,
@@ -72,14 +68,14 @@ CREATE TABLE `real_people` (
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
 
-CREATE TABLE `user` (
+CREATE TABLE IF NOT EXISTS `user` (
   `userid` int(11) NOT NULL AUTO_INCREMENT,
   `name` varchar(30) NOT NULL,
   PRIMARY KEY (`userid`)
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
 
-CREATE TABLE `video` (
+CREATE TABLE IF NOT EXISTS `video` (
   `frameid` int(11) NOT NULL,
   `cameraid` int(11) NOT NULL,
   `path` varchar(255) NOT NULL,

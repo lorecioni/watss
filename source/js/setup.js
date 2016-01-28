@@ -7,12 +7,6 @@ var loading = $('<img></img>')
 	.attr('src', 'img/loading.gif')
 	.attr('alt', 'loading');
 
-var cameras = [];
-
-/** install steps **/
-var installSteps = 5;
-var currentStep = 0;
-
 
 $(document).ready(function(){
 	
@@ -172,7 +166,6 @@ function getCameras(folderName){
 				.addClass('message glyphicon');		
 			
 			if(data.length > 0){
-				cameras = data;
 				$('#cameras-form .alert')
 					.removeClass('alert-warning alert-danger')
 					.addClass('alert-success')
@@ -182,7 +175,7 @@ function getCameras(folderName){
 				var settings = '';
 				for ( var i in data) {
 					var id = data[i];
-					settings += '<div class="form-group camera" data-id="' + id + '">';
+					settings += '<div class="form-group camera-entry" data-id="' + id + '">';
 					settings += '<label for="camera-calibration-' + id + '" class="col-sm-3 control-label">Camera ' + id + '</label>';
 					settings += '<div class="col-sm-8">';
 					settings += '<input type="text" class="form-control" id="camera-calibration-' + id + '" value="0" placeholder="Calibration">';
@@ -243,10 +236,21 @@ function validateInstall(){
 	}
 }
 
+
+/** Installation procedure **/
+
+/** install steps **/
+
+var installSteps = 5;
+var currentStep = 0;
+
 function install(){
 	if(validateInstall()){
 		//WATSS is ready to be installed
 		console.log('Installing WATSS');
+		
+		$('#install-log-container').empty();
+		
 		
 		if(!$('#install-button').hasClass('disabled')){
 		//	$('#install-button').addClass('disabled');
@@ -268,11 +272,11 @@ function install(){
 		var framesFolder = $('#frame-folder-name').val();
 		
 		//Cameras
-		var cameraSettings = cameras;
-		for ( var i in cameraSettings) {
-			var id = cameraSettings[i].id;
+		var cameras = [];
+		for(var i = 0; i < $('.camera-entry').length; i++){
+			var id = $($('.camera-entry')[i]).data('id');
 			var calibration = $('#camera-calibration-' + id).val();
-			cameraSettings[i] = {id: id, calibration: calibration}
+			cameras.push({id: id, calibration: calibration});
 		}
 		
 		var data = [];
@@ -286,8 +290,8 @@ function install(){
 				data = {
 					connection: {user: dbUser, password: dbPassword, host: dbHost, name: dbName},
 					framesFolder: framesFolder,
-					cameras: cameraSettings,
-					users: users
+					cameras: JSON.stringify(cameras),
+					users: JSON.stringify(users)
 				};
 				
 				createDatabaseConnection(progress, data);
@@ -299,6 +303,11 @@ function install(){
 	}
 }
 
+/**
+ * Creates database connection file
+ * @param progress
+ * @param data
+ */
 function createDatabaseConnection(progress, data){
 	$.ajax({
 		type: "POST",
@@ -315,14 +324,22 @@ function createDatabaseConnection(progress, data){
 				progress.attr('aria-valuenow', value).css('width', value + '%');
 				progress.html(value + '%');
 				generateDatabaseSchema(progress, data);
+				generateLog('Created database connection file.', 'success');
+			} else {
+				generateLog('Error creating database connection file.', 'error');
 			}
 		},
 		error: function(error){
-			console.log(error);
+			generateLog(error.responseText, 'error');
 		}
 	});	
 }
 
+/**
+ * Create database and generate tables
+ * @param progress
+ * @param data
+ */
 function generateDatabaseSchema(progress, data){
 	$.ajax({
 		type: "POST",
@@ -332,17 +349,137 @@ function generateDatabaseSchema(progress, data){
 			data: data.connection
 		},
 		success: function(response){
-			console.log(response)
 			if(response){
 				currentStep += 1;
 				var value = currentStep * 100/installSteps;
 				
 				progress.attr('aria-valuenow', value).css('width', value + '%');
 				progress.html(value + '%');
+				generateLog('Created schema and database tables.', 'success');
+				
+				insertCameras(progress, data);
+			} else {
+				generateLog('Error creating database schema.', 'error');
 			}
 		},
 		error: function(error){
-			console.log(error);
+			generateLog(error.responseText, 'error');
 		}
 	});	
+}
+
+/**
+ * Inserting cameras in db
+ * @param progress
+ * @param data
+ */
+function insertCameras(progress, data){
+	$.ajax({
+		type: "POST",
+		url: "php/setup.php",
+		data: {
+			action: "insert-cameras",
+			data: data
+		},
+		success: function(response){
+			if(response){
+				currentStep += 1;
+				var value = currentStep * 100/installSteps;
+				
+				progress.attr('aria-valuenow', value).css('width', value + '%');
+				progress.html(value + '%');
+				generateLog('Cameras inserted in database.', 'success');
+				
+				insertFrames(progress, data);
+			} else {
+				generateLog('Error inserting cameras in database.', 'error');
+			}
+		},
+		error: function(error){
+			generateLog(error.responseText, 'error');
+		}
+	});	
+}
+
+
+/**
+ * Inserting frames in db, scans camera folders
+ * @param progress
+ * @param data
+ */
+function insertFrames(progress, data){
+	$.ajax({
+		type: "POST",
+		url: "php/setup.php",
+		data: {
+			action: "insert-frames",
+			data: data
+		},
+		success: function(response){
+			if(response){
+				currentStep += 1;
+				var value = currentStep * 100/installSteps;
+				
+				progress.attr('aria-valuenow', value).css('width', value + '%');
+				progress.html(value + '%');
+				generateLog('Frames inserted in database.', 'success');
+				
+				insertUsers(progress, data);
+			} else {
+				generateLog('Error inserting frames in database.', 'error');
+			}
+		},
+		error: function(error){
+			generateLog(error.responseText, 'error');
+		}
+	});	
+}
+
+/**
+ * Inserting users in db
+ * @param progress
+ * @param data
+ */
+function insertUsers(progress, data){
+	$.ajax({
+		type: "POST",
+		url: "php/setup.php",
+		data: {
+			action: "insert-users",
+			data: data
+		},
+		success: function(response){
+			if(response){
+				currentStep += 1;
+				var value = currentStep * 100/installSteps;
+				
+				progress.attr('aria-valuenow', value).css('width', value + '%');
+				progress.html(value + '%');
+				generateLog('Users inserted in database.', 'success');
+			} else {
+				generateLog('Error inserting users in database.', 'error');
+			}
+		},
+		error: function(error){
+			generateLog(error.responseText, 'error');
+		}
+	});	
+}
+
+
+/**
+ * Function for generating installation log
+ * @param msg
+ * @param type: error or success
+ */
+function generateLog(msg, type){
+	switch(type){
+		case 'success':
+			$('#install-log-container').append('<p class="install-log-entry success">' + msg + '</p>');
+			break;
+			
+		case 'error':
+			$('#install-log-container').append('<p class="install-log-entry error">' + msg + '</p>');
+			break;
+	}
 }
