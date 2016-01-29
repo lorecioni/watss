@@ -200,4 +200,14 @@ p.install-log-entry.success {
 
 p.install-log-entry.error {
     color: #CD0000;
+    font-weight: bold;
+}
+
+section#installation-success {
+    display: none;
+}
+
+button#start-button {
+    margin: 50px auto 0;
+    display: block;
 }

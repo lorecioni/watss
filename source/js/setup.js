@@ -26,7 +26,7 @@ $(document).ready(function(){
 		} else {
 			$('#check-db-name').append('<span class="icon glyphicon glyphicon-remove"></span>');
 		}
-		validateInstall()
+		validateInstallationInfo()
 	});
 	
 	$('#user-list-input').change(function(){
@@ -37,7 +37,7 @@ $(document).ready(function(){
 		} else {
 			$('#check-users').append('<span class="icon glyphicon glyphicon-remove"></span>');
 		}
-		validateInstall()
+		validateInstallationInfo()
 	})
 	
 	$('.btn-file :file').change(function(){
@@ -66,6 +66,10 @@ $(document).ready(function(){
 		if(!$(this).hasClass('disabled')){
 			install();
 		}
+	});
+	
+	$('#start-button').click(function(){
+		window.location.href = "index.php";
 	});
 	
 });
@@ -116,7 +120,7 @@ function checkDatabaseConnection(){
 				$('#db-connection-form .form-button .message').remove();
 				$('#db-connection-form .form-button').append(label);
 				
-				validateInstall()		
+				validateInstallationInfo()		
 			},
 			error: function(){
 				$('#db-connection-form .loading').remove();
@@ -127,7 +131,7 @@ function checkDatabaseConnection(){
 				$('#db-connection-form .form-button').append(label);	
 				//Updates install summary (bottom page)
 				$('#check-db-connection').append('<span class="icon glyphicon glyphicon-remove"></span>');
-				validateInstall()
+				validateInstallationInfo()
 			}
 		});	
 	} else {
@@ -138,7 +142,7 @@ function checkDatabaseConnection(){
 		$('#db-connection-form .form-button .message').remove();
 		$('#db-connection-form .form-button').append(label);
 		$('#check-db-connection').append('<span class="icon glyphicon glyphicon-remove"></span>');
-		validateInstall()
+		validateInstallationInfo()
 	}
 }
 
@@ -201,7 +205,7 @@ function getCameras(folderName){
 			}
 			$('#cameras-form .form-button .message').remove();
 			$('#cameras-form .form-button').append(label);	
-			validateInstall();
+			validateInstallationInfo();
 		},
 		error: function(){
 			$('#camera-settings .loading').remove();
@@ -214,13 +218,13 @@ function getCameras(folderName){
 			//Updates install summary
 			$('#check-frames-folder').append('<span class="icon glyphicon glyphicon-remove"></span>');
 			$('#check-camera-settings').append('<span class="icon glyphicon glyphicon-remove"></span>');
-			validateInstall()
+			validateInstallationInfo()
 		}
 	});	
 }
 
 
-function validateInstall(){
+function validateInstallationInfo(){
 	var numChecks = $('p.check-label').length;
 	var checked = $('p.check-label .icon.glyphicon-ok').length;
 	if(checked >= numChecks){
@@ -245,15 +249,14 @@ var installSteps = 6;
 var currentStep = 0;
 
 function install(){
-	if(validateInstall()){
+	if(validateInstallationInfo()){
 		//WATSS is ready to be installed
 		console.log('Installing WATSS');
 		
 		$('#install-log-container').empty();
 		
-		
 		if(!$('#install-button').hasClass('disabled')){
-		//	$('#install-button').addClass('disabled');
+			$('#install-button').addClass('disabled');
 		}
 		
 		$('#install-progress').fadeIn('fast');
@@ -322,7 +325,7 @@ function createDatabaseConnection(progress, data){
 				var value = currentStep * 100/installSteps;
 				
 				progress.attr('aria-valuenow', value).css('width', value + '%');
-				progress.html(value + '%');
+				progress.html(formatNumber(value) + '%');
 				generateDatabaseSchema(progress, data);
 				generateLog('Created database connection file.', 'success');
 			} else {
@@ -354,7 +357,7 @@ function generateDatabaseSchema(progress, data){
 				var value = currentStep * 100/installSteps;
 				
 				progress.attr('aria-valuenow', value).css('width', value + '%');
-				progress.html(value + '%');
+				progress.html(formatNumber(value) + '%');
 				generateLog('Created schema and database tables.', 'success');
 				
 				insertCameras(progress, data);
@@ -387,7 +390,7 @@ function insertCameras(progress, data){
 				var value = currentStep * 100/installSteps;
 				
 				progress.attr('aria-valuenow', value).css('width', value + '%');
-				progress.html(value + '%');
+				progress.html(formatNumber(value) + '%');
 				generateLog('Cameras inserted in database.', 'success');
 				
 				insertFrames(progress, data);
@@ -421,7 +424,7 @@ function insertFrames(progress, data){
 				var value = currentStep * 100/installSteps;
 				
 				progress.attr('aria-valuenow', value).css('width', value + '%');
-				progress.html(value + '%');
+				progress.html(formatNumber(value) + '%');
 				generateLog('Frames inserted in database.', 'success');
 				
 				insertUsers(progress, data);
@@ -454,8 +457,10 @@ function insertUsers(progress, data){
 				var value = currentStep * 100/installSteps;
 				
 				progress.attr('aria-valuenow', value).css('width', value + '%');
-				progress.html(value + '%');
+				progress.html(formatNumber(value) + '%');
 				generateLog('Users inserted in database.', 'success');
+				
+				insertPoi(progress, data);
 			} else {
 				generateLog('Error inserting users in database.', 'error');
 			}
@@ -466,6 +471,66 @@ function insertUsers(progress, data){
 	});	
 }
 
+/**
+ * Inserting POI in db
+ * @param progress
+ * @param data
+ */
+function insertPoi(progress, data){
+	$.ajax({
+		type: "POST",
+		url: "php/setup.php",
+		data: {
+			action: "insert-poi",
+			data: data
+		},
+		success: function(response){
+			if(response){
+				currentStep += 1;
+				var value = currentStep * 100/installSteps;	
+				progress.attr('aria-valuenow', value).css('width', value + '%');
+				progress.html(formatNumber(value) + '%');
+				generateLog('POI inserted in database.', 'success');
+				
+				validateInstall(progress);
+			} else {
+				generateLog('Error inserting POI in database.', 'error');
+			}
+		},
+		error: function(error){
+			generateLog(error.responseText, 'error');
+		}
+	});	
+}
+
+/**
+ * Checks if everything has gone ok
+ */
+function validateInstall(progress){
+	if($('#install-log-container p.install-log-entry.error').length == 0){
+		console.log('Validating install...');
+		generateLog('Validating install...', 'success');
+		
+		setTimeout(function(){
+			console.log('Installation success!');
+	    	generateLog('Installation success!', 'success');
+	    	progress.removeClass('active');
+	    	setTimeout(function () { 
+	    		$('section.install-section').fadeOut('fast', function(){
+	    			$('#installation-success').fadeIn(100);
+	    		});
+	    	}, 2000);
+		}, 2000);
+	
+	} else {
+		console.log('Installation error');
+		generateLog('Installation failed.', 'error');
+		
+		progress.removeClass('progress-bar-success')
+			.addClass('progress-bar-danger')
+			.removeClass('active');
+	}
+}
 
 /**
  * Function for generating installation log
@@ -482,4 +547,14 @@ function generateLog(msg, type){
 			$('#install-log-container').append('<p class="install-log-entry error">' + msg + '</p>');
 			break;
 	}
+}
+
+/**
+ * Format number having always a fixed number of digits
+ * @param number
+ * @param digits
+ * @returns
+ */
+function formatNumber(number){
+	return Math.round(number);
 }

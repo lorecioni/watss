@@ -228,6 +228,42 @@ if(isset($_REQUEST['action'])){
 					}
 					mysqli_close($dbConnection);
 					break;
+					
+					/**
+					 *  Inserting poi in database
+					 */
+					case 'insert-poi':
+						$success = true;
+					
+						$dbInfo = $_REQUEST['data']['connection'];
+						$dbUser = $dbInfo['user'];
+						$dbPass = $dbInfo['password'];
+						$dbHost = $dbInfo['host'];
+						$dbName = $dbInfo['name'];
+						$dbConnection = mysqli_connect($dbHost, $dbUser, $dbPass, $dbName) or $success = false;
+					
+						$sql = 'INSERT INTO `poi` (`poiid`, `cameraid`, `location_x`, `location_y`, `width`, `height`, `name`) VALUES ';
+					
+						$cameras = json_decode($_REQUEST['data']['cameras']);
+						
+						for($i = 0; $i < count($cameras); $i++){
+							$sql .= "(0, ".$cameras[$i]->id.", 0, 0, 0, 0, 'Not set')";
+							if($i < count($cameras) - 1){
+								$sql .= ',';
+							}
+						}
+					
+						//FIXME remove comment
+						//mysqli_query($dbConnection, $sql) or $success = false;
+					
+						if($success){
+							jecho($success);
+						} else {
+							$log = mysqli_error($dbConnection);
+							error_500($log);
+						}
+						mysqli_close($dbConnection);
+						break;
 	}
 	
 }

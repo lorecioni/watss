@@ -21,14 +21,14 @@
 			</header>
 
 		    <!-- Welcome section -->
-			<section>
+			<section class="install-section">
 				<h3>Welcome</h3>
 				<p>Welcome to the WATSS installation process. Fill information below to start using this tool.
 				Read the <a href="help.html">Readme</a> if you need help.</p>
 			</section>
 			
 			<!-- Database section -->
-			<section>
+			<section class="install-section">
 				<h3>Database connection</h3>
 				<p>Provide information about database connection.</p>
 				<form id="db-connection-form" class="form-horizontal">
@@ -58,7 +58,7 @@
 			</section>	
 			
 			<!-- Frame path section -->
-			<section>
+			<section class="install-section">
 				<h3>Cameras</h3>
 				Provide frames information. Follow this steps:
 				<ul>
@@ -92,7 +92,7 @@
 			</section>
 			
 			<!-- SQL script -->
-			<section>
+			<section class="install-section">
 				<h3>Data</h3>
 				<p>Import data or creating new database.</p>
 				<div class="radio">
@@ -142,7 +142,7 @@
 				</section>
 				
 				<!-- Install section  -->
-				<section id="install-section">
+				<section id="install-section" class="install-section">
 					<h3>Install</h3>
 					<p>Check if all the provided information above are correct, then you are ready to install WATSS.</p>
 					<div id="checks-container">
@@ -159,6 +159,12 @@
 					</div>
 					<div class="clearfix"></div>
 					<div id="install-log-container"></div>
+				</section>
+				
+				<section id="installation-success">
+					<h3>Installation completed</h3>
+					<p>Congratulations! You have correctly installed WATSS.</p>
+					<button type="button" class="btn btn-primary btn-lg" id="start-button">Start WATSS</button>
 				</section>
 
 		</div>
