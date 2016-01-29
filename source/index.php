@@ -13,6 +13,7 @@
     </head>
 
     <body>
+      <div id="content">
 		<nav class="navbar navbar-default" role="navigation">
 			  <div class="container-fluid">
 
@@ -32,10 +33,35 @@
 			  </div><!-- /.container-fluid -->
 			</nav>
 		<div id="content-wrapper">
-		    <h1>WATSS: Web Annotation Tool for Surveillance Scenarios</h1>
-		    <h4>This tool is designed to annotate person and group bounding boxes, visible area, head gaze, body gaze and observed points of interest (poi) on surveillance datasets.</h4> 
-	     	    <h5>You may  try it on sequences acquired from the Bargello Museum, Go to <i>GT Making</i> section and enter with the user <i>Guest</i>.</h5>
+		
+			<header>
+		  		<img id="logo" src="img/logo_header.png" alt="WATSS Logo">
+		  		<h4>Web Annotation Tool for Surveillance Scenarios</h4>
+		  	</header>
+		<div class="row">
+		  <div class="col-xs-8 col-sm-6 col-md-6">
+		  	<div id=""></div>
+		  		  <p>This tool is designed to annotate person and group bounding boxes, visible area, head gaze, body gaze and observed points of interest (poi) on surveillance datasets.</p> 
+		  		<div id="features-list">
+		  			<h4>Features</h4>
+		  			<ul>
+		  				<li>Bounding Box<div class="arrow arrow-bb"></div></li>
+		  				<li>Visible area<div class="arrow arrow-bbv"></div></li>
+		  				<li>Head gaze<div class="arrow arrow-hgaze"></div></li>
+		  				<li>Body gaze<div class="arrow arrow-bgaze"></div></li>
+		  				<li>Points of interest<div class="arrow arrow-poi"></div></li>
+		  			</ul>
+		  		</div>
+		  </div>
+		  <div class="col-xs-6 col-md-6">
+		  	<img src="img/frame.jpg" alt="Frame" id="frame-preview">		  
+		  </div>
 		</div>
+		</div>
+		</div>
+		<footer>
+			&copy; 2016, MICC University of Florence
+		</footer>
  <!-- jQuery (necessary for Bootstrap's JavaScript plugins) -->
 	    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.0/jquery.min.js"></script>
 	    <!-- Include all compiled plugins (below), or include individual files as needed -->

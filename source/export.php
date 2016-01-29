@@ -14,6 +14,7 @@
     </head>
 
     <body>
+    	<div id="content">
 		<div>
 			<nav class="navbar navbar-default" role="navigation">
 			  <div class="container-fluid">
@@ -38,7 +39,10 @@
 			<a href="#" class="btn btn-default btn-sm" id="export_res"> Export </a>	
 			</div>
 		</div>
-			
+		</div>
+		<footer>
+			&copy; 2016, MICC University of Florence
+		</footer>
 	    <script src="js/jquery-1.11.1.min.js"></script>
 	    <!-- Include all compiled plugins (below), or include individual files as needed -->
 	    <script src="js/bootstrap.min.js"></script>

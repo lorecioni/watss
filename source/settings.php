@@ -16,7 +16,7 @@
     </head>
 
     <body>
-    
+      <div id="content">
 		<nav class="navbar navbar-default" role="navigation">
 			  <div class="container-fluid">
 				<div class="collapse navbar-collapse">
@@ -167,6 +167,10 @@
 				  </div>		 
 			</div>
 		 </div>
+		 </div>
+		 <footer>
+			&copy; 2016, MICC University of Florence
+		</footer>
 		 <!-- jQuery (necessary for Bootstrap's JavaScript plugins) -->
 	    <script src="js/jquery-1.11.1.min.js"></script>
 	    <!-- Include all compiled plugins (below), or include individual files as needed -->

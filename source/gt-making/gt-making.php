@@ -21,6 +21,7 @@
 	</head>
 
 	<body>
+	  <div id="content">
 		<nav class="navbar navbar-default" role="navigation">
 			<div class="container-fluid">
 				<!-- Collect the nav links, forms, and other content for toggling -->
@@ -235,7 +236,11 @@
 			</div>
 		  </div>
 		</div>
-
+		</div>
+		<footer>
+			&copy; 2016, MICC University of Florence
+		</footer>
+		
 		<script src="../js/jquery-1.11.1.min.js"></script>
 		<script src="../js/bootstrap.min.js"></script>
 		<script src="../js/jquery.bootpag.min.js"></script>
