@@ -176,6 +176,10 @@ if(isset($_REQUEST['action'])){
 						if($checkDatabaseConnection){
 							$sql = "INSERT INTO `camera` (`calibration`) VALUES ('".$calibration."');";
 							$result = mysql_query($sql) or $success = false;
+							
+							$sql = "INSERT INTO `poi` (`poiid`, `cameraid`, `location_x`, `location_y`, `width`, `height`, `name`) 
+										VALUES (0, '".mysql_insert_id()."', 0, 0, 0, 0, 'Not set')";	
+							$result = mysql_query($sql) or $success = false;
 						} else {
 							$success = false;
 						}
@@ -236,7 +240,7 @@ if(isset($_REQUEST['action'])){
 				 */
 				case "get-poi":
 					$success = true;
-					$sql = "SELECT * FROM poi";
+					$sql = "SELECT * FROM poi WHERE poiid != 0";
 					$pois = array();
 					if($checkDatabaseConnection){
 						$result = mysql_query($sql) or $success = false;
