@@ -161,8 +161,16 @@ class Queries {
 		return "DELETE FROM `people` WHERE cameraid=".$cameraid." AND peopleid=".$peopleid." AND frameid=".$frameid."";
 	}
 	
+	function getPersonInFrame($id, $cameraid, $frameid){
+		return "SELECT * FROM `people` WHERE `peopleid`=".$id." AND cameraid = ".$cameraid." AND frameid = ".$frameid."";
+	}
+	
 	
 	/** Real people queries **/
+	
+	function getRealPeopleInfo($id){
+		return "SELECT * FROM `real_people` WHERE `peopleid` = ".$id;
+	}
 	
 	function insertRealPeople($face, $facez, $path){
 		return "INSERT INTO `real_people` (`face`,`face_z`,`image`) VALUES (".$face.", ".$facez.",'".$path."')";

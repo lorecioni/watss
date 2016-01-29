@@ -692,7 +692,7 @@ function deselectAllBox(table_id){
 				parseInt($("#box-"+table.$('tr.info').data("id")+"-bbV").outerWidth()*parseFloat($("#video-box").data("width"))/680.0),
 				parseInt($("#box-"+table.$('tr.info').data("id")+"-bbV").outerHeight()*parseFloat($("#video-box").data("height"))/425.0)]; 
 		
-		console.log("[update-person-attribute] call bb:["+bb[0]+","+bb[1]+","+bb[2]+","+bb[3]+"] bbV:["+bbV[0]+","+bbV[1]+","+bbV[2]+","+bbV[3]+"] angle_face:"+ $("#box-"+table.$('tr.info').data("id")+"-face").data("face") +" angle_face_z:"+$("#box-"+table.$('tr.info').data("id")+"-face").data("facez")+" angle_body:"+ $("#box-"+table.$('tr.info').data("id")+"-face").data("body")+ " angle_body_z:"+$("#box-"+table.$('tr.info').data("id")+"-face").data("bodyz")+" color: ",table.$('#color-'+table.$('tr.info').data('id')).colorpicker().data('colorpicker').color.toHex()," group: ",table.$('#group-'+table.$('tr.info').data('id')).editable('getValue'), "	art: "+table.$('#art-'+table.$('tr.info').data('id')).editable().data('select2'));
+		console.log("[update-person-attribute]");
 
 		$.ajax({
 			type: "POST",

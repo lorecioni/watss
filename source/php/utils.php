@@ -2,7 +2,7 @@
 
 /**
  * 
- * A set of utils function for WATTS annotation tool
+ * A set of utils function for WATSS annotation tool
  * 
  */
 
@@ -44,59 +44,82 @@ function error_500 ($msg){
  * @param unknown $id
  * @return boolean
  */
-function createAvatar($bbV, $id){
+function createAvatar($id){
 	$done = true;
-	$first_change = false;
+	global $config;
+	global $QUERIES;
+	$defaultAvatar = false;
 	$dimension = array();
+	
+	$log = 'creating avatar';
+	
 	$alpha = 0.09;
 	$gamma = 0.9;
-	$beta = 1-($alpha+$gamma);
-	// recover person avatar...
-	$sql="SELECT * FROM `real_people` WHERE `peopleid`=".$id;
-	$result=mysql_query($sql) or $done = false;
+	$beta = 1 - ($alpha + $gamma);
 
+	$sql = $QUERIES->getRealPeopleInfo($id);
+	$result = mysql_query($sql) or $done = false;
+	
+	
 	if ($done == true){
-		while ($row=mysql_fetch_array($result) )
-		{
-			if ($row["image"] != "../img/real_people/default.png"){
+		while ($row = mysql_fetch_array($result) ){
+			if (strcmp($row["image"], $config->realPeopleDefaultImg) != 0){
 				$dimension = getimagesize($row["image"]);
 			}else{
 				$dimension[0] = 0.1;
 				$dimension[1] = 0.1;
-				$first_change = true;
+				$defaultAvatar = true;
 			}
 			$face = intval($row["face"]);
 			$face_z = intval($row["face_z"]);
 		}
 	}
+	
+	
+	
+	$sql = $QUERIES->getPersonInFrame($id, $_SESSION['camera_id'], $_SESSION['frame_id']);
+	$result = mysql_query($sql) or $done = false;
+	
+	$bb = new stdClass();
+	$bbV = new stdClass();
 
-	$sql="SELECT gazeAngle_face, gazeAngle_face_z FROM `people` WHERE `peopleid`=".$id." AND cameraid = ".$_SESSION['camera_id']." AND frameid = ".$_SESSION['frame_id']."";
-
-	$result=mysql_query($sql) or $done = false;
-
+	$facePeople = 0;
+	$facePeopleZ = 0;
+	
 	if ($done == true){
-		while ($row=mysql_fetch_array($result) )
-		{
-			$face_people = intval($row['gazeAngle_face']);
-			$face_z_people = intval($row['gazeAngle_face_z']);
+		while ($row=mysql_fetch_array($result)){
+			$bb->x = intval($row['bb_x']);
+			$bb->y = intval($row['bb_y']);
+			$bb->width = intval($row['bb_width']);
+			$bb->height = intval($row['bb_height']);
+			$bbV->x = intval($row['bbV_x']);
+			$bbV->y = intval($row['bbV_y']);
+			$bbV->width = intval($row['bbV_width']);
+			$bbV->height = intval($row['bbV_height']);
+			$facePeople = intval($row['gazeAngle_face']);
+			$facePeopleZ = intval($row['gazeAngle_face_z']);
 		}
 	}
-
-	$old_value = 1/($dimension[0]*$dimension[1]);
-	$new_value = 1/($bbV[2]*$bbV[3]);
+	
+	$old_value = 1/($dimension[0] * $dimension[1]);
+	$new_value = 1/($bbVwidth * $bbVheight);
 
 	if ( $new_value < $old_value ){
-		$sql="SELECT path FROM `video` WHERE `frameid`=".$_SESSION["frame_id"]." AND `cameraid`=".$_SESSION["camera_id"]."";
-		$result=mysql_query($sql) or $done = false;
-
+		$sql = $QUERIES->getFrameById($_SESSION["frame_id"], $_SESSION["camera_id"]);
+		$result = mysql_query($sql) or $done = false;
+		
+		
 		if ($done == true){
+			$log .= 'dentro';
 			while ($row=mysql_fetch_array($result) )
 			{
 				$src = imagecreatefromjpeg("../frames/".$row["path"]);
 				$dest = imagecreatetruecolor($bbV[2], $bbV[3]);
-				$done = imagecopyresampled($dest, $src, 0, 0, $bbV[0],  $bbV[1],  $bbV[2],  $bbV[3], $bbV[2],  $bbV[3]);
+				$done = imagecopyresampled($dest, $src, 0, 0, $bbV->x,  $bbV->y,  $bbV->width,  $bbV->heigth,$bbV->width,  $bbV->height);
 				$done = imagejpeg($dest, "../img/real_people/".$id.".jpg");
 
+				
+				//TODO using classes
 				$src = $dest;
 				$dest = imagecreatetruecolor(intval(100.0*$bbV[2]/$bbV[3]), 100);
 				$done = imagecopyresampled($dest, $src, 0, 0, 0,  0, intval(100.0*$bbV[2]/$bbV[3]), 100, $bbV[2],$bbV[3]);
@@ -109,18 +132,19 @@ function createAvatar($bbV, $id){
 
 			}
 
-			$sql="UPDATE `real_people` SET face=".$face_people.", face_z=".$face_z_people." WHERE peopleid=".$id;
-			$result=mysql_query($sql) or $done=false;
+			//$sql="UPDATE `real_people` SET face=".$face_people.", face_z=".$face_z_people." WHERE peopleid=".$id;
+			//$result=mysql_query($sql) or $done=false;
 
 		}
 
 		if ($first_change == true){
-			$sql="UPDATE `real_people` SET `image`='../img/real_people/".$id.".jpg' WHERE peopleid=".$id;
-			$result=mysql_query($sql) or $done=false;
+			//$sql="UPDATE `real_people` SET `image`='../img/real_people/".$id.".jpg' WHERE peopleid=".$id;
+			//$result=mysql_query($sql) or $done=false;
 
 		}
 	}
-	return $done;
+	return $log;
+//	return $done;
 }
 
 

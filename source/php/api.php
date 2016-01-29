@@ -403,9 +403,6 @@
 							$bbV[0], $bbV[1], $bbV[2], $bbV[3], 0, 0, 0, 0, '#000000', 0, $_SESSION['user'], 0);
 					$result=mysql_query($sql) or $success = false;
 				}
-				if ($success == true){
-					$success = createAvatar($_REQUEST['bbV'], $_REQUEST['id']);
-				}
 			}	
 			
 			if( isset($_REQUEST['angle_face']) && isset($_REQUEST['angle_face_z'])  ){
@@ -449,10 +446,14 @@
 							$bbV->x, $bbV->y, $bbV->width, $bbV->height, 0, 0, 0, 0, '#000000', $_REQUEST['opera_id'], $_SESSION['user'], 0);
 					$result = mysql_query($sql) or $success = false;
 				}
-				
-			}	
+			}
 			
-			jecho($success);			
+			
+			if ($success && isset($_REQUEST['id'])){
+				$log = createAvatar($_REQUEST['id']);
+			}
+			
+			jecho($log);			
 		break;
 
 		/**
@@ -657,6 +658,10 @@
             break;
 
 	}
+
+	
+	
+	
 	
    
 
