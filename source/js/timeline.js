@@ -298,6 +298,7 @@
 		$('#timeline-frame-' + id).addClass('current');
 		$('.timeline-annotation').remove();
 		currentFrame = id;
+		centerTimeline();
 		updateCursor();
 		loadPeople(timelineFrames[id - 1].people)
 	}
@@ -314,8 +315,7 @@
 	}
 	
 	//Updates cursor position pointing to the current frame
-	function updateCursor(){
-		centerTimeline();
+	function updateCursor(){	
 		if($('.timeline-frame.current').parent().length > 0){
 			$('.timeline-cursor').css({
 				left: $('.timeline-frame.current').parent().position().left 
