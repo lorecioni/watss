@@ -1,3 +1,11 @@
+<?php 
+	//If connection ini not exists, redirect to setup page
+	if(!file_exists('php/connection.ini')){
+		header("Location: setup.php");
+		exit;
+	}
+?>
+<!DOCTYPE html>
 <html>
     <head>
     <title>WATSS - Home</title>
@@ -11,7 +19,7 @@
 	<link rel="stylesheet" href="css/style.css">
     <!--<script src="js/event-handler"></script>-->
     </head>
-
+    
     <body>
       <div id="content">
 		<nav class="navbar navbar-default" role="navigation">

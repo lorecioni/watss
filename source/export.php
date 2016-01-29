@@ -1,3 +1,11 @@
+<?php 
+	//If connection ini not exists, redirect to setup page
+	if(!file_exists('php/connection.ini')){
+		header("Location: setup.php");
+		exit;
+	}
+?>
+<!DOCTYPE html>
 <html>
     <head>
     <title>WATSS - Export</title>
