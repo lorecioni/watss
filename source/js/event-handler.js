@@ -254,6 +254,7 @@ $('#goto-frame').on('change', function(){
 		success: function(response){
 			console.log("[get-frame] returned");
 			setFrame(response);
+			$('.timeline').timeline('gotoFrame', response.frame_id);
 		}
 	});
 });

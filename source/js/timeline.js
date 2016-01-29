@@ -90,6 +90,10 @@
 			}
 	    	$('.timeline-annotation-' + id).remove();
 	    	loadPeople(timelineFrames[currentFrame - 1].people)
+	    },
+	    /** Go to frame in timeline **/
+	    gotoFrame: function(id){
+	    	gotoFrame(id);
 	    }
 	};
 	
@@ -247,11 +251,6 @@
 			$('.timeline-frames-container').append(frame);
 		}
 		$('.timeline-loading').remove();
-		//Centering timeline on current frame
-		if(currentFrame > 20){
-			$('.timeline-frames-container').css('left', - $('.timeline-frame.current').position().left 
-					+ $('.timeline-frames').width()/2);
-		}
 		updateCursor();
 	}
 
@@ -293,6 +292,16 @@
 
 	}
 	
+	//Goes to frame (no callback)
+	function gotoFrame(id){
+		$('.timeline-frame.current').removeClass('current');
+		$('#timeline-frame-' + id).addClass('current');
+		$('.timeline-annotation').remove();
+		currentFrame = id;
+		updateCursor();
+		loadPeople(timelineFrames[id - 1].people)
+	}
+	
 	//Selects frame with the given id in timeline
 	function selectFrame(id){
 		$('.timeline-frame.current').removeClass('current');
@@ -306,6 +315,7 @@
 	
 	//Updates cursor position pointing to the current frame
 	function updateCursor(){
+		centerTimeline();
 		if($('.timeline-frame.current').parent().length > 0){
 			$('.timeline-cursor').css({
 				left: $('.timeline-frame.current').parent().position().left 
@@ -316,7 +326,6 @@
 				left: -100
 			});
 		}
-
 	}
 	
 	//Displaying annotation duration for a selected person
@@ -382,6 +391,17 @@
 	function deselectAll(){
 		$('.timeline-person').removeClass('selected');
 		$('.timeline-annotation-container').remove();
+	}
+	
+	//Center timeline on cursor
+	function centerTimeline(){
+		//Centering timeline on current frame
+		if(currentFrame > 20){
+			$('.timeline-frames-container').css('left', - $('.timeline-frame.current').position().left 
+					+ $('.timeline-frames').width()/2);
+		} else {
+			$('.timeline-frames-container').css('left', 0);
+		}
 	}
 	
 })(jQuery);
