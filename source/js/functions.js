@@ -167,6 +167,7 @@ function updateRemovePerson(table_id, last){
 					$("#box-"+t.data("id")).remove();
 					updateDeletable("#groups-table");
 					updateNPeople("#groups-table");
+					$('.timeline').timeline('removePerson', t.data("id"));
 				}else{
 					alert("Error: could not delete");
 				}
@@ -580,6 +581,13 @@ function addBoundingBox(people){
 	}).click(function(e){
 		e.preventDefault();
 		$('.bb.init').removeClass('init');
+	});
+	
+	$(document).bind('keydown', 'esc', function (e){
+		if($('.bb.init').length > 0){
+			var addedId = $('.bb.init').first().data('id');
+			$('#people-table tr[data-id=' + addedId + '] .remove-person').click();
+		}
 	});
 	
 	

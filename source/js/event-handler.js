@@ -214,8 +214,6 @@ $('#people-table tbody').on( 'click', 'tr', function (e) {
 				id: $(this).data('id'), 
 				color: $(this).find('.pickthb').css('background-color')
 			});
-		} else {
-			$('.timeline').timeline('removePerson', $(this).data('id'));
 		}
     }
 });

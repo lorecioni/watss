@@ -175,3 +175,17 @@ input#add-poi-name {
 button#add-poi-submit {
     margin-left: 20px;
 }
+
+.modal .panel-heading {
+    line-height: 20px;
+    font-weight: normal;
+    padding-left: 60px;
+}
+
+.panel-heading .radio {
+    margin-left: 15px;
+}
+
+.panel-heading .radio input {
+    left: -18px;
+}
