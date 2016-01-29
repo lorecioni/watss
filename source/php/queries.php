@@ -130,7 +130,7 @@ class Queries {
 	}
 	
 	function updatePersonColor($color, $userid, $peopleid, $frameid, $cameraid){
-		return 	"UPDATE `people` SET `color`='".$color."' ,userid='".$userid."' WHERE  `peopleid`=".$peopleid." AND `frameid` = ".$frameid." AND `cameraid` = ".$cameraid."";	
+		return 	"UPDATE `people` SET `color`='".$color."' WHERE  `peopleid`=".$peopleid." AND `cameraid` = ".$cameraid."";	
 	}
 	
 	function updatePersonGroup($groupid, $userid, $peopleid, $frameid, $cameraid){

@@ -94,6 +94,10 @@
 	    /** Go to frame in timeline **/
 	    gotoFrame: function(id){
 	    	gotoFrame(id);
+	    },
+	    /** Update person color **/
+	    updatePersonColor: function(data){
+	    	updatePersonColor(data.id, data.color);
 	    }
 	};
 	
@@ -402,6 +406,18 @@
 		} else {
 			$('.timeline-frames-container').css('left', 0);
 		}
+	}
+	
+	//Updates person color in timeline
+	function updatePersonColor(id, color){		
+		for(var i in timelineFrames){
+			for(var j in timelineFrames[i].people){
+				if(timelineFrames[i].people[j].id == id){
+					timelineFrames[i].people[j].color = color;
+				}
+			}
+		}
+		loadPeople(timelineFrames[currentFrame - 1].people);
 	}
 	
 })(jQuery);

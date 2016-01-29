@@ -2,7 +2,15 @@ var cell_height;
 var panzoom_scale = 1.0;
 var select_shown = false;
 
-/* INITIALIZE PEOPLE TABLE */
+/**
+ * Initialize people table
+ * @param people
+ * @param groups
+ * @param artworks
+ * @param table_id
+ * @param people_per_page
+ * @param att_list
+ */
 function initPeopleTable(people, groups, artworks, table_id, people_per_page, att_list){
 		
 		//if it's already a dataTable, destroy it.
@@ -71,7 +79,15 @@ function initPeopleTable(people, groups, artworks, table_id, people_per_page, at
 		}
 }
 
-/* UPDATE PEOPLE TABLE - ADD PERSON IN BOTTOM POSITION*/
+/**
+ * Add people to the table
+ * @param person
+ * @param groups
+ * @param artworks
+ * @param table_id
+ * @param people_per_page
+ * @param att_list
+ */
 function addPeople(person, groups, artworks, table_id, people_per_page, att_list){
 		to_append="";
 		to_append +='<tr data-id="'+person["id"]+'" id="tr-'+person["id"]+'" '+(person["prev_frame"]?'class="success"':'')+'>';
@@ -170,7 +186,13 @@ function updatePopover(last){
 	});
 }
 
-/* INIT GROUPS TABLE */
+/**
+ * Initialize groups table
+ * @param groups
+ * @param table_id
+ * @param groups_per_page
+ * @param att_list
+ */
 function initGroupsTable(groups, table_id, groups_per_page, att_list){
 		if($(table_id).parents('.dataTables_wrapper').length>=1)
 			$(table_id).dataTable().fnDestroy();
@@ -189,7 +211,13 @@ function initGroupsTable(groups, table_id, groups_per_page, att_list){
 		updateDeletable(table_id);
 }
 
-/* ADD GROUP TABLE */
+/**
+ * Add groups table
+ * @param group
+ * @param table_id
+ * @param groups_per_page
+ * @param att_list
+ */
 function addGroupsTable(group, table_id, groups_per_page, att_list){
 		to_append="";
 		to_append +='<tr id="tr-'+group["id"]+'-grp" class="grouptah" data-id="'+group["id"]+'">';	
@@ -204,7 +232,10 @@ function addGroupsTable(group, table_id, groups_per_page, att_list){
 		$(table_id).dataTable().fnPageChange('last');
 }
 
-/* UPDATE DELETABLE */
+/**
+ * Update groups deletable
+ * @param table_id
+ */
 function updateDeletable(table_id){
 	console.log("[get-deletable] call");
 	$.ajax({
@@ -229,7 +260,10 @@ function updateDeletable(table_id){
 	});
 }
 
-/* UPDATE NPEOPLE */
+/**
+ * Update number of people per groups
+ * @param table_id
+ */
 function updateNPeople(table_id){ 
 	console.log("[get-groups] call"); 
 	$.ajax({ 
@@ -256,7 +290,11 @@ function updateNPeople(table_id){
 	}); 
 }
 
-/* UPDATE REMOVE GROUP */
+/**
+ * Update remove group
+ * @param table_id
+ * @param last
+ */
 function updateRemoveGroup(table_id, last){
 	var last_str = last?":last":"";
 	$(".remove-group"+last_str).click(function(){
@@ -282,6 +320,11 @@ function updateRemoveGroup(table_id, last){
 	});
 }
 
+/**
+ * Update person color
+ * @param elem
+ * @param col
+ */
 function updateColor(elem, col){
 	var table = $("#people-table").DataTable();
 	table.$(elem).colorpicker();
@@ -307,6 +350,12 @@ function updateColor(elem, col){
 					$("#box-"+el.parent().parent().data('id')).css("border-color", col);
 					$("#box-"+el.parent().parent().data('id')+"-bbV").css("border-color", col);
 					$("#box-"+el.parent().parent().data('id')+"-face").css("border-color", col);
+					//Updating timeline
+					$('.timeline-annotation-container').remove();
+					$('.timeline').timeline('updatePersonColor', {
+						id: el.parent().parent().data('id'),
+						color: col
+					})
 				}
 			},
 			error: function(error){

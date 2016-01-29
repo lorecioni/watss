@@ -376,8 +376,8 @@
 					$bb = array();
 					$bb = $_REQUEST['bb'];
 					$sql = $QUERIES->updatePersonBB($bb, $_SESSION['user'], $_REQUEST['id'], $_SESSION['frame_id'], $_SESSION['camera_id']);
-					$result = mysql_query($sql) or $success=false;
-				}else{
+					$result = mysql_query($sql) or $success = false;										
+				} else {
 					$bb = array();
 					$bb = $_REQUEST['bb'];
 					$bbV = $config->bbV;
@@ -392,7 +392,7 @@
 				if(checkPerson($_REQUEST['id']) == 1){					
 					 $bbV = array();
 					 $bbV = $_REQUEST['bbV'];
-					 $sql = $QUERIES->updatePersonBB($bbV, $_SESSION['user'], $_REQUEST['id'], $_SESSION['frame_id'], $_SESSION['camera_id']);
+					 $sql = $QUERIES->updatePersonBBV($bbV, $_SESSION['user'], $_REQUEST['id'], $_SESSION['frame_id'], $_SESSION['camera_id']);
 					 $result=mysql_query($sql) or $success=false;
 				} else {
 					$bb = $config->bb;
