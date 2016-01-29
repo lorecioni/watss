@@ -41,7 +41,8 @@
 		<div class="row">
 		  <div class="col-xs-8 col-sm-6 col-md-6">
 		  	<div id=""></div>
-		  		  <p>This tool is designed to annotate person and group bounding boxes, visible area, head gaze, body gaze and observed points of interest (poi) on surveillance datasets.</p> 
+		  		  <p>This tool is designed to annotate person and group bounding boxes, visible area, head gaze, body gaze and observed points of interest (poi) on surveillance datasets.</p>
+		  		  <p>You may try it on sequences acquired from the <i>Bargello Museum</i>, go to <a href="gt-making/gt-making.php">GT Making</a> section and enter with the user <i>Guest</i>.<p> 
 		  		<div id="features-list">
 		  			<h4>Features</h4>
 		  			<ul>
@@ -53,7 +54,8 @@
 		  			</ul>
 		  		</div>
 		  </div>
-		  <div class="col-xs-6 col-md-6">
+		  <div class="preview col-xs-6 col-md-6">
+		  	<h3>Preview</h3>
 		  	<img src="img/frame.jpg" alt="Frame" id="frame-preview">		  
 		  </div>
 		</div>

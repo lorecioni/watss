@@ -195,6 +195,12 @@ footer {
     box-shadow: 0px -1px 1px rgba(0, 0, 0, 0.15);
 }
 
+.preview h3 {
+    color: #3B6465;
+    text-align: center;
+    margin-bottom: 30px;
+}
+
 /* Image picker dimension */
 img.image_picker_image {
     max-height: 100px;
