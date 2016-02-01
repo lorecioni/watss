@@ -73,8 +73,8 @@ div#features-list {
 }
 
 .arrow-bb {
-    width: 841px;
-    top: -11px;
+    width: 477px;
+    top: 0px;
     left: 116px;
     transform: rotate(-3deg);
 }
@@ -87,17 +87,17 @@ div#features-list {
 }
 
 .arrow-hgaze {
-    width: 841px;
-    top: -11px;
-    left: 116px;
-    transform: rotate(-3deg);
+     width: 753px;
+    top: -16px;
+    left: 105px;
+    transform: rotate(-4deg);
 }
 
 .arrow-bgaze {
-    width: 841px;
-    top: -11px;
-    left: 116px;
-    transform: rotate(-3deg);
+        width: 753px;
+    top: -16px;
+    left: 105px;
+    transform: rotate(-4deg);
 }
 
 .arrow-poi {
@@ -260,6 +260,10 @@ div.dataTables_info {
     max-height: 182px;
     overflow-y: scroll;
     width: 100%;
+}
+
+.scrollable-container {
+    margin-top: 14px;
 }
 
 .list-group span.badge {
