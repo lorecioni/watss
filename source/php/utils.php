@@ -90,18 +90,22 @@ function createAvatar($id){
 	$oldScore = computeAvatarScore($oldFace, $oldFaceZ, $dim[0], $dim[1]);
 	$newScore = computeAvatarScore($facePeople, $facePeopleZ, $bbV->width, $bbV->height);
 	
-	if ( $newScore > $oldScore ){
+	if ( $newScore > $oldScore || $defaultAvatar){
 		$sql = $QUERIES->getFrameById($_SESSION["frame_id"], $_SESSION["camera_id"]);
 		$result = mysql_query($sql) or $done = false;		
 		
 		if ($done == true){
-			$log .= 'dentro';
 			while ($row = mysql_fetch_array($result) ){
 				$crop = array('x' => $bbV->x , 'y' => $bbV->y, 'width' => $bbV->width, 'height'=> $bbV->height);
 				$src = imagecreatefromjpeg("../frames/".$row["path"]);
+				
+				$percent = 0.5;
+				$resizedWidth = $bbV->width * $percent;
+				$resizedHeight = $bbV->height * $percent;
 				$dest = imagecrop($src, $crop);
-				imagejpeg($dest, "../img/real_people/".$id.".jpg", 100);			
-				chmod("../img/real_people/".$id.".jpg",0777);
+				imagejpeg($dest, "../img/real_people/".$id.".jpg", 100);	
+				
+				chmod("../img/real_people/".$id.".jpg", 0777);
 				imagedestroy($src);
 				imagedestroy($dest);
 			}

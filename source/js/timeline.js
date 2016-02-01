@@ -255,6 +255,7 @@
 			$('.timeline-frames-container').append(frame);
 		}
 		$('.timeline-loading').remove();
+		centerTimeline();
 		updateCursor();
 	}
 
@@ -270,8 +271,8 @@
 					.addClass('timeline-person list-group-item')
 					.attr('data-id', people[i].id)
 					.attr('id', 'timeline-person-' + people[i].id)
-					.append('<div><a href="#" class="popover-img" data-container="body" href="#" data-toggle="popover" data-placement="right" data-content=\'' 
-							+ '<img src="../img/real_people/'+ people[i].id + '_100.jpg">' + '\'>' + people[i].id + '</a></div>')
+					.append('<div><a href="#" class="popover-img-timeline" data-container="body" href="#" data-toggle="popover" data-placement="right" data-content=\'' 
+							+ '<img style="max-height: 100px;" src="../img/real_people/'+ people[i].id + '.jpg">' + '\'>' + people[i].id + '</a></div>')
 					.append('<div id="color-' + people[i].id +'" class="thumbnail pickthb" '
 						+ 'style="background-color:'+ people[i].color + '"></div>');
 				
@@ -293,6 +294,11 @@
 		} else {
 			$('#timeline-frame-' + currentFrame).removeClass('people');
 		}
+		
+		$(".popover-img-timeline").popover({
+			trigger: 'hover',
+			html: true
+		});
 
 	}
 	

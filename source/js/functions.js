@@ -27,10 +27,10 @@ function initPeopleTable(people, groups, artworks, table_id, people_per_page, at
 					case "id":
 						to_append += '<td><a href="#" class="popover-img" data-container="body" href="#" data-toggle="popover" data-placement="right" data-content=\'';
 						$.ajax({
-							url: '../img/real_people/'+people[i][att_list[att]]+'_100.jpg',
+							url: '../img/real_people/'+people[i][att_list[att]]+'.jpg',
 							async: false,
 							success: function(){
-								to_append += '<img src="../img/real_people/'+people[i][att_list[att]]+'_100.jpg">';
+								to_append += '<img style="max-height: 100px;" src="../img/real_people/'+people[i][att_list[att]]+'.jpg">';
 							},
 							error: function(){
 								to_append += 'Image not found';
@@ -96,10 +96,10 @@ function addPeople(person, groups, artworks, table_id, people_per_page, att_list
 				case "id":
 					to_append += '<td><a href="#" class="popover-img" data-container="body" href="#" data-toggle="popover" data-placement="right" data-content="';
 					$.ajax({
-						url: '../img/real_people/'+person[att_list[att]]+'_100.jpg',
+						url: '../img/real_people/'+person[att_list[att]]+'.jpg',
 						async: false,
 						success: function(){
-							to_append += '<img src=\'../img/real_people/'+person[att_list[att]]+'_100.jpg\'>';
+							to_append += '<img src=\'../img/real_people/'+person[att_list[att]]+'.jpg\'>';
 						},
 						error: function(){
 							to_append += 'Image not found.';
