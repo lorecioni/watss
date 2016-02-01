@@ -264,6 +264,19 @@ if(isset($_REQUEST['action'])){
 						}
 						mysqli_close($dbConnection);
 						break;
+						
+					case 'parse-sql-script':
+						if ( $_FILES['file']['error'] > 0) {
+							error_500('Error: ' . $_FILES['file']['error']);
+						}
+						else {
+							$sql = file_get_contents($_FILES['file']['tmp_name']);
+
+							jecho($sql);
+//							move_uploaded_file($_FILES['file']['tmp_name'], 'uploads/' . $_FILES['file']['name']);
+						}
+						
+						break;
 	}
 	
 }

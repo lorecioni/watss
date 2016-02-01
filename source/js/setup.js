@@ -47,6 +47,11 @@ $(document).ready(function(){
 		console.log('Selected file ' + label);
 	});
 	
+	$('#verify-script').click(function(e){
+		e.preventDefault();
+		verifySqlScript();
+	});
+	
 	
 	$('input[name=import-data]').change(function(){
 		switch($(this).val()){
@@ -530,6 +535,34 @@ function validateInstall(progress){
 			.addClass('progress-bar-danger')
 			.removeClass('active');
 	}
+}
+
+/** Verify and parse sql script**/
+function verifySqlScript(form){
+	var file = $('#input-file').prop('files')[0]; 
+	console.log(file)
+
+	 var data = new FormData();
+	 data.append('file', file);
+	 data.append('action', 'parse-sql-script');
+	console.log(data)
+	
+    $.ajax({
+    	url: "php/setup.php",
+    	dataType: 'json',
+        cache: false,
+        contentType: false,
+        processData: false,
+        data: data,                         
+        type: 'post',
+        success: function(response){
+        	console.log(response);
+        }, 
+        error: function(error){
+        	console.log(error);
+        }
+     });
+	
 }
 
 /**

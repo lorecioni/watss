@@ -125,17 +125,19 @@
 								
 				<div id="importing-data-container" class="data-container">
 					<p>Import SQL script for loading data.</p>
+					<form id="form-input-script">
 					<div class="input-group">
 		                <span class="input-group-btn" >
 		                    <span class="btn btn-primary btn-file">
-		                        Browse&hellip; <input id="input-file" type="file">
+		                        Browse&hellip; <input id="input-file" name="file" type="file">
 		                    </span>
 		                </span>
 		                <input id="filename" type="text" class="form-control" readonly>
 		            </div>
 		            <div class="col-sm-offset-2 col-sm-10 form-button" id="input-script-check">
-					  	<button id="verify-script" type="button" class="btn btn-default">Verify script</button>
+					  	<input id="verify-script" type="submit" class="btn btn-default" value="Verify script"/>
 					  </div>	
+					</form>
 		            <div class="clearfix"></div>
 		            <div class="alert alert-warning" role="alert">No SQL script selected.</div>			
 				</div>
