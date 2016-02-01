@@ -49,49 +49,35 @@ function createAvatar($id){
 	global $config;
 	global $QUERIES;
 	$defaultAvatar = false;
-	$dimension = array();
-	
-	$log = 'creating avatar';
-	
-	$alpha = 0.09;
-	$gamma = 0.9;
-	$beta = 1 - ($alpha + $gamma);
+	$dim = array();
 
 	$sql = $QUERIES->getRealPeopleInfo($id);
 	$result = mysql_query($sql) or $done = false;
 	
-	
 	if ($done == true){
 		while ($row = mysql_fetch_array($result) ){
 			if (strcmp($row["image"], $config->realPeopleDefaultImg) != 0){
-				$dimension = getimagesize($row["image"]);
+				$dim = getimagesize($row["image"]);
 			}else{
-				$dimension[0] = 0.1;
-				$dimension[1] = 0.1;
+				$dim[0] = 0.1;
+				$dim[1] = 0.1;
 				$defaultAvatar = true;
 			}
-			$face = intval($row["face"]);
-			$face_z = intval($row["face_z"]);
+			$oldFace = intval($row["face"]);
+			$oldFaceZ = intval($row["face_z"]);
 		}
 	}
 	
-	
-	
+	//Retrieving current people in frame information
 	$sql = $QUERIES->getPersonInFrame($id, $_SESSION['camera_id'], $_SESSION['frame_id']);
 	$result = mysql_query($sql) or $done = false;
 	
-	$bb = new stdClass();
 	$bbV = new stdClass();
-
 	$facePeople = 0;
 	$facePeopleZ = 0;
 	
 	if ($done == true){
 		while ($row=mysql_fetch_array($result)){
-			$bb->x = intval($row['bb_x']);
-			$bb->y = intval($row['bb_y']);
-			$bb->width = intval($row['bb_width']);
-			$bb->height = intval($row['bb_height']);
 			$bbV->x = intval($row['bbV_x']);
 			$bbV->y = intval($row['bbV_y']);
 			$bbV->width = intval($row['bbV_width']);
@@ -101,52 +87,53 @@ function createAvatar($id){
 		}
 	}
 	
-	$old_value = 1/($dimension[0] * $dimension[1]);
-	$new_value = 1/($bbVwidth * $bbVheight);
-
-	if ( $new_value < $old_value ){
+	$oldScore = computeAvatarScore($oldFace, $oldFaceZ, $dim[0], $dim[1]);
+	$newScore = computeAvatarScore($facePeople, $facePeopleZ, $bbV->width, $bbV->height);
+	
+	if ( $newScore > $oldScore ){
 		$sql = $QUERIES->getFrameById($_SESSION["frame_id"], $_SESSION["camera_id"]);
-		$result = mysql_query($sql) or $done = false;
-		
+		$result = mysql_query($sql) or $done = false;		
 		
 		if ($done == true){
 			$log .= 'dentro';
-			while ($row=mysql_fetch_array($result) )
-			{
+			while ($row = mysql_fetch_array($result) ){
+				$crop = array('x' => $bbV->x , 'y' => $bbV->y, 'width' => $bbV->width, 'height'=> $bbV->height);
 				$src = imagecreatefromjpeg("../frames/".$row["path"]);
-				$dest = imagecreatetruecolor($bbV[2], $bbV[3]);
-				$done = imagecopyresampled($dest, $src, 0, 0, $bbV->x,  $bbV->y,  $bbV->width,  $bbV->heigth,$bbV->width,  $bbV->height);
-				$done = imagejpeg($dest, "../img/real_people/".$id.".jpg");
-
-				
-				//TODO using classes
-				$src = $dest;
-				$dest = imagecreatetruecolor(intval(100.0*$bbV[2]/$bbV[3]), 100);
-				$done = imagecopyresampled($dest, $src, 0, 0, 0,  0, intval(100.0*$bbV[2]/$bbV[3]), 100, $bbV[2],$bbV[3]);
-				$done = imagejpeg($dest, "../img/real_people/".$id."_100.jpg");
-
+				$dest = imagecrop($src, $crop);
+				imagejpeg($dest, "../img/real_people/".$id.".jpg", 100);			
 				chmod("../img/real_people/".$id.".jpg",0777);
-				chmod("../img/real_people/".$id."_100.jpg",0777);
 				imagedestroy($src);
 				imagedestroy($dest);
-
 			}
-
-			//$sql="UPDATE `real_people` SET face=".$face_people.", face_z=".$face_z_people." WHERE peopleid=".$id;
-			//$result=mysql_query($sql) or $done=false;
-
-		}
-
-		if ($first_change == true){
-			//$sql="UPDATE `real_people` SET `image`='../img/real_people/".$id.".jpg' WHERE peopleid=".$id;
-			//$result=mysql_query($sql) or $done=false;
-
-		}
+			
+			$sql = $QUERIES->setRealPeopleFace($id, $facePeople, $facePeopleZ);
+			$result = mysql_query($sql) or $done = false;
+		}	
 	}
-	return $log;
-//	return $done;
+	
+	if ($defaultAvatar == true){
+		$sql = $QUERIES->setRealPeopleAvatar($id);
+		$result = mysql_query($sql) or $done=false;
+	}
+	
+	return $done;
 }
 
+/**
+ * Compute avatar score
+ * @param float $y
+ * @param float $z
+ * @param float $w
+ * @param float $h
+ */
+function computeAvatarScore($y, $z, $w, $h){
+	$alpha = 0.09;
+	$gamma = 0.9;
+	$beta = 1 - ($alpha + $gamma);
+	
+	return exp(-($alpha * abs($y - 180))) + $beta * abs($z)/360 
+		+ 2 * $gamma * (1/(($w * $h)/(1280*800) + 1) - 1/2);
+}
 
 /**
  * Check if a person is already present in database

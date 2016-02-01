@@ -408,7 +408,7 @@
 			if( isset($_REQUEST['angle_face']) && isset($_REQUEST['angle_face_z'])  ){
 				if(checkPerson($_REQUEST['id']) == 1){
 					 $sql = $QUERIES->updatePersonAngleFace($_REQUEST['angle_face'], $_REQUEST['angle_face_z'], $_SESSION['user'], $_REQUEST['id'], $_SESSION['frame_id'], $_SESSION['camera_id']);
-					 $result=mysql_query($sql) or $success=false;
+					 $result = mysql_query($sql) or $success = false;
 				} else {
 					$bb = $config->bb;
 					$bbV = $config->bbV;
@@ -450,10 +450,10 @@
 			
 			
 			if ($success && isset($_REQUEST['id'])){
-				$log = createAvatar($_REQUEST['id']);
+				$success = createAvatar($_REQUEST['id']);
 			}
 			
-			jecho($log);			
+			jecho($success);			
 		break;
 
 		/**

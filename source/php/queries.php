@@ -177,8 +177,15 @@ class Queries {
 	}
 	
 	function getRealPeopleList($frameid, $cameraid){
-		return "SELECT r.* FROM `real_people` as r WHERE (r.peopleid not in (SELECT p2.peopleid FROM `people` as p2 WHERE p2.frameid=".$frameid." AND p2.cameraid=".$cameraid."))";
-		
+		return "SELECT r.* FROM `real_people` as r WHERE (r.peopleid not in (SELECT p2.peopleid FROM `people` as p2 WHERE p2.frameid=".$frameid." AND p2.cameraid=".$cameraid."))";	
+	}
+	
+	function setRealPeopleFace($peopleid, $face, $facez){
+		return "UPDATE `real_people` SET face=".$face.", face_z=".$facez." WHERE peopleid=".$peopleid;
+	}
+	
+	function setRealPeopleAvatar($id){
+		return "UPDATE `real_people` SET `image`='../img/real_people/".$id.".jpg' WHERE peopleid=".$id;
 	}
 	
 	/** POI queries **/
