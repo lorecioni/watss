@@ -165,6 +165,14 @@ class Queries {
 		return "SELECT * FROM `people` WHERE `peopleid`=".$id." AND cameraid = ".$cameraid." AND frameid = ".$frameid."";
 	}
 	
+	function getColorListByCamera($cameraid){
+		return "SELECT DISTINCT `color` FROM `people` WHERE `cameraid` = ".$cameraid;
+	}
+	
+	function getPersonColor($peopleid, $cameraid){
+		return "SELECT `color` FROM `people` WHERE `peopleid` = ".$peopleid." and `cameraid` = ".$cameraid;
+	}
+	
 	
 	/** Real people queries **/
 	
@@ -206,6 +214,8 @@ class Queries {
 				LEFT JOIN video as v ON p.frameid = v.frameid and p.cameraid=v.cameraid LEFT JOIN poi ON p.poiid=poi.poiid and p.cameraid=poi.cameraid 
 				LEFT JOIN groups as g ON p.groupid=g.groupid;";
 	}
+	
+	
 
 }
 

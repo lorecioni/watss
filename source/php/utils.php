@@ -8,16 +8,37 @@
 
 /** Create and return a random color HEX value **/
 function getRandomColorHEX(){
-	$red = rand(0,255);
-	$green = rand(0,255);
-	$blue = rand(0,255);
-	$rgb = array($red,$green,$blue);
-	$hex = "#";
-	$hex .= str_pad(dechex($rgb[0]), 2, "0", STR_PAD_LEFT);
-	$hex .= str_pad(dechex($rgb[1]), 2, "0", STR_PAD_LEFT);
-	$hex .= str_pad(dechex($rgb[2]), 2, "0", STR_PAD_LEFT);
-	return $hex;
+	$done = true;
+	global $QUERIES;
+
+	$sql = $QUERIES->getColorListByCamera($_SESSION['camera_id']);
+	$result = mysql_query($sql) or $done = false;
+	$colors = array();
+	if ($done == true){
+		while ($row = mysql_fetch_array($result) ){
+			array_push($colors, $row['color']);
+		}
+		$found = false;
+		while(!$found){
+			$red = rand(0,255);
+			$green = rand(0,255);
+			$blue = rand(0,255);
+			$rgb = array($red, $green, $blue);
+			$hex = "#";
+			$hex .= str_pad(dechex($rgb[0]), 2, "0", STR_PAD_LEFT);
+			$hex .= str_pad(dechex($rgb[1]), 2, "0", STR_PAD_LEFT);
+			$hex .= str_pad(dechex($rgb[2]), 2, "0", STR_PAD_LEFT);
+		
+			if (!in_array($hex, $colors)) {
+				$found = true;
+			}
+		}
+		return $hex;
+	} else {
+		return "#000";
+	}
 }
+
 
 /** Return json encoded content value
  * @param $value: content to be encoded
@@ -160,5 +181,15 @@ function checkPerson($id){
 
 	return $var;
 }
+
+/** SQL Script Query parser
+ * 
+ */
+
+function SQLParse($sql){
+	$sql = trim($sql);
+}
+
+
 
 ?>

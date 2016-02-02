@@ -203,7 +203,7 @@ footer {
 
 /* Image picker dimension */
 img.image_picker_image {
-    max-height: 100px;
+    height: 100px;
 }
 
 /** Panels **/

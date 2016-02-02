@@ -286,15 +286,21 @@
 		 * - Insert person into the database
 		 * **/
 		case "add-person":	
-		    //Generate random HEX color 
-			$hex = getRandomColorHEX();
-
 			$bb = $config->bb;
 			$bbV = $config->bbV;
 
 		    //Query indicator: if true the query has been done
-			$done = true;			
+			$done = true;
+			
 			if (isset($_REQUEST["people_id"])){
+				//Retrieve person color
+				$sql = $QUERIES->getPersonColor($_REQUEST['people_id'], $_SESSION['camera_id']);
+				$result = mysql_query($sql) or $done = false;
+				$hex = "";
+				while ($row = mysql_fetch_array($result) ){
+					$hex = $row['color'];
+				}
+				
 				$sql = $QUERIES->insertPerson($_REQUEST['people_id'], $_SESSION['frame_id'], $_SESSION['camera_id'], $bb->x, $bb->y, $bb->width, $bb->height, 
 							$bbV->x, $bbV->y, $bbV->width, $bbV->height, 0, 0, 0, 0, $hex, 0, $_SESSION['user'], 0);	
 						
@@ -307,6 +313,9 @@
 							"bbV" => array($bbV->x, $bbV->y, $bbV->width, $bbV->height));
 				}
 			} else {
+				//Generate random HEX color
+				$hex = getRandomColorHEX();
+				
 			    $sql = $QUERIES->insertGroup(0, 'No group', 0, $_SESSION['user']);
 				$result = mysql_query($sql);
 				
@@ -575,7 +584,7 @@
 			while ($row = mysql_fetch_array($result) ){
 				if(end(explode("/", $row["image"])) != 'default.png'){
 					$url = implode(".", explode(".", $row["image"], -1));
-					$realpeople[] = array("id"=>$row["peopleid"],"image"=>$url."_100.jpg");
+					$realpeople[] = array("id"=>$row["peopleid"],"image"=>$url.".jpg");
 				} else {
 					$realpeople[] = array("id"=>$row["peopleid"],"image"=>$row["image"]);
 				}
