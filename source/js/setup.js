@@ -18,8 +18,18 @@ $(document).ready(function(){
 	$('#verify-frame-folder').click(function(){
 		getCameras($('#frame-folder-name').val());
 	});
-	
+		
 	$('#db-name').change(function(){
+		$('#check-db-name .icon').remove();
+		if($(this).val().length > 0 && $(this).val() != ''){	
+			$('#check-db-name').append('<span class="icon glyphicon glyphicon-ok"></span>');
+		} else {
+			$('#check-db-name').append('<span class="icon glyphicon glyphicon-remove"></span>');
+		}
+		validateInstallationInfo()
+	});
+	
+	$('#import-db-name').change(function(){
 		$('#check-db-name .icon').remove();
 		if($(this).val().length > 0 && $(this).val() != ''){	
 			$('#check-db-name').append('<span class="icon glyphicon glyphicon-ok"></span>');
@@ -56,11 +66,15 @@ $(document).ready(function(){
 	$('input[name=import-data]').change(function(){
 		switch($(this).val()){
 			case 'new':
+				$('input#import-new-data').removeAttr('checked');
+				$(this).prop('checked');
 				$('#new-data-container').show();
 				$('#importing-data-container').hide();
 				break;
 			
 			case 'import':
+				$('input#create-new-data').removeAttr('checked');
+				$(this).prop('checked');
 				$('#new-data-container').hide();
 				$('#importing-data-container').show();
 				break;
@@ -269,7 +283,7 @@ function install(){
 		progress.attr('aria-valuenow', 0).css('width', 0 + '%');
 		progress.addClass('active');
 		currentStep = 0;
-		var type = $('input[name=import-data]').val();
+		var type = $('input[name=import-data]:checked').val();
 		
 		//Database connection
 		var dbUser = $('#db-user').val();
@@ -305,6 +319,18 @@ function install(){
 				createDatabaseConnection(progress, data);
 				
 			case 'import':
+				
+				var dbName = '';
+				if($('#import-script-database-name').is(':visible')){
+					dbName = $('#import-db-name').val();
+				}
+				
+				data = {
+						connection: {user: dbUser, password: dbPassword, host: dbHost, name: dbName},
+					};
+				
+				createDatabaseConnectionImport(progress, data);
+				
 				break;
 		}
 		
@@ -333,6 +359,39 @@ function createDatabaseConnection(progress, data){
 				progress.html(formatNumber(value) + '%');
 				generateDatabaseSchema(progress, data);
 				generateLog('Created database connection file.', 'success');
+			} else {
+				generateLog('Error creating database connection file.', 'error');
+			}
+		},
+		error: function(error){
+			generateLog(error.responseText, 'error');
+		}
+	});	
+}
+
+/**
+ * Creates database connection file
+ * @param progress
+ * @param data
+ */
+function createDatabaseConnectionImport(progress, data){
+	$.ajax({
+		type: "POST",
+		url: "php/setup.php",
+		data: {
+			action: "create-connection",
+			data: data.connection
+		},
+		success: function(response){
+			if(response){
+				currentStep += 1;
+				var value = currentStep * 100/installSteps;
+				
+				progress.attr('aria-valuenow', value).css('width', value + '%');
+				progress.html(formatNumber(value) + '%');
+				generateLog('Created database connection file.', 'success');
+				
+				importData(progress, data);
 			} else {
 				generateLog('Error creating database connection file.', 'error');
 			}
@@ -540,12 +599,10 @@ function validateInstall(progress){
 /** Verify and parse sql script**/
 function verifySqlScript(form){
 	var file = $('#input-file').prop('files')[0]; 
-	console.log(file)
 
 	 var data = new FormData();
 	 data.append('file', file);
 	 data.append('action', 'parse-sql-script');
-	console.log(data)
 	
     $.ajax({
     	url: "php/setup.php",
@@ -556,13 +613,100 @@ function verifySqlScript(form){
         data: data,                         
         type: 'post',
         success: function(response){
-        	console.log(response);
+        	var dbNameSet = false;
+        	var errors = 0;
+        	$('#import-script-response').empty();
+        	$('#check-db-name .icon').remove();
+        	$('#check-users .icon').remove();
+        	
+        	if(response.name.length > 0){
+        		//Databse name set in script
+        		$('#import-script-response').append('<p class="import-script-log success">Creating database <i>' 
+						+ response.name + '</i></p>');
+        		dbNameSet = true;
+        	}
+        	
+        	if(response.tables.length > 0){
+        		for ( var i in response.tables) {
+					var table = response.tables[i];
+					if(!table.success){
+						errors++;
+						$('#import-script-response').append('<p class="import-script-log error">Error creating table <i>' 
+								+ table.name + '</i></p>');
+					} else {
+						$('#import-script-response').append('<p class="import-script-log success">Creating table <i>' 
+								+ table.name + '</i></p>');
+					}
+				}
+        		if(errors == 0){
+        			if(dbNameSet){
+        				$('#import-script-alert')
+	        				.removeClass('alert-warning')
+	        				.removeClass('alert-danger')
+	        				.addClass('alert-success')
+	        				.html('Valid script. Will be created <b>' + response.tables.length + '</b> tables');
+        				$('#check-db-name').append('<span class="icon glyphicon glyphicon-ok"></span>');
+        				$('#check-users').append('<span class="icon glyphicon glyphicon-ok"></span>');
+        			} else {
+        				$('#import-script-alert')
+	        				.removeClass('alert-success')
+	        				.removeClass('alert-danger')
+	        				.addClass('alert-warning')
+	        				.html('Valid script. Will be created <b>' + response.tables.length + '</b> tables. Missing database name.');
+        				$('#import-script-database-name').show();
+        				$('#check-users').append('<span class="icon glyphicon glyphicon-ok"></span>');
+        			}
+        		} else {
+        			$('#import-script-alert')
+        				.removeClass('alert-success')
+	    				.removeClass('alert-warning')
+	    				.addClass('alert-danger')
+	    				.html('Found <b>' + errors + '</b> errors in the imported script.');
+        			$('#check-db-name').append('<span class="icon glyphicon glyphicon-remove"></span>');
+        		}
+        	} else {
+        		$('#import-script-alert')
+					.removeClass('alert-success')
+					.removeClass('alert-warning')
+					.addClass('alert-danger')
+					.html('Error validating SQL script. Check your syntax!');
+        		$('#check-db-name').append('<span class="icon glyphicon glyphicon-remove"></span>');
+    		}
+        	validateInstallationInfo();
+        	
         }, 
         error: function(error){
         	console.log(error);
         }
      });
 	
+}
+
+/** Importing data **/
+function importData(progress, data){
+	$.ajax({
+		type: "POST",
+		url: "php/setup.php",
+		data: {
+			action: "import-data",
+			data: data
+		},
+		success: function(response){
+			if(response){
+				var value = 100;
+				progress.attr('aria-valuenow', value).css('width', value + '%');
+				progress.html(formatNumber(value) + '%');
+				generateLog('Importing data success.', 'success');
+				
+				validateInstall(progress);
+			} else {
+				generateLog('Error importing data in database.', 'error');
+			}
+		},
+		error: function(error){
+			generateLog(error.responseText, 'error');
+		}
+	});	
 }
 
 /**

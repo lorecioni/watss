@@ -270,13 +270,50 @@ if(isset($_REQUEST['action'])){
 							error_500('Error: ' . $_FILES['file']['error']);
 						}
 						else {
+							require_once 'config.php';
+							global $config;
+							
 							$sql = file_get_contents($_FILES['file']['tmp_name']);
-
-							jecho($sql);
-//							move_uploaded_file($_FILES['file']['tmp_name'], 'uploads/' . $_FILES['file']['name']);
+							$result = SQLParse($sql);
+							
+							$response = array(
+								'name' => $result['name'],
+								'tables' => array()
+							);
+							 
+							foreach ($result['tables'] as $t){		
+								if(in_array($t, $config->tables)){
+									array_push($response['tables'], array('name' => $t, 'success' => true));	
+								} else {
+									array_push($response['tables'], array('name' => $t, 'success' => false));
+								}
+							}
+							move_uploaded_file($_FILES['file']['tmp_name'], "../database/import.sql");
+							jecho($response);
 						}
 						
 						break;
+						
+				case 'import-data':
+					$success = true;
+					$dbInfo = $_REQUEST['data']['connection'];
+					$dbUser = $dbInfo['user'];
+					$dbPass = $dbInfo['password'];
+					$dbHost = $dbInfo['host'];
+					$dbName = $dbInfo['name'];
+					
+					if($dbName != ''){
+						$dbConnection = mysqli_connect($dbHost, $dbUser, $dbPass, $dbName) or $success = false;
+						
+					} else {
+						$dbConnection = mysqli_connect($dbHost, $dbUser, $dbPass) or $success = false;
+					}
+					
+					$sql = file_get_contents("../database/import.sql");
+					mysqli_query($dbConnection, $sql) or $success = false;
+					
+					jecho($success);
+					break;
 	}
 	
 }

@@ -194,13 +194,21 @@ p.install-log-entry {
     margin: 10px 0 0;
     font-size: .9em;
 }
+p.import-script-log.success,
 p.install-log-entry.success {
     color: #006D0D;
 }
 
+p.import-script-log.error,
 p.install-log-entry.error {
     color: #CD0000;
     font-weight: bold;
+}
+
+#import-script-database-name {
+    display: none;
+    margin-top: 30px;
+    margin-bottom: 110px;
 }
 
 section#installation-success {
@@ -210,4 +218,9 @@ section#installation-success {
 button#start-button {
     margin: 50px auto 0;
     display: block;
+}
+
+p.import-script-log {
+    margin-top: 10px;
+    margin-bottom: 0;
 }

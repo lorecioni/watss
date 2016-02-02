@@ -139,7 +139,15 @@
 					  </div>	
 					</form>
 		            <div class="clearfix"></div>
-		            <div class="alert alert-warning" role="alert">No SQL script selected.</div>			
+		            <div id="import-script-alert" class="alert alert-warning" role="alert">No SQL script selected.</div>
+		            <div id="import-script-response"></div>	
+		            <div class="clearfix"></div>
+		            <div id="import-script-database-name" class="form-group">
+					    <label for="db-name" class="col-sm-3 control-label">Database name</label>
+					    <div class="col-sm-8">
+					      <input type="text" class="form-control" id="import-db-name" placeholder="Name">
+					    </div>
+					  </div>	
 				</div>
 				</section>
 				

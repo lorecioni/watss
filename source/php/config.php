@@ -25,3 +25,6 @@ $config->bbV->height = 50;
 
 //Real people
 $config->realPeopleDefaultImg = "../img/real_people/default.png";
+
+//Database table names
+$config->tables = array('camera', 'poi', 'user', 'groups', 'real_people', 'people', 'video');

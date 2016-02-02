@@ -183,11 +183,40 @@ function checkPerson($id){
 }
 
 /** SQL Script Query parser
- * 
  */
 
 function SQLParse($sql){
 	$sql = trim($sql);
+	$sql = preg_replace('~[[:cntrl:]]~', '', $sql); 
+	$sql = preg_replace('~[.[:cntrl:]]~', '', $sql);
+	$stms = explode(";", $sql);
+	
+	$response = array(
+		'name' => '',
+		'tables' => array()
+	);
+	
+	foreach ($stms as $query){
+		//Matching database name
+		preg_match('/(?:CREATE DATABASE) (?:`)?(\w*)(?:`)?/', $query, $matches);
+		if($matches != null && count($matches) > 0){
+			$response['name'] =  $matches[1];
+		} else {
+			//Matching table names
+			preg_match('/(?:CREATE TABLE) (?:IF NOT EXISTS)? (?:`)?(\w*)(?:`)?/', $query, $matches);
+			if($matches != null && count($matches) > 1){
+				array_push($response['tables'], $matches[1]);
+			} else {
+				preg_match('/(?:CREATE TABLE) (?:`)?(\w*)(?:`)?/', $query, $matches);
+				if($matches != null && count($matches) > 1){
+					array_push($response['tables'], $matches[1]);
+				}
+			}
+		}
+
+	}
+	
+	return $response;
 }
 
 
