@@ -7,17 +7,17 @@ class Queries {
 	
 	/** Users queries **/
 	function getUserIdFromName($name){
-		return "SELECT userid FROM `user` WHERE `name`='".mysql_real_escape_string($name)."'";
+		return "SELECT userid FROM `users` WHERE `name`='".mysql_real_escape_string($name)."'";
 	}
 	
 	function getUserNameById($userid){
-		return "SELECT name FROM `user` WHERE userid='".intval($userid)."'";
+		return "SELECT name FROM `users` WHERE userid='".intval($userid)."'";
 	}
 	
 	/** Groups queries **/
 	
 	function countNoGroupsByUserName($name){
-		return "SELECT g.groupid FROM `groups` as g, `user` as u WHERE g.userid=u.userid AND u.name='".$name."' AND g.groupid = 0";
+		return "SELECT g.groupid FROM `groups` as g, `users` as u WHERE g.userid=u.userid AND u.name='".$name."' AND g.groupid = 0";
 	}
 	
 	function insertGroup($id, $name, $deleted, $userid){
@@ -70,30 +70,30 @@ class Queries {
 	/** Frames queries **/
 	
 	function getFirstFrameId($cameraid){
-		return "SELECT MIN(n) as id FROM (SELECT frameid as n FROM video WHERE cameraid = ".$cameraid.") as tab";
+		return "SELECT MIN(n) as id FROM (SELECT frameid as n FROM frames WHERE cameraid = ".$cameraid.") as tab";
 	}
 	
 	function getFirstUntaggedFrameId($userid, $cameraid){
-		return "SELECT MIN(frameid) as id FROM video WHERE frameid not in (SELECT frameid FROM people WHERE userid=".$userid." AND cameraid=".$cameraid.")";
+		return "SELECT MIN(frameid) as id FROM frames WHERE frameid not in (SELECT frameid FROM people WHERE userid=".$userid." AND cameraid=".$cameraid.")";
 	}
 	
 	function getFramesByQuery($cameraid, $term, $limit){
-		return "SELECT `frameid` as id, `frameid` as txt FROM `video` WHERE `cameraid` = ".$cameraid." AND `frameid` LIKE '%".$term."%' ORDER BY `frameid`,2 ASC LIMIT ".$limit;
+		return "SELECT `frameid` as id, `frameid` as txt FROM `frames` WHERE `cameraid` = ".$cameraid." AND `frameid` LIKE '%".$term."%' ORDER BY `frameid`,2 ASC LIMIT ".$limit;
 	}
 	
 	function getFramesForSelect($cameraid, $limit){
-		return "SELECT `frameid` as id, `frameid` as txt FROM `video` WHERE `cameraid` = ".$cameraid." ORDER BY `frameid` ASC LIMIT ".$limit;	
+		return "SELECT `frameid` as id, `frameid` as txt FROM `frames` WHERE `cameraid` = ".$cameraid." ORDER BY `frameid` ASC LIMIT ".$limit;	
 	}
 	
 	function getFrameById($frameid, $cameraid){
-		return "SELECT * FROM `video` WHERE `frameid`=".$frameid." AND `cameraid`=".$cameraid."";
+		return "SELECT * FROM `frames` WHERE `frameid`=".$frameid." AND `cameraid`=".$cameraid."";
 	}
 	
 	function getFrameIdList($cameraid, $limit, $current){
 		if($limit == null){
-			return "SELECT frameid FROM video WHERE cameraid = ".$cameraid.";";
+			return "SELECT frameid FROM frames WHERE cameraid = ".$cameraid.";";
 		} else {
-			return "SELECT frameid FROM video
+			return "SELECT frameid FROM frames
                   WHERE frameid >= ".($current - $limit)."
                   		and frameid <= ".($current + $limit)."
                   		and cameraid = '".$cameraid."';";
@@ -103,7 +103,7 @@ class Queries {
 	/** Camera queries **/
 	
 	function getCameras(){
-		return "SELECT c.cameraid FROM `camera` as c";
+		return "SELECT c.cameraid FROM `cameras` as c";
 	}
 	
 	/** People queries **/
@@ -177,23 +177,23 @@ class Queries {
 	/** Real people queries **/
 	
 	function getRealPeopleInfo($id){
-		return "SELECT * FROM `real_people` WHERE `peopleid` = ".$id;
+		return "SELECT * FROM `avatars` WHERE `peopleid` = ".$id;
 	}
 	
 	function insertRealPeople($face, $facez, $path){
-		return "INSERT INTO `real_people` (`face`,`face_z`,`image`) VALUES (".$face.", ".$facez.",'".$path."')";
+		return "INSERT INTO `avatars` (`face`,`face_z`,`image`) VALUES (".$face.", ".$facez.",'".$path."')";
 	}
 	
 	function getRealPeopleList($frameid, $cameraid){
-		return "SELECT r.* FROM `real_people` as r WHERE (r.peopleid not in (SELECT p2.peopleid FROM `people` as p2 WHERE p2.frameid=".$frameid." AND p2.cameraid=".$cameraid."))";	
+		return "SELECT r.* FROM `avatars` as r WHERE (r.peopleid not in (SELECT p2.peopleid FROM `people` as p2 WHERE p2.frameid=".$frameid." AND p2.cameraid=".$cameraid."))";	
 	}
 	
 	function setRealPeopleFace($peopleid, $face, $facez){
-		return "UPDATE `real_people` SET face=".$face.", face_z=".$facez." WHERE peopleid=".$peopleid;
+		return "UPDATE `avatars` SET face=".$face.", face_z=".$facez." WHERE peopleid=".$peopleid;
 	}
 	
 	function setRealPeopleAvatar($id){
-		return "UPDATE `real_people` SET `image`='../img/real_people/".$id.".jpg' WHERE peopleid=".$id;
+		return "UPDATE `avatars` SET `image`='../img/avatars/".$id.".jpg' WHERE peopleid=".$id;
 	}
 	
 	/** POI queries **/
@@ -211,7 +211,7 @@ class Queries {
 	function getExportQuery(){
 		return "SELECT p.peopleid,p.frameid,p.cameraid, p.bb_x, p.bb_y, p.bb_width, p.bb_height, p.bbV_x, p.bbV_y, p.bbV_width, p.bbV_height, 
 				p.gazeAngle_face, p.gazeAngle_face_z, p.gazeAngle_body, p.gazeAngle_body_z,  v.path , poi.name , g.groupid FROM people as p  
-				LEFT JOIN video as v ON p.frameid = v.frameid and p.cameraid=v.cameraid LEFT JOIN poi ON p.poiid=poi.poiid and p.cameraid=poi.cameraid 
+				LEFT JOIN frames as v ON p.frameid = v.frameid and p.cameraid=v.cameraid LEFT JOIN poi ON p.poiid=poi.poiid and p.cameraid=poi.cameraid 
 				LEFT JOIN groups as g ON p.groupid=g.groupid;";
 	}
 	

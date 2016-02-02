@@ -272,7 +272,7 @@
 					.attr('data-id', people[i].id)
 					.attr('id', 'timeline-person-' + people[i].id)
 					.append('<div><a href="#" class="popover-img-timeline" data-container="body" href="#" data-toggle="popover" data-placement="right" data-content=\'' 
-							+ '<img style="max-height: 100px;" src="../img/real_people/'+ people[i].id + '.jpg">' + '\'>' + people[i].id + '</a></div>')
+							+ '<img style="max-height: 100px;" src="../img/avatars/'+ people[i].id + '.jpg">' + '\'>' + people[i].id + '</a></div>')
 					.append('<div id="color-' + people[i].id +'" class="thumbnail pickthb" '
 						+ 'style="background-color:'+ people[i].color + '"></div>');
 				

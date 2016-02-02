@@ -1,4 +1,4 @@
-CREATE TABLE IF NOT EXISTS `camera` (
+CREATE TABLE IF NOT EXISTS `cameras` (
   `cameraid` int(11) NOT NULL AUTO_INCREMENT,
   `calibration` int(11) NOT NULL,
   PRIMARY KEY (`cameraid`)
@@ -59,7 +59,7 @@ CREATE TABLE IF NOT EXISTS `poi` (
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
 
-CREATE TABLE IF NOT EXISTS `real_people` (
+CREATE TABLE IF NOT EXISTS `avatars` (
   `peopleid` int(11) NOT NULL AUTO_INCREMENT,
   `face` int(11) NOT NULL,
   `face_z` int(11) NOT NULL,
@@ -68,14 +68,14 @@ CREATE TABLE IF NOT EXISTS `real_people` (
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
 
-CREATE TABLE IF NOT EXISTS `user` (
+CREATE TABLE IF NOT EXISTS `users` (
   `userid` int(11) NOT NULL AUTO_INCREMENT,
   `name` varchar(30) NOT NULL,
   PRIMARY KEY (`userid`)
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
 
-CREATE TABLE IF NOT EXISTS `video` (
+CREATE TABLE IF NOT EXISTS `frames` (
   `frameid` int(11) NOT NULL,
   `cameraid` int(11) NOT NULL,
   `path` varchar(255) NOT NULL,
@@ -89,19 +89,19 @@ CREATE TABLE IF NOT EXISTS `video` (
 
 
 ALTER TABLE `groups`
-  ADD CONSTRAINT `group_fk_userid` FOREIGN KEY (`userid`) REFERENCES `user` (`userid`) ON DELETE NO ACTION ON UPDATE NO ACTION;
+  ADD CONSTRAINT `group_fk_userid` FOREIGN KEY (`userid`) REFERENCES `users` (`userid`) ON DELETE NO ACTION ON UPDATE NO ACTION;
 
 ALTER TABLE `people`
-  ADD CONSTRAINT `people_fk_cameraid` FOREIGN KEY (`cameraid`) REFERENCES `camera` (`cameraid`) ON DELETE NO ACTION ON UPDATE NO ACTION,
-  ADD CONSTRAINT `people_fk_frameid` FOREIGN KEY (`frameid`) REFERENCES `video` (`frameid`) ON DELETE NO ACTION ON UPDATE NO ACTION,
+  ADD CONSTRAINT `people_fk_cameraid` FOREIGN KEY (`cameraid`) REFERENCES `cameras` (`cameraid`) ON DELETE NO ACTION ON UPDATE NO ACTION,
+  ADD CONSTRAINT `people_fk_frameid` FOREIGN KEY (`frameid`) REFERENCES `frames` (`frameid`) ON DELETE NO ACTION ON UPDATE NO ACTION,
   ADD CONSTRAINT `people_fk_groupid` FOREIGN KEY (`groupid`) REFERENCES `groups` (`groupid`) ON DELETE NO ACTION ON UPDATE NO ACTION,
   ADD CONSTRAINT `people_fk_poi` FOREIGN KEY (`poiid`) REFERENCES `poi` (`poiid`) ON DELETE NO ACTION ON UPDATE NO ACTION,
-  ADD CONSTRAINT `people_fk_userid` FOREIGN KEY (`userid`) REFERENCES `user` (`userid`) ON DELETE NO ACTION ON UPDATE NO ACTION,
-  ADD CONSTRAINT `people_fk_peopleid` FOREIGN KEY (`peopleid`) REFERENCES `watts`.`real_people` (`peopleid`) ON DELETE NO ACTION ON UPDATE NO ACTION;
+  ADD CONSTRAINT `people_fk_userid` FOREIGN KEY (`userid`) REFERENCES `users` (`userid`) ON DELETE NO ACTION ON UPDATE NO ACTION,
+  ADD CONSTRAINT `people_fk_peopleid` FOREIGN KEY (`peopleid`) REFERENCES `watts`.`avatars` (`peopleid`) ON DELETE NO ACTION ON UPDATE NO ACTION;
 
 ALTER TABLE `poi`
-  ADD CONSTRAINT `poi_fk_cameraid` FOREIGN KEY (`cameraid`) REFERENCES `camera` (`cameraid`) ON DELETE NO ACTION ON UPDATE NO ACTION;
+  ADD CONSTRAINT `poi_fk_cameraid` FOREIGN KEY (`cameraid`) REFERENCES `cameras` (`cameraid`) ON DELETE NO ACTION ON UPDATE NO ACTION;
 
-ALTER TABLE `video`
-  ADD CONSTRAINT `video_fk_cameraid` FOREIGN KEY (`cameraid`) REFERENCES `camera` (`cameraid`) ON DELETE NO ACTION ON UPDATE NO ACTION;
+ALTER TABLE `frames`
+  ADD CONSTRAINT `frames_fk_cameraid` FOREIGN KEY (`cameraid`) REFERENCES `cameras` (`cameraid`) ON DELETE NO ACTION ON UPDATE NO ACTION;
 
