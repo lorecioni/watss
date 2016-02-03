@@ -72,7 +72,7 @@ function createAvatar($id){
 	$defaultAvatar = false;
 	$dim = array();
 
-	$sql = $QUERIES->getRealPeopleInfo($id);
+	$sql = $QUERIES->getAvatar($id);
 	$result = mysql_query($sql) or $done = false;
 	
 	if ($done == true){
@@ -131,13 +131,13 @@ function createAvatar($id){
 				imagedestroy($dest);
 			}
 			
-			$sql = $QUERIES->setRealPeopleFace($id, $facePeople, $facePeopleZ);
+			$sql = $QUERIES->setAvatarFace($id, $facePeople, $facePeopleZ);
 			$result = mysql_query($sql) or $done = false;
 		}	
 	}
 	
 	if ($defaultAvatar == true){
-		$sql = $QUERIES->setRealPeopleAvatar($id);
+		$sql = $QUERIES->setAvatarImage($id);
 		$result = mysql_query($sql) or $done=false;
 	}
 	

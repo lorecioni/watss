@@ -123,8 +123,7 @@ if(isset($_REQUEST['action'])){
 				}
 			}
 			
-			//FIXME remove comment
-			//mysqli_query($dbConnection, $sql) or $success = false;
+			mysqli_query($dbConnection, $sql) or $success = false;
 			
 			if($success){
 				jecho($success);
@@ -181,8 +180,7 @@ if(isset($_REQUEST['action'])){
 					}	
 				}
 				
-				//FIXME remove comment
-				//mysqli_query($dbConnection, $sql) or $success = false;
+				mysqli_query($dbConnection, $sql) or $success = false;
 
 				if($success){
 					jecho($success);
@@ -217,8 +215,7 @@ if(isset($_REQUEST['action'])){
 						}
 					}
 						
-					//FIXME remove comment
-					//mysqli_query($dbConnection, $sql) or $success = false;
+					mysqli_query($dbConnection, $sql) or $success = false;
 						
 					if($success){
 						jecho($success);
@@ -253,8 +250,7 @@ if(isset($_REQUEST['action'])){
 							}
 						}
 					
-						//FIXME remove comment
-						//mysqli_query($dbConnection, $sql) or $success = false;
+						mysqli_query($dbConnection, $sql) or $success = false;
 					
 						if($success){
 							jecho($success);

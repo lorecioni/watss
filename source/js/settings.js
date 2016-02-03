@@ -262,7 +262,8 @@ function getUsers(){
 			}
 			$('#user-settings .panel-body .scrollable').append(list);
 		},
-		error: function(){
+		error: function(e){
+			console.log(e)
 			$('#user-settings .panel-loading').remove();
 		}
 	});	

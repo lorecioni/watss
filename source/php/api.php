@@ -319,7 +319,7 @@
 			    $sql = $QUERIES->insertGroup(0, 'No group', 0, $_SESSION['user']);
 				$result = mysql_query($sql);
 				
-				$sql = $QUERIES->insertRealPeople(0, 0, $config->realPeopleDefaultImg);
+				$sql = $QUERIES->insertAvatar(0, 0, $config->realPeopleDefaultImg);
 				$result = mysql_query($sql) or $done = false;
 				if($done){
 					$my_id = mysql_insert_id();
@@ -578,7 +578,7 @@
 		 */
 		case "get-realpeople":			
 			$realpeople = array();	
-			$sql = $QUERIES->getRealPeopleList($_SESSION["frame_id"], $_SESSION["camera_id"]);
+			$sql = $QUERIES->getAvatarList($_SESSION["frame_id"], $_SESSION["camera_id"]);
 			$result = mysql_query($sql) or $realpeople = array();	
 			if ( mysql_num_rows($result) == 0 ) $realpeople = array();	
 			while ($row = mysql_fetch_array($result) ){
