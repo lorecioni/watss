@@ -97,7 +97,7 @@ ALTER TABLE `people`
   ADD CONSTRAINT `people_fk_groupid` FOREIGN KEY (`groupid`) REFERENCES `groups` (`groupid`) ON DELETE NO ACTION ON UPDATE NO ACTION,
   ADD CONSTRAINT `people_fk_poi` FOREIGN KEY (`poiid`) REFERENCES `poi` (`poiid`) ON DELETE NO ACTION ON UPDATE NO ACTION,
   ADD CONSTRAINT `people_fk_userid` FOREIGN KEY (`userid`) REFERENCES `users` (`userid`) ON DELETE NO ACTION ON UPDATE NO ACTION,
-  ADD CONSTRAINT `people_fk_peopleid` FOREIGN KEY (`peopleid`) REFERENCES `watts`.`avatars` (`peopleid`) ON DELETE NO ACTION ON UPDATE NO ACTION;
+  ADD CONSTRAINT `people_fk_peopleid` FOREIGN KEY (`peopleid`) REFERENCES `avatars` (`peopleid`) ON DELETE NO ACTION ON UPDATE NO ACTION;
 
 ALTER TABLE `poi`
   ADD CONSTRAINT `poi_fk_cameraid` FOREIGN KEY (`cameraid`) REFERENCES `cameras` (`cameraid`) ON DELETE NO ACTION ON UPDATE NO ACTION;

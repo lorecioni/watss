@@ -1,8 +1,0 @@
-"        UPDATE `people` SET `color`='#2713ec' ,userid=1 WHERE  `peopleid`=1 AND `frameid` = 17 AND `cameraid` = 1        
-UPDATE `people` SET `groupid`=0, userid=1 WHERE  `peopleid`=1 AND `frameid` = 17 AND `cameraid` = 1       
- UPDATE `people` SET `bb_x`=1128,`bb_y`=168,`bb_width`=71,`bb_height`=161, userid=1 WHERE  `peopleid`=1 AND `frameid` = 17 AND `cameraid` = 1       
-  UPDATE `people` SET `gazeAngle_face`=0, `gazeAngle_face_z`=0, userid=1   WHERE  peopleid=1 AND `frameid` = 17 AND `cameraid` = 1        
-  UPDATE `people` SET `gazeAngle_body`=0, `gazeAngle_body_z`=0, userid=1  WHERE   peopleid=1 AND `frameid` = 17 AND `cameraid` = 1        
-  UPDATE `people` SET `poiid`='0', userid=1 WHERE `peopleid`='1' AND `frameid` = 17 AND `cameraid` = 1"
-  
-  MODIFICARE APICIIIII
