@@ -273,13 +273,11 @@
 	//Extend timeline frames
 	function extendTimelineFrame(direction){
 		var frame, id;
-		var empty = true;
 		var start = parseInt(displayedFrames[0].id);
 		var end = parseInt(displayedFrames[displayedFrames.length - 1].id);
 		if(direction == 'right'){
 			frame = displayedFrames[0];
 			if (parseInt(frame.id) <= 1) return;
-			if(frame.people.length > 0) empty = false;
 			$('#timeline-frame-' + end).remove();
 			id = parseInt(frame.id) - 1;
 			start = start - 1;
@@ -287,7 +285,6 @@
 		} else {
 			frame = displayedFrames[displayedFrames.length - 1];
 			if(parseInt(frame.id) >= parseInt(timelineFrames[timelineFrames.length - 1].id)) return;
-			if(frame.people.length > 0) empty = false;
 			$('#timeline-frame-' + start).remove();
 			id = parseInt(frame.id) + 1;
 			start = start + 1;
@@ -300,7 +297,7 @@
 			.append('<div class="timeline-frame-indicator"></div>')
 			.append('<span class="timeline-frame-number">' + id + '</span>');
 		
-		if(!empty){
+		if(timelineFrames[id - 1].people.length > 0){
 			frame.addClass('people');
 		}
 		

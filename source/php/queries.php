@@ -5,7 +5,16 @@
 
 class Queries {
 	
-	/** Users queries **/
+	/**
+	 * ****************************
+	 *  	  Users queries 
+	 * ****************************
+	 * */
+	
+	function getUsers(){
+		return "SELECT * FROM users";
+	}
+	
 	function getUserIdFromName($name){
 		return "SELECT userid FROM `users` WHERE `name`='".mysql_real_escape_string($name)."'";
 	}
@@ -14,7 +23,19 @@ class Queries {
 		return "SELECT name FROM `users` WHERE userid='".intval($userid)."'";
 	}
 	
-	/** Groups queries **/
+	function insertUser($name){
+		return "INSERT INTO `users` (`name`) VALUES ('".$name."');";
+	}
+	
+	function deleteUser($userid){
+		return "DELETE FROM `users` WHERE `userid` = ".$userid."";
+	}
+	
+	/**
+	 * ****************************
+	 *  	  Groups queries 
+	 * ****************************
+	 * */
 	
 	function countNoGroupsByUserName($name){
 		return "SELECT g.groupid FROM `groups` as g, `users` as u WHERE g.userid=u.userid AND u.name='".$name."' AND g.groupid = 0";
@@ -62,13 +83,15 @@ class Queries {
 	//Find removable groups
 	function getDeletableGroups($userid){
 		return "SELECT g.groupid, count(p.groupid) as people FROM `people` as p right outer join `groups` as g on p.groupid = g.groupid 
-				WHERE g.userid=".$userid." AND g.deleted=0 GROUP BY g.groupid ORDER BY g.groupid ";
-		
+				WHERE g.userid=".$userid." AND g.deleted=0 GROUP BY g.groupid ORDER BY g.groupid ";	
 	}
 	
 	
-	/** Frames queries **/
-	
+	/**
+	 * ****************************
+	 *  	  Frames queries 
+	 * ****************************
+	 * */	
 	function getFirstFrameId($cameraid){
 		return "SELECT MIN(n) as id FROM (SELECT frameid as n FROM frames WHERE cameraid = ".$cameraid.") as tab";
 	}
@@ -100,13 +123,37 @@ class Queries {
 		}
 	}
 	
-	/** Camera queries **/
+	/**
+	 * ****************************
+	 *  	  Cameras queries 
+	 * ****************************
+	 * */
 	
 	function getCameras(){
+		return "SELECT * FROM cameras";
+	}
+	
+	function getCamerasList(){
 		return "SELECT c.cameraid FROM `cameras` as c";
 	}
 	
-	/** People queries **/
+	function deleteCamera($id){
+		return "DELETE FROM `cameras` WHERE `cameraid` = ".$id."";
+	}
+	
+	function updateCamera($id, $calibration){
+		return "UPDATE `cameras` SET `calibration` = ".$calibration." WHERE `cameraid` = ".$id."";
+	}
+	
+	function insertCamera($calibration){
+		return "INSERT INTO `cameras` (`calibration`) VALUES ('".$calibration."');";
+	}
+	
+	/**
+	 * ****************************
+	 *  	  People queries 
+	 * ****************************
+	 * */
 	
 	function getPeopleFrame($cameraid, $frameid){
 		return "SELECT * FROM `people` WHERE cameraid=".$cameraid." AND frameid=".$frameid."";
@@ -174,7 +221,11 @@ class Queries {
 	}
 	
 	
-	/** Real people queries **/
+	/**
+	 * ****************************
+	 *  	  Avatar queries 
+	 * ****************************
+	 * */
 	
 	function getRealPeopleInfo($id){
 		return "SELECT * FROM `avatars` WHERE `peopleid` = ".$id;
@@ -196,7 +247,16 @@ class Queries {
 		return "UPDATE `avatars` SET `image`='../img/avatars/".$id.".jpg' WHERE peopleid=".$id;
 	}
 	
-	/** POI queries **/
+	/**
+	 * ****************************
+	 *  	  POI queries 
+	 * ****************************
+	 * */
+	
+	function insertPOI($id, $cameraid, $x, $y, $w, $h, $name){
+		return "INSERT INTO `poi` (`poiid`, `cameraid`, `location_x`, `location_y`, `width`, `height`, `name`)
+										VALUES (".$id.", '".$cameraid."', ".$x.", ".$y.", ".$w.", ".$h.", '".$name."')";
+	}
 	
 	function getPois($cameraid){
 		return "SELECT * FROM `poi` WHERE cameraid=".$cameraid."";
@@ -206,7 +266,15 @@ class Queries {
 		return "SELECT * FROM `poi` WHERE name LIKE '%".$query."%' AND cameraid=".$cameraid." ORDER BY poiid";
 	}
 	
-	/** Export query **/
+	function getUsefulPoi(){
+		return "SELECT * FROM poi WHERE poiid != 0";
+	}
+	
+	/**
+	 * ****************************
+	 *  	  Export queries 
+	 * ****************************
+	 * */
 	
 	function getExportQuery(){
 		return "SELECT p.peopleid,p.frameid,p.cameraid, p.bb_x, p.bb_y, p.bb_width, p.bb_height, p.bbV_x, p.bbV_y, p.bbV_width, p.bbV_height, 

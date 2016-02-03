@@ -36,6 +36,9 @@ if(file_exists($dbIniFile)){
 
 if(isset($_REQUEST['action'])){
 	require_once 'utils.php';
+	require_once 'queries.php';
+	
+	$QUERIES = new Queries();
 	
 	switch($_REQUEST['action']) {
 		
@@ -82,7 +85,7 @@ if(isset($_REQUEST['action'])){
 		 */
 		case "get-users":
 			$success = true;
-			$sql = "SELECT * FROM user";
+			$sql = $QUERIES->getUsers();
 			$users = array();
 			if($checkDatabaseConnection){
 				$result = mysql_query($sql) or $success = false;
@@ -105,10 +108,9 @@ if(isset($_REQUEST['action'])){
 				$success = true;
 				if (isset($_REQUEST['name'])){
 					$name = mysql_escape_string($_REQUEST['name']);
-					
-					
+
 					if($checkDatabaseConnection){
-						$sql = "INSERT INTO `user` (`name`) VALUES ('".$name."');";
+						$sql = $QUERIES->insertUser($name);
 						$result = mysql_query($sql) or $success = false;
 					} else {
 						$success = false;
@@ -132,7 +134,7 @@ if(isset($_REQUEST['action'])){
 				if (isset($_REQUEST['userid'])){
 					$id = $_REQUEST['userid'];
 					if($checkDatabaseConnection){
-						$sql = "DELETE FROM `user` WHERE `userid` = ".$id."";
+						$sql = $QUERIES->deleteUser($id);
 						$result = mysql_query($sql) or $success = false;
 					} else {
 						$success = false;
@@ -149,7 +151,7 @@ if(isset($_REQUEST['action'])){
 				 */
 				case "get-cameras":
 					$success = true;
-					$sql = "SELECT * FROM camera";
+					$sql = $QUERIES->getCameras();
 					$cameras = array();
 					if($checkDatabaseConnection){
 						$result = mysql_query($sql) or $success = false;
@@ -174,11 +176,10 @@ if(isset($_REQUEST['action'])){
 						$calibration = $_REQUEST['calibration'];		
 							
 						if($checkDatabaseConnection){
-							$sql = "INSERT INTO `camera` (`calibration`) VALUES ('".$calibration."');";
+							$sql = $QUERIES->insertCamera($calibration);
 							$result = mysql_query($sql) or $success = false;
 							
-							$sql = "INSERT INTO `poi` (`poiid`, `cameraid`, `location_x`, `location_y`, `width`, `height`, `name`) 
-										VALUES (0, '".mysql_insert_id()."', 0, 0, 0, 0, 'Not set')";	
+							$sql = $QUERIES->insertPOI(0, mysql_insert_id(), 0, 0, 0, 0, 'Not set');
 							$result = mysql_query($sql) or $success = false;
 						} else {
 							$success = false;
@@ -202,7 +203,7 @@ if(isset($_REQUEST['action'])){
 					if (isset($_REQUEST['cameraid'])){
 						$id = $_REQUEST['cameraid'];
 						if($checkDatabaseConnection){
-							$sql = "DELETE FROM `camera` WHERE `cameraid` = ".$id."";
+							$sql = $QUERIES->deleteCamera($id);
 							$result = mysql_query($sql) or $success = false;
 						} else {
 							$success = false;
@@ -223,7 +224,7 @@ if(isset($_REQUEST['action'])){
 						$id = $_REQUEST['cameraid'];
 						$calibration = $_REQUEST['calibration'];
 						if($checkDatabaseConnection){
-							$sql = "UPDATE `camera` SET `calibration` = ".$calibration." WHERE `cameraid` = ".$id."";
+							$sql = $QUERIES->updateCamera($id, $calibration);
 							$result = mysql_query($sql) or $success = false;
 						} else {
 							$success = false;
@@ -240,7 +241,7 @@ if(isset($_REQUEST['action'])){
 				 */
 				case "get-poi":
 					$success = true;
-					$sql = "SELECT * FROM poi WHERE poiid != 0";
+					$sql = $QUERIES->getUsefulPoi();
 					$pois = array();
 					if($checkDatabaseConnection){
 						$result = mysql_query($sql) or $success = false;
@@ -272,9 +273,7 @@ if(isset($_REQUEST['action'])){
 						&& isset($_REQUEST['height'])){
 														
 						if($checkDatabaseConnection){
-							$sql = "INSERT INTO `poi` (`poiid`, `cameraid`, `location_x`, `location_y`, `width`, `height`, `name`) 
-										VALUES ('".$_REQUEST['poiid']."', '".$_REQUEST['cameraid']."', '".$_REQUEST['x']."', 
-										'".$_REQUEST['y']."', '".$_REQUEST['width']."', '".$_REQUEST['height']."', '".$_REQUEST['name']."')";
+							$sql = $QUERIES->insertPOI($_REQUEST['poiid'], $_REQUEST['cameraid'], $_REQUEST['x'], $_REQUEST['y'], $_REQUEST['width'], $_REQUEST['height'], $_REQUEST['name']);
 							$result = mysql_query($sql) or $success = false;
 						} else {
 							$success = false;

@@ -99,7 +99,7 @@
 		 */
 		case "get-cameras":
 			$camera = array();
-			$sql = $QUERIES->getCameras();
+			$sql = $QUERIES->getCamerasList();
 			$result=mysql_query($sql) or
 			die ("Error: ".mysql_error());
 			while ($row=mysql_fetch_array($result)){
