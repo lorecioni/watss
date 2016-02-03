@@ -52,6 +52,15 @@
 	    	if($('#timeline-frame-' + prev).data('id') != undefined){
 	    		selectFrame(prev);
 	    		currentFrame = prev;
+	    	} else {
+	    		currentFrame = prev;
+	    		if(currentFrame < config.loadedFrames/2){
+					displayedFrames = timelineFrames.slice(0, config.loadedFrames);
+				} else {
+					displayedFrames = timelineFrames.slice(currentFrame - config.loadedFrames/2, currentFrame + config.loadedFrames/2);
+				}
+	    		showFrames(displayedFrames);
+	    		selectFrame(prev);
 	    	}
 	    },
 	    /**
@@ -62,7 +71,16 @@
 	    	if($('#timeline-frame-' + next).data('id') != undefined){
 	    		selectFrame(next);
 	    		currentFrame = next;
-	    	}	 
+	    	} else {
+	    		currentFrame = next;
+	    		if(currentFrame < config.loadedFrames/2){
+					displayedFrames = timelineFrames.slice(0, config.loadedFrames);
+				} else {
+					displayedFrames = timelineFrames.slice(currentFrame - config.loadedFrames/2, currentFrame + config.loadedFrames/2);
+				}
+	    		showFrames(displayedFrames);
+	    		selectFrame(next);
+	    	} 
 	    },
 	    /**
 		 * Function handler on frame selected
