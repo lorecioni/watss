@@ -17,11 +17,14 @@
 		title: 'Timeline',
 		cursorDraggable: false,
 		mouseScrolling: true,
+		loadedFrames: 100
 	}
 	
 	//List of frames
 	var timelineFrames = [];
-	//Current frame in timeline
+	//Preloaded frames in timeline
+	var displayedFrames = [];
+	//Current frame number in timeline
 	var currentFrame;
 	
 	/**
@@ -34,7 +37,12 @@
 		showFrames : function(data) {
 			timelineFrames = data.frames;
 			currentFrame = data.current;
-			showFrames(timelineFrames);
+			if(data.current < config.loadedFrames/2){
+				displayedFrames = timelineFrames.slice(0, config.loadedFrames);
+			} else {
+				displayedFrames = timelineFrames.slice(currentFrame - config.loadedFrames/2, currentFrame + config.loadedFrames/2);
+			}		
+			showFrames(displayedFrames);
 		},
 	    /**
 		 * Go to the previous frame
@@ -122,7 +130,6 @@
     			onFrameSelected: function(){}
     		}, value);
     		
-    		loadedFrames = params.loadedFrames;
     		methods.onFrameSelected = params.onFrameSelected;
         } else {
             $.error( 'Method ' +  value + ' does not exist on timeline' );
@@ -196,6 +203,9 @@
 					}
 					offset += e.deltaY; //If necessary multiply for e.deltaFactor
 				}
+				
+				console.log(e.deltaFactor);
+				console.log(e.deltaX)
 				//Limiting scolling
 				if(offset > 0)
 					offset = 0;
@@ -206,7 +216,7 @@
 					left: offset
 				})
 				
-				if(loadedFrames != undefined){
+				if(config.loadedFrames != undefined){
 					extendTimelineFrame(direction);
 				}		
 				updateCursor();
@@ -260,6 +270,68 @@
 	}
 
 	
+	//Extend timeline frames
+	function extendTimelineFrame(direction){
+		var frame, id;
+		var empty = true;
+		var start = parseInt(displayedFrames[0].id);
+		var end = parseInt(displayedFrames[displayedFrames.length - 1].id);
+		if(direction == 'right'){
+			frame = displayedFrames[0];
+			if (parseInt(frame.id) <= 1) return;
+			if(frame.people.length > 0) empty = false;
+			$('#timeline-frame-' + end).remove();
+			id = parseInt(frame.id) - 1;
+			start = start - 1;
+			end = end - 1;
+		} else {
+			frame = displayedFrames[displayedFrames.length - 1];
+			if(parseInt(frame.id) >= parseInt(timelineFrames[timelineFrames.length - 1].id)) return;
+			if(frame.people.length > 0) empty = false;
+			$('#timeline-frame-' + start).remove();
+			id = parseInt(frame.id) + 1;
+			start = start + 1;
+			end = end + 1;
+		}
+		var frame = $('<div></div>')
+			.addClass('timeline-frame')
+			.attr('id', 'timeline-frame-' + id)
+			.attr('data-id', id)
+			.append('<div class="timeline-frame-indicator"></div>')
+			.append('<span class="timeline-frame-number">' + id + '</span>');
+		
+		if(!empty){
+			frame.addClass('people');
+		}
+		
+		if(id == currentFrame){
+			frame.addClass('current');
+		}
+		
+		//On click change frame
+		frame.click(function(){
+			selectFrame($(this).data('id'));
+		});
+			
+		if(direction == 'right'){
+			$('.timeline-frames-container').prepend(frame);
+		} else {
+			$('.timeline-frames-container').append(frame);
+		}
+		
+		$( ".timeline-annotation" ).each(function() {
+			var start = $(this).data('start');
+			var left = 600;
+			if($('#timeline-frame-' + start).length > 0 ){
+				left = $('#timeline-frame-' + start).position().left;
+			}
+			$(this).css('left', left);
+		});
+		
+		//Updating displayed frames list
+		displayedFrames = timelineFrames.slice(start - 1, end);
+	}
+	
 	//Loading current frame people
 	function loadPeople(people){
 		$('.timeline-people-list').empty();
@@ -304,10 +376,14 @@
 	
 	//Goes to frame (no callback)
 	function gotoFrame(id){
-		$('.timeline-frame.current').removeClass('current');
-		$('#timeline-frame-' + id).addClass('current');
-		$('.timeline-annotation').remove();
+		if(id < config.loadedFrames/2){
+			displayedFrames = timelineFrames.slice(0, config.loadedFrames);
+		} else {
+			displayedFrames = timelineFrames.slice(id - config.loadedFrames/2, id + config.loadedFrames/2);
+		}		
 		currentFrame = id;
+		showFrames(displayedFrames);
+		$('.timeline-annotation').remove();
 		centerTimeline();
 		updateCursor();
 		loadPeople(timelineFrames[id - 1].people)
@@ -378,15 +454,23 @@
 				.addClass('timeline-annotation-' + person.id);
 				
 			for ( var i in intervals) {
+				var width = 0;
+				var left = -100;
+				if($('#timeline-frame-' + intervals[i].start).length > 0 ){
+					width = $('#timeline-frame-' + intervals[i].start).width();
+					left = $('#timeline-frame-' + intervals[i].start).position().left;
+				}
+				
 				var over = $('<div></div>')
 					.addClass('timeline-annotation')
 					.css({
 						'background-color': person.color,
-						'width' : $('#timeline-frame-' + intervals[i].start).width() * (intervals[i].end - intervals[i].start)
-								+ $('#timeline-frame-' + intervals[i].start).width(),
-						'left' : $('#timeline-frame-' + intervals[i].start).position().left,
+						'width' :  width * (intervals[i].end - intervals[i].start)
+								+ width,
+						'left' : left,
 						'top' :  '40px'
-					});
+					})
+					.attr('data-start', intervals[i].start);
 				annotationContainer.append(over);
 			}
 			$('.timeline-frames-container').prepend(annotationContainer);
@@ -412,6 +496,7 @@
 		} else {
 			$('.timeline-frames-container').css('left', 0);
 		}
+
 	}
 	
 	//Updates person color in timeline
