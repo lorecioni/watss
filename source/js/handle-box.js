@@ -6,16 +6,61 @@
  * @param bbF : bounding box face (jQuery obj)
  */
 
+
+(function() {
+
+	$('#video-box').click(function(e){
+		e.preventDefault();
+		$('.bb.init').removeClass('init');
+	});
+	
+	/**
+	 * Enabling bounding box creation, bb is atteched to the pointer
+	 * until click on a frame position
+	 */
+	$('#video-box').mousemove(function(e){
+		var geometryEnabled = true;		
+			if($('.bb.init').length > 0){
+				if(geometryEnabled){
+					//Attach bounding box to the pointer
+					var addedId = $('.bb.init').first().data('id');
+					var x = e.pageX - $('#video-box').offset().left;
+					var y = e.pageY - $('#video-box').offset().top;
+					
+					$('#video-box #box-' + addedId).css({
+						'left': x,
+						'top': y
+					});
+					$('#video-box #box-' + addedId + '-bbV').css({
+						'left': x,
+						'top': y
+					});
+					$('#video-box #box-' + addedId + '-face').css({
+						'left': x,
+						'top': y
+					});
+				} else {
+					//Create manually bounding box
+					
+					
+				}
+			}	
+	});
+	
+	$(document).bind('keydown', 'esc', function (e){
+		if($('.bb.init').length > 0){
+			var addedId = $('.bb.init').first().data('id');
+			$('#people-table tr[data-id=' + addedId + '] .remove-person').click();
+		}
+	});
+})();
+
 function setDragResize(bb, bbV, bbF) {
 	
 	//Set bounding box draggable
 	bb.draggable({ 
 		containment: "parent",
 		drag: function( event, ui ) {
-			/*if(!$("#tr-"+$(this).data("id")).hasClass('info')){
-				deselectAllBox("#people-table");
-				changeSelectBox("#people-table",$(this));
-			}*/
 			bbV.offset({left: ui.offset.left + bbV.position().left - ui.originalPosition.left, 
 							  top: ui.offset.top + bbV.position().top - ui.originalPosition.top });
 			bbF.offset({left: ui.offset.left + bbF.position().left - ui.originalPosition.left, 
@@ -38,7 +83,6 @@ function setDragResize(bb, bbV, bbF) {
 				bbV.height(bb.height() - border)
 			}
 			//Updating face bounding box
-			//FIXME to be updated
 			bbF.width(bb.width());
 			bbF.height(bb.height());
 		},

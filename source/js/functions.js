@@ -483,7 +483,7 @@ function addBoundingBox(people){
 	var videoBoxHeight = $('#video-box').height();
 	var videoWidth = $("#video-box").data("width");
 	var videoHeight = $("#video-box").data("height");
-		
+			
 	for(var i in people){
 		
 		//Updates bounding box coordinates
@@ -554,42 +554,6 @@ function addBoundingBox(people){
 		setDragResize(boundingBox, boundingBoxVisible, boundingBoxFace)
 		
 	}
-	
-	/**
-	 * Enabling bounding box creation, bb is atteched to the pointer
-	 * until click on a frame position
-	 */
-	$('#video-box').mousemove(function(e){
-		if($('.bb.init').length > 0){
-			var addedId = $('.bb.init').first().data('id');
-			var x = e.pageX - $('#video-box').offset().left;
-			var y = e.pageY - $('#video-box').offset().top;
-			
-			$('#video-box #box-' + addedId).css({
-				'left': x,
-				'top': y
-			});
-			$('#video-box #box-' + addedId + '-bbV').css({
-				'left': x,
-				'top': y
-			});
-			$('#video-box #box-' + addedId + '-face').css({
-				'left': x,
-				'top': y
-			});
-		}	
-	}).click(function(e){
-		e.preventDefault();
-		$('.bb.init').removeClass('init');
-	});
-	
-	$(document).bind('keydown', 'esc', function (e){
-		if($('.bb.init').length > 0){
-			var addedId = $('.bb.init').first().data('id');
-			$('#people-table tr[data-id=' + addedId + '] .remove-person').click();
-		}
-	});
-	
 	
 	if(people.length == 1){
 		$(".bb:last, .bbV:last, .face:last").click(function(){

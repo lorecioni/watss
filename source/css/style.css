@@ -166,15 +166,18 @@ div#features-list {
 	position: absolute;
 	height: 425px;
 	overflow: hidden;
+	cursor: crosshair !important;
 }
 
 .bb{
 	position: absolute;
 	z-index: 3;
+	cursor: pointer;
 }
 .bbV {
 	position: absolute;
 	z-index: 2;
+	cursor: pointer;
 }
 
 .face {
