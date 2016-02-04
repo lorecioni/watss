@@ -44,6 +44,17 @@
 						<li><a href="../settings.php">Settings</a></li>		
 					</ul>
 			 <ul class="nav navbar-nav navbar-right">
+			 	<li class="dropdown">
+		          <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Options <span class="caret"></span></a>
+		          <ul class="dropdown-menu">
+		            <li>
+		            	<a href="#"><div class="checkbox">
+ 						 <label>
+    						<input type="checkbox" value="">Enable Geometry</label></div>
+    					</a>
+    				</li>
+		          </ul>
+		        </li>
 		         <li><a id="welcome-person"></a></li>
 		        <li class="dropdown">
 		          <a href="#" class="dropdown-toggle" data-toggle="dropdown"><span class="glyphicon glyphicon-cog"></span></a>
