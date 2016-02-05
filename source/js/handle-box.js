@@ -67,6 +67,7 @@
 					break;
 			
 				case 'mouseleave':
+					$('#video-overlay').remove();
 					break;
 					
 					
@@ -90,7 +91,6 @@
 							'top': y
 						});
 					} else {
-						//console.log(rect)
 						if ($('#video-overlay').is(':visible')) {
 				            var startX = parseInt($('#bb-selection').css('left'));
 				            var startY = parseInt($('#bb-selection').css('top'));
@@ -98,17 +98,8 @@
 				            var width = e.offsetX - startX;
 				            var height = e.offsetY - startY;
 				            
-				            
-//				            if (width < 0) {
-//				            	$('#bb-selection').css('width', width * -1);
-//				            } else {
-				            	$('#bb-selection').css('width', width);
-//				            }
-//				            if (height < 0) {
-//				            	$('#bb-selection').css('height', height * -1);
-//				            } else {
-				            	$('#bb-selection').css('height', height);
-//				            }
+				            $('#bb-selection').css('width', width);
+				            $('#bb-selection').css('height', height);
 				        }
 					}
 					break;

@@ -166,7 +166,6 @@ div#features-list {
 	position: absolute;
 	height: 425px;
 	overflow: hidden;
-	cursor: crosshair !important;
 }
 
 .bb{

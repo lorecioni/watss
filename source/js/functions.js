@@ -548,7 +548,8 @@ function addBoundingBox(people){
 			boundingBox.addClass('init');
 			boundingBoxVisible.addClass('init');
 			boundingBoxFace.addClass('init');
-			$("#video-box").prepend('<div id="video-overlay"></div>');
+			$("#video-box").prepend('<div id="video-overlay"></div>')
+				.css('cursor', 'crosshair');
 		}
 		
 		$("#video-box").append(boundingBox);
