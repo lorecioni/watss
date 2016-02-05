@@ -645,6 +645,16 @@
 				
 			jecho($output);
 			break;
+			
+		/**
+		 * Generates proposals for a single person for next frames based on current and previous annotation
+		 * Calls python script: uses a combination of person motion and a Kalman filter for a prediction based
+		 * on previous person annotation.
+		 * Called by extending person annotation in timeline
+		 */
+		case 'propagate':
+			break;
+			
 		
 		/**
 		 * Export function for DB
