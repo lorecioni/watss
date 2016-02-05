@@ -1,3 +1,6 @@
+import cv2
+import os
+import random
 
 TRAIN_SIZE = 40
 
@@ -8,7 +11,7 @@ def trainBackgroundSubstractorMOG(frames):
         filename = os.path.abspath('../frames/1/' + str(frames[id]))
         frame = cv2.imread(filename)
         bgs.apply(frame)
-        print('processed ' + str(id))
+        #print('processed ' + str(id))
     return bgs
     
 

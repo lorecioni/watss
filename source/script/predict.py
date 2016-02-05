@@ -2,13 +2,11 @@
 import numpy as np
 import cv2
 import os
-import pickle
-import random
 from os import listdir
 from os.path import isfile, join
 import sys
 import argparse
-import tracking
+from tracking import *
 
 parser = argparse.ArgumentParser()
 parser.add_argument("-x", type=int, help="bounding box x position")
