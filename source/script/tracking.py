@@ -1,18 +1,14 @@
-#Tracking functions
-import numpy as np
-import cv2
-import os
-import pickle
-from os import listdir
-from os.path import isfile, join
+
+TRAIN_SIZE = 40
 
 def trainBackgroundSubstractorMOG(frames):
     bgs = cv2.createBackgroundSubtractorMOG2()
-    for i in range(20, 40):
-        filename = os.path.abspath('../frames/1/' + str(frames[i]))
+    for i in range(TRAIN_SIZE):
+        id = random.choice(range(len(frames)));
+        filename = os.path.abspath('../frames/1/' + str(frames[id]))
         frame = cv2.imread(filename)
         bgs.apply(frame)
-        print('processed ' + str(i))
+        print('processed ' + str(id))
     return bgs
     
 
@@ -38,29 +34,3 @@ def getDetections(bgs, frame):
             filtered.append(rect)
 
     return filtered
-
-
-path = os.path.abspath('../frames/1/')
-frames = [f for f in listdir(os.path.abspath(path)) if isfile(join(path, f))]
-
-bb = (1152, 192, 80, 158)
-
-
-bgs = trainBackgroundSubstractorMOG(frames)
-
-paths = []
-
-for i in range(20, len(frames)):
-    filename = os.path.abspath('../frames/1/' + str(frames[i]))
-    frame = cv2.imread(filename)
-    rects = getDetections(bgs, frame)
-    
-    for rect in rects:
-        (x, y, w, h) = rect
-        frame = cv2.rectangle(frame, (x, y), (x + w, y + h), 255, 2)
-
-    paths = match_rects_to_paths(rects, paths, i)
-    print(paths)
-    cv2.imshow('img', frame)    
-    cv2.waitKey(0)
-        

@@ -479,13 +479,27 @@
 				var over = $('<div></div>')
 					.addClass('timeline-annotation')
 					.css({
+						'position': 'absolute',
 						'background-color': person.color,
 						'width' :  width * (intervals[i].end - intervals[i].start)
 								+ width,
+						'height': '18px',
 						'left' : left,
 						'top' :  '40px'
 					})
 					.attr('data-start', intervals[i].start);
+				
+				over.resizable({
+					handles: 'e',
+					grid: 20,
+					start: function(e, ui){
+						console.log('start');
+					},
+					stop: function(e, ui){
+						console.log('ends');
+					}
+				});
+
 				annotationContainer.append(over);
 			}
 			$('.timeline-frames-container').prepend(annotationContainer);
