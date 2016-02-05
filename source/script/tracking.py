@@ -16,30 +16,6 @@ def trainBackgroundSubstractorMOG(frames):
     return bgs
     
 
-def match_rects_to_paths(rects, paths, frame_num):
-    for rect in rects:
-        added_path = False
-        waiting = False
-        for path in paths:
-            # Check if we can add rect to path
-            last_box = path[-1]
-            if (abs(last_box['rect'][0] - rect[0]) < 20 and
-                abs(last_box['rect'][1] - rect[1]) < 20 and
-                (frame_num - last_box['frame']) < 15):
-                if (frame_num - last_box['frame']) > 3:
-                    path.append({'visible':True, 'rect':rect, 'frame':frame_num})
-                    added_path = True
-                else:
-                    waiting = True
-        if not added_path and not waiting:
-            # Create new path
-            new_path = []
-            if frame_num > 0:
-                new_path.append({'visible':False, 'rect':rect, 'frame':0})
-            new_path.append({'visible':True, 'rect':rect, 'frame':frame_num})
-            paths.append(new_path)
-    return paths
-
 def getDetections(bgs, frame):
     fgmask = bgs.apply(frame)
 

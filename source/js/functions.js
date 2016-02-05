@@ -546,6 +546,9 @@ function addBoundingBox(people){
 		//Detecting new bounding box, append it to mouse
 		if(people[i]["bb"][0] < 0 || people[i]["bb"][1] < 0 ){
 			boundingBox.addClass('init');
+			boundingBoxVisible.addClass('init');
+			boundingBoxFace.addClass('init');
+			$("#video-box").prepend('<div id="video-overlay"></div>');
 		}
 		
 		$("#video-box").append(boundingBox);

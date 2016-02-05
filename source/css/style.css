@@ -301,6 +301,18 @@ img.panel-heading-loading {
     width: 90px;
 }
 
+div#video-overlay {
+    width: 100%;
+    height: 100%;
+    position: relative;
+    z-index: 1000;
+}
+
+#video-overlay div#bb-selection {
+    position: absolute;
+    border: 2px solid #000;
+}
+
 input#add-poi-name {
     width: 250px;
     margin: 0 30px;
