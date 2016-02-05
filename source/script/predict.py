@@ -1,9 +1,6 @@
-#!/usr/bin/env python
-
-#Tracking person script
+#!/usr/local/bin/python
 import argparse
 import sys
-import json
 from tracking import *
 
 ## Parsing arguments
@@ -23,15 +20,10 @@ if(len(args.x) != len(args.y) or len(args.width) != len(args.height) or len(args
     print('Error: invalid parameters')
     sys.exit()
 else:
-    
-    out_file = open("test.txt","w")
-    out_file.write("This Text is going to out file\nLook at it and see\n")
-    out_file.close()
-    
     for i in range(len(args.x)):
         frames.append([args.frames[i], (args.x[i], args.y[i], args.width[i], args.height[i])])
     
     #Forward prediction
     out = predictPerson(args.camera, frames, args.predict)
-    print(json.dumps(out))
+    print(out)
  

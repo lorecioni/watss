@@ -652,21 +652,16 @@
 		 * Called by extending person annotation in timeline
 		 */
 		case 'propagate':
-			//$handle = popen('python ../script/predict.py -x 1070 -y 230 -width 120 -height 215 -camera 1 -frames 16h21m58s_3870.jpg -predict 16h21m58s_3871.jpg 16h21m58s_3872.jpg', 'r');
-			
-			passthru('/usr/bin/python2.7 /srv/http/assets/py/switch.py arg1 arg2');
-			$output = ob_get_clean();
-			
-			
-			$command = "python ../script/predict.py -x 1070 -y 230 -width 120 -height 215 -camera 1 -frames 16h21m58s_3870.jpg -predict 16h21m58s_3871.jpg 16h21m58s_3872.jpg 2>&1";
-			$command = escapeshellcmd($command);
-			$output = shell_exec($command) or $output = 'invalid';
-			//$output = fread($handle, 1024);
-			//$output = passthru("python ../script/predict.py -x 1070 -y 230 -width 120 -height 215 -camera 1 -frames 16h21m58s_3870.jpg -predict 16h21m58s_3871.jpg 16h21m58s_3872.jpg");
-			json_encode($output);
-			break;
-			
+			$command = $config->python_interpreter.' '.$config->predict_script_path;
+			$command .= " -x 1070 -y 230 -width 120 -height 215 -camera 1 -frames 16h21m58s_3870.jpg -predict 16h21m58s_3871.jpg 16h21m58s_3872.jpg";
+			$output = shell_exec($command);
+			$output = preg_replace('~[[:cntrl:]]~', '', $output);
+			$output = preg_replace('~[.[:cntrl:]]~', '', $output);
+			$list = json_decode($output);
 		
+			jecho($output);
+			break;
+					
 		/**
 		 * Export function for DB
 		 */

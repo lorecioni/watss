@@ -13,7 +13,7 @@ def trainBackgroundSubstractorMOG(frames):
     bgs = cv2.createBackgroundSubtractorMOG2()
     for i in range(TRAIN_SIZE):
         id = random.choice(range(len(frames)));
-        filename = os.path.abspath('../frames/1/' + str(frames[id]))
+        filename = os.path.abspath('/Applications/MAMP/htdocs/watss/source/frames/1/' + str(frames[id]))
         frame = cv2.imread(filename)
         bgs.apply(frame)
         #print('processed ' + str(id))
@@ -55,7 +55,7 @@ def boundingBoxIntersect(bb, rect):
 
 
 def predictPerson(camera, previousFrames, nextFrames):  
-    path = os.path.abspath('../frames/' + str(camera) + '/')
+    path = os.path.abspath('/Applications/MAMP/htdocs/watss/source/frames/' + str(camera) + '/')
     images = [f for f in listdir(os.path.abspath(path)) if isfile(join(path, f))]
     bgs = trainBackgroundSubstractorMOG(images)
     
@@ -65,7 +65,7 @@ def predictPerson(camera, previousFrames, nextFrames):
         
         bb = previousFrames[len(previousFrames) - 1][1]
         
-        filename = os.path.abspath('../frames/1/' + str(nextFrames[i]))
+        filename = os.path.abspath('/Applications/MAMP/htdocs/watss/source/frames/' + str(camera) + '/' + str(nextFrames[i]))
         frame = cv2.imread(filename)
         rects = getDetections(bgs, frame)
         
