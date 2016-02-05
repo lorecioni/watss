@@ -456,8 +456,7 @@
 					$result = mysql_query($sql) or $success = false;
 				}
 			}
-			
-			
+						
 			if ($success && isset($_REQUEST['id'])){
 				$success = createAvatar($_REQUEST['id']);
 			}

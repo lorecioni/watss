@@ -110,12 +110,12 @@ function createAvatar($id){
 	
 	$oldScore = computeAvatarScore($oldFace, $oldFaceZ, $dim[0], $dim[1]);
 	$newScore = computeAvatarScore($facePeople, $facePeopleZ, $bbV->width, $bbV->height);
-	
+
 	if ( $newScore > $oldScore || $defaultAvatar){
 		$sql = $QUERIES->getFrameById($_SESSION["frame_id"], $_SESSION["camera_id"]);
 		$result = mysql_query($sql) or $done = false;		
 		
-		if ($done == true){
+		if ($done){
 			while ($row = mysql_fetch_array($result) ){
 				$crop = array('x' => $bbV->x , 'y' => $bbV->y, 'width' => $bbV->width, 'height'=> $bbV->height);
 				$src = imagecreatefromjpeg("../frames/".$row["path"]);
@@ -124,23 +124,25 @@ function createAvatar($id){
 				$resizedWidth = $bbV->width * $percent;
 				$resizedHeight = $bbV->height * $percent;
 				$dest = imagecrop($src, $crop);
-				imagejpeg($dest, "../img/real_people/".$id.".jpg", 100);	
+				imagejpeg($dest, "../img/avatars/".$id.".jpg", 100);	
 				
-				chmod("../img/real_people/".$id.".jpg", 0777);
+				if($defaultAvatar){
+					$sql = $QUERIES->setAvatarImage($id);
+					$result = mysql_query($sql) or $done = false;
+				}
+				
+				chmod("../img/avatars/".$id.".jpg", 0777);
 				imagedestroy($src);
 				imagedestroy($dest);
 			}
 			
-			$sql = $QUERIES->setAvatarFace($id, $facePeople, $facePeopleZ);
-			$result = mysql_query($sql) or $done = false;
+			if($done){
+				$sql = $QUERIES->setAvatarFace($id, $facePeople, $facePeopleZ);
+				$result = mysql_query($sql) or $done = false;
+			}		
 		}	
 	}
-	
-	if ($defaultAvatar == true){
-		$sql = $QUERIES->setAvatarImage($id);
-		$result = mysql_query($sql) or $done=false;
-	}
-	
+
 	return $done;
 }
 
