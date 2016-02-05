@@ -497,6 +497,7 @@
 					},
 					stop: function(e, ui){
 						console.log('ends');
+						propagate();
 					}
 				});
 
@@ -540,4 +541,22 @@
 		loadPeople(timelineFrames[currentFrame - 1].people);
 	}
 	
+	
+	/**
+	 * Propagating annotation with computer vision
+	 * 
+	 */
+	function propagate(){
+		$.ajax({
+			type: "POST",
+			url: "../php/api.php",
+			data: {action: "propagate"},
+			success: function(response){
+				console.log(response);			
+			},
+			error: function(error){
+				console.log(error);
+			}
+		});
+	}
 })(jQuery);
