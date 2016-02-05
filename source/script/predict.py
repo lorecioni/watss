@@ -13,24 +13,17 @@ parser.add_argument("-x", type=int, help="bounding box x position")
 parser.add_argument("-y", type=int, help="bounding box y position")
 parser.add_argument("-width", type=int, help="bounding box width")
 parser.add_argument("-height", type=int, help="bounding box height")
-parser.add_argument('-frame', action='append', dest='frames',
-                    default=[],
-                    help='Add repeated values to a list',
-                    )
+parser.add_argument('-frame', action='append', dest='frames', default=[], help='Frames list',)
 args = parser.parse_args()
 
-
-
-
+bb = (args.x, args.y, args.width, args.height)
 
 path = os.path.abspath('../frames/1/')
-frames = [f for f in listdir(os.path.abspath(path)) if isfile(join(path, f))]
+images = [f for f in listdir(os.path.abspath(path)) if isfile(join(path, f))]
+bgs = trainBackgroundSubstractorMOG(images)
 
-bb = (1152, 192, 80, 158)
-bgs = trainBackgroundSubstractorMOG(frames)
-
-for i in range(20, len(frames)):
-    filename = os.path.abspath('../frames/1/' + str(frames[i]))
+for i in range(len(args.frames)):
+    filename = os.path.abspath('../frames/1/' + str(args.frames[i]))
     frame = cv2.imread(filename)
     rects = getDetections(bgs, frame)
     
