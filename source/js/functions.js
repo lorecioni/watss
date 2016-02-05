@@ -573,6 +573,12 @@ function addBoundingBox(people){
 			}
 		});
 	} else {
+		$('.bb').click(function(){
+			if($(this).hasClass('selected')){
+				$(this).addClass('selected');
+			}
+		})
+		
 		$(".bb, .bbV, .face").click(function(){
 			$("#video-box").panzoom("option", "disablePan", true);
 			if(!$("#tr-"+$(this).data("id")).hasClass('info')){
@@ -695,6 +701,7 @@ function deselectAllBox(table_id){
 	resetPeopleMode(table_id);
 	updateBoxGraphics(table.$('tr.info'));
 	table.$('tr.info').removeClass('info');
+	$('.bb').removeClass('selected');
 }
 
 /* CHANGE AND SELECT BOX */
