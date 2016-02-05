@@ -158,7 +158,6 @@ $(document).ready(function(){
 			data: {action:"get-realpeople" },
 			success: function(response){
 				console.log("[get-realpeople] returned");
-				console.log(response);
 				to_append = "";
 				for(var i in response){
 					to_append += '<option data-img-src="'+response[i]["image"]+'" value="'+response[i]["id"]+'"><span class="label label-warning" style="margin: 2px auto;">ID: '+response[i]["id"]+'</span></option>';

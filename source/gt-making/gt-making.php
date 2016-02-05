@@ -50,7 +50,7 @@
 		            <li>
 		            	<a href="#"><div class="checkbox">
  						 <label>
-    						<input type="checkbox" value="">Enable Geometry</label></div>
+    						<input type="checkbox" id="enable-geometry" value="">Enable Geometry</label></div>
     					</a>
     				</li>
 		          </ul>

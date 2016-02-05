@@ -9,12 +9,16 @@
 
 (function() {
 
-
-	
-//	$('#video-box').click(function(e){
-//		e.preventDefault();
-		//$('.bb.init').removeClass('init');
-//	});
+	$('#video-box').click(function(e){
+		var geometryEnabled = $('#enable-geometry').is(':checked');
+		if(geometryEnabled){
+			e.preventDefault();
+			$('#video-overlay').remove();
+			var bb = $('.bb.init').first();
+			$('.init').removeClass('init');
+			bb.click()
+		}	
+	});
 	
 	/**
 	 * Enabling bounding box creation, bb is atteched to the pointer
@@ -22,19 +26,21 @@
 	 */
 	$('#video-box').bind( "mousedown mouseup mousemove mouseleave", function(e) {
 		if($('.bb.init').length > 0){
-			var geometryEnabled = false;
+			var geometryEnabled = $('#enable-geometry').is(':checked');
 			
 			switch (e.type){
 				case 'mousedown':
-					$('#video-overlay').append('<div id="bb-selection"></div>');
-					var x = e.offsetX;
-					var y = e.offsetY;
-					var color = $('.bb.init').first().css('border-color');
-					$('#video-overlay #bb-selection').css({
-						'left': x, 
-						'top': y,
-						'border': '2px solid ' + color
-						});
+					if(!geometryEnabled){
+						$('#video-overlay').append('<div id="bb-selection"></div>');
+						var x = e.offsetX;
+						var y = e.offsetY;
+						var color = $('.bb.init').first().css('border-color');
+						$('#video-overlay #bb-selection').css({
+							'left': x, 
+							'top': y,
+							'border': '2px solid ' + color
+							});
+					}
 					break;
 					
 				case 'mouseup':			
