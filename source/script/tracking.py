@@ -1,8 +1,13 @@
 import cv2
+import numpy as np
 import os
 import random
+import os
+from os import listdir
+from os.path import isfile, join
 
 TRAIN_SIZE = 40
+TOLERANCE = 80
 
 def trainBackgroundSubstractorMOG(frames):
     bgs = cv2.createBackgroundSubtractorMOG2()
@@ -14,7 +19,6 @@ def trainBackgroundSubstractorMOG(frames):
         #print('processed ' + str(id))
     return bgs
     
-
 def getDetections(bgs, frame):
     fgmask = bgs.apply(frame)
 
@@ -37,3 +41,50 @@ def getDetections(bgs, frame):
             filtered.append(rect)
 
     return filtered
+
+
+def boundingBoxIntersect(bb, rect):
+    a = abs(bb[0] - rect[0])
+    b = abs(bb[1] - rect[1])
+    c = abs(bb[2] - rect[2])
+    d = abs(bb[3] - rect[3])
+    if ((a + b + c + d) < TOLERANCE):
+        return True
+    else:
+        return False
+
+
+def predictPerson(camera, previousFrames, nextFrames):  
+    path = os.path.abspath('../frames/' + str(camera) + '/')
+    images = [f for f in listdir(os.path.abspath(path)) if isfile(join(path, f))]
+    bgs = trainBackgroundSubstractorMOG(images)
+    
+    out = []
+    
+    for i in range(len(nextFrames)):
+        
+        bb = previousFrames[len(previousFrames) - 1][1]
+        
+        filename = os.path.abspath('../frames/1/' + str(nextFrames[i]))
+        frame = cv2.imread(filename)
+        rects = getDetections(bgs, frame)
+        
+        found = False
+        for rect in rects:
+            if(boundingBoxIntersect(bb, rect)):
+                out.append(rect)
+                previousFrames.append([nextFrames[i], rect])
+                found = True
+                break
+        
+        if(not found):
+            out.append(bb)
+            previousFrames.append([nextFrames[i], bb])
+        
+    return out
+                #(x, y, w, h) = rect
+                #frame = cv2.rectangle(frame, (x, y), (x + w, y + h), 255, 2)
+                            
+        #cv2.imshow('img', frame)    
+        #cv2.waitKey(0)     
+

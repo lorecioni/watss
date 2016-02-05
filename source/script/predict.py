@@ -1,36 +1,30 @@
-#Tracking functions
-import numpy as np
-import cv2
-import os
-from os import listdir
-from os.path import isfile, join
-import sys
+#Tracking person script
 import argparse
+import sys
+import json
 from tracking import *
 
+## Parsing arguments
 parser = argparse.ArgumentParser()
-parser.add_argument("-x", type=int, help="bounding box x position")
-parser.add_argument("-y", type=int, help="bounding box y position")
-parser.add_argument("-width", type=int, help="bounding box width")
-parser.add_argument("-height", type=int, help="bounding box height")
-parser.add_argument('-frame', action='append', dest='frames', default=[], help='Frames list',)
+parser.add_argument("-x", nargs='+', type=int, help="bounding box x position")
+parser.add_argument("-y", nargs='+', type=int, help="bounding box y position")
+parser.add_argument("-width", nargs='+', type=int, help="bounding box width")
+parser.add_argument("-height", nargs='+', type=int, help="bounding box height")
+parser.add_argument('-camera', type=int, help="camera id")
+parser.add_argument('-frames', nargs='+', default=[], help='Frames list')
+parser.add_argument('-predict', nargs='+', default=[], help='Frames list')
 args = parser.parse_args()
 
-bb = (args.x, args.y, args.width, args.height)
+frames = []
 
-path = os.path.abspath('../frames/1/')
-images = [f for f in listdir(os.path.abspath(path)) if isfile(join(path, f))]
-bgs = trainBackgroundSubstractorMOG(images)
-
-for i in range(len(args.frames)):
-    filename = os.path.abspath('../frames/1/' + str(args.frames[i]))
-    frame = cv2.imread(filename)
-    rects = getDetections(bgs, frame)
+if(len(args.x) != len(args.y) or len(args.width) != len(args.height) or len(args.frames) != len(args.x)):
+    print('Error: invalid parameters')
+    sys.exit()
+else:
+    for i in range(len(args.x)):
+        frames.append([args.frames[i], (args.x[i], args.y[i], args.width[i], args.height[i])])
     
-    for rect in rects:
-        (x, y, w, h) = rect
-        frame = cv2.rectangle(frame, (x, y), (x + w, y + h), 255, 2)
-
-    cv2.imshow('img', frame)    
-    cv2.waitKey(0)
-        
+    #Forward prediction
+    out = predictPerson(args.camera, frames, args.predict)
+    print(json.dumps(out))
+ 
