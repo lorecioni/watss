@@ -137,6 +137,23 @@ class Queries {
                   		and cameraid = '".$cameraid."';";
 		}
 	}
+
+	function getPreviousFrameBB($frameid, $cameraid, $person){
+		return "SELECT path, people.bb_x, people.bb_y, people.bb_width, people.bb_height 
+				FROM `frames`, people where frames.frameid = ".$frameid." and frames.cameraid = ".$cameraid." and people.peopleid = ".$person." 
+							and people.frameid = frames.frameid and people.cameraid = frames.cameraid";
+	}
+	
+	function getNextFramesPath($frameid, $cameraid, $length){
+		$nums = "";
+		$current = $frameid + 1;
+		for ($i = 0; $i < $length; $i++){
+			$nums .= "".$current;
+			if($i < $length - 1) $nums .= ", ";
+			$current++;
+		}
+		return "SELECT path FROM frames WHERE frameid IN (".$nums.") AND cameraid = ".$cameraid;
+	}
 	
 	/**
 	 * ****************************

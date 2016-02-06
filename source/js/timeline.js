@@ -487,17 +487,24 @@
 						'left' : left,
 						'top' :  '40px'
 					})
-					.attr('data-start', intervals[i].start);
+					.attr('data-start', intervals[i].start)
+					.attr('data-end', intervals[i].end)
+					.attr('data-person', person.id);
 				
 				over.resizable({
 					handles: 'e',
+					minWidth: over.width(),
 					grid: 20,
 					start: function(e, ui){
-						console.log('start');
+						console.log('Start propagation selection');
 					},
 					stop: function(e, ui){
-						console.log('ends');
-						propagate();
+						console.log('End propagation selection');
+						var start = $(this).data('start');
+						var end = $(this).data('end');
+						var offset = ($(this).width() - (end - start + 1) * 20)/20;
+						var person = $(this).data('person');
+						propagate(person, offset, currentFrame);
 					}
 				});
 
@@ -544,13 +551,18 @@
 	
 	/**
 	 * Propagating annotation with computer vision
-	 * 
+	 * @param len: length od the propagation
 	 */
-	function propagate(){
+	function propagate(person, len, frames){
 		$.ajax({
 			type: "POST",
 			url: "../php/api.php",
-			data: {action: "propagate"},
+			data: {
+				action: "propagate",
+				person: person,
+				length: len,
+				frames: frames
+			},
 			success: function(response){
 				console.log(response);			
 			},

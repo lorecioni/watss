@@ -1,6 +1,7 @@
 #!/usr/local/bin/python
 import argparse
 import sys
+import json
 from tracking import *
 
 ## Parsing arguments
@@ -16,7 +17,9 @@ args = parser.parse_args()
 
 frames = []
 
-if(len(args.x) != len(args.y) or len(args.width) != len(args.height) or len(args.frames) != len(args.x)):
+if(len(args.x) != len(args.y) 
+   or len(args.width) != len(args.height) 
+   or len(args.frames) != len(args.x)):
     print('Error: invalid parameters')
     sys.exit()
 else:
@@ -25,5 +28,5 @@ else:
     
     #Forward prediction
     out = predictPerson(args.camera, frames, args.predict)
-    print(out)
+    print(json.dumps(out))
  

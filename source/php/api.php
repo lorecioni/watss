@@ -652,14 +652,62 @@
 		 * Called by extending person annotation in timeline
 		 */
 		case 'propagate':
+			$success = true;
+			
+			$personid = $_REQUEST['person'];
+			$length = $_REQUEST['length'];
+			$frame = $_REQUEST['frames'];
+			$camera = $_SESSION['camera_id'];
+			
+			//Previous frames
+			$path = '';
+			$bb = new stdClass();
+			$sql = $QUERIES->getPreviousFrameBB($frame, $camera, $personid);			
+			$result = mysql_query($sql) or $success = false;
+			while ($row = mysql_fetch_array($result)){
+				$path = $row['path'];
+				$bb->x = $row['bb_x'];
+				$bb->y = $row['bb_y'];
+				$bb->width = $row['bb_width'];
+				$bb->height = $row['bb_height'];
+			}
+						
+			//Building python command
 			$command = $config->python_interpreter.' '.$config->predict_script_path;
-			$command .= " -x 1070 -y 230 -width 120 -height 215 -camera 1 -frames 16h21m58s_3870.jpg -predict 16h21m58s_3871.jpg 16h21m58s_3872.jpg";
+			
+			$command .= " -x ".$bb->x." -y ".$bb->y." -width ".$bb->width." -height ".$bb->height;
+			$command .= " -camera ".$camera;
+			$command .= " -frames ".$path;
+			$command .= " -predict";
+			
+			$sql = $QUERIES->getNextFramesPath($frame, $camera, $length);
+			$result = mysql_query($sql) or $success = false;
+			while ($row = mysql_fetch_array($result)){
+				$command .= " ".$row['path'];				
+			}
+		
 			$output = shell_exec($command);
 			$output = preg_replace('~[[:cntrl:]]~', '', $output);
 			$output = preg_replace('~[.[:cntrl:]]~', '', $output);
-			$list = json_decode($output);
+			$predictions = json_decode($output);
 		
-			jecho($output);
+			for ($i = 0; $i < count($predictions); $i++){
+				//Retrieve person color
+				$sql = $QUERIES->getPersonColor($personid, $camera);
+				$result = mysql_query($sql) or $success = false;
+				$hex = "";
+				while ($row = mysql_fetch_array($result) ){
+					$hex = $row['color'];
+				}
+				
+				$sql = $QUERIES->insertPerson($personid, ($frame + $i + 1), $camera, $predictions[$i]->x, $predictions[$i]->y, $predictions[$i]->width, $predictions[$i]->height,
+						$predictions[$i]->x, $predictions[$i]->y, $predictions[$i]->width, $predictions[$i]->height, 0, 0, 0, 0, $hex, 0, $_SESSION['user'], 0);
+				$result = mysql_query($sql) or $success = false;
+				if(!$success) break;
+			}
+
+			jecho($success);
+			//jecho($log);
 			break;
 					
 		/**
