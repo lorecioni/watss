@@ -31,6 +31,9 @@
 			switch (e.type){
 				case 'mousedown':
 					if(!geometryEnabled){
+						if(!$('#video-overlay').is(':visible')){
+							$(this).append('<div id="video-overlay"></div>');
+						}
 						$('#video-overlay').append('<div id="bb-selection"></div>');
 						var x = e.offsetX;
 						var y = e.offsetY;
