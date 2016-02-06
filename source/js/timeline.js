@@ -554,6 +554,7 @@
 	 * @param len: length od the propagation
 	 */
 	function propagate(person, len, frames){
+		var color = $('#color-' + person).css('background-color');
 		$.ajax({
 			type: "POST",
 			url: "../php/api.php",
@@ -564,7 +565,12 @@
 				frames: frames
 			},
 			success: function(response){
-				console.log(response);			
+				if(response){
+					for (var i = 0; i < len; i++){
+						timelineFrames[currentFrame + i].people.push({id: person, color: color});
+						$('#timeline-frame-' + (currentFrame + 1 + i)).addClass('people');
+					}
+				}	
 			},
 			error: function(error){
 				console.log(error);
