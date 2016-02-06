@@ -72,13 +72,15 @@ def predictPerson(camera, previousFrames, nextFrames):
         found = False
         for rect in rects:
             if(boundingBoxIntersect(bb, rect)):
-                out.append(rect)
+                obj = {'x': rect[0], 'y': rect[1], 'width': rect[2], 'height': rect[3]}
+                out.append(obj)
                 previousFrames.append([nextFrames[i], rect])
                 found = True
                 break
         
         if(not found):
-            out.append(bb)
+            obj = {'x': bb[0], 'y': bb[1], 'width': bb[2], 'height': bb[3]}
+            out.append(obj)
             previousFrames.append([nextFrames[i], bb])
         
     return out
