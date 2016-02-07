@@ -10,16 +10,25 @@ from PIL.ImageChops import offset
 TRAIN_SIZE = 40
 TOLERANCE = 80
 
-def trainBackgroundSubstractorMOG(frames, nextFrames):
+HOG_STRIDE = 8
+HOG_PADDING = 32
+HOG_SCALE = 1.05
+
+def trainBackgroundSubstractorMOG(images, next):
     bgs = cv2.createBackgroundSubtractorMOG2()
-    for j in range(len(nextFrames)):
-        frame = cv2.imread(nextFrames[j])
+    for i in range(len(next)):
+        frame = cv2.imread(next[i])
         bgs.apply(frame)
     for i in range(TRAIN_SIZE):
-        id = random.choice(range(len(frames)));
-        frame = cv2.imread(frames[id])
+        id = random.choice(range(len(images)));
+        frame = cv2.imread(images[id])
         bgs.apply(frame)
     return bgs
+
+def initializeHOGDescriptor():
+    hog = cv2.HOGDescriptor()
+    hog.setSVMDetector(cv2.HOGDescriptor_getDefaultPeopleDetector())
+    return hog
     
 def getDetections(bgs, frame):
     fgmask = bgs.apply(frame)
@@ -44,7 +53,21 @@ def getDetections(bgs, frame):
 
     return filtered
 
+def inside(r, q):
+    rx, ry, rw, rh = r
+    qx, qy, qw, qh = q
+    return rx > qx and ry > qy and rx + rw < qx + qw and ry + rh < qy + qh
 
+def detectPeopleHOG(hog, frame):
+    found, w = hog.detectMultiScale(frame, winStride=(8,8), padding=(32,32), scale=1.05)
+    found_filtered = []
+    for ri, r in enumerate(found):
+        for qi, q in enumerate(found):
+            if ri != qi and inside(r, q):
+                break
+            else:
+                found_filtered.append(r)
+    return found_filtered
 
 def boundingBoxIntersect(r1, r2):
     (x1, y1, w1, h1) = r1
@@ -84,31 +107,56 @@ def predictPerson(camera, previousFrames, nextFrames):
     imagesPath = join(path, str(camera) + '/')
     images = [join(imagesPath, f) for f in listdir(os.path.abspath(imagesPath)) if isfile(join(imagesPath, f))]
     nextImages = []
-    for j in range(len(nextFrames)):
-        nextImages.append(join(path, nextFrames[j]))
+    previousImages = []
     
+    for i in range(len(previousFrames)):
+        tmp = join(path, previousFrames[i][0])
+        #frame = cv2.imread(tmp)
+        previousImages.append(tmp)
+        
+    for j in range(len(nextFrames)):
+        tmp = join(path, nextFrames[j])
+        #frame = cv2.imread(tmp)
+        nextImages.append(tmp)
+        
     bgs = trainBackgroundSubstractorMOG(images, nextImages)
+    hog = initializeHOGDescriptor()
+    
+    for k in range(len(previousImages)):
+        frame = cv2.imread(previousImages[k])
+        people = detectPeopleHOG(hog, frame)
     
     out = []
     
     for i in range(len(nextImages)):
         
         bb = previousFrames[len(previousFrames) - 1][1]
-        filename = nextImages[i]
-        
-        frame = cv2.imread(filename)
+                
+        frame = cv2.imread(nextImages[i])
         rects = getDetections(bgs, frame)
+        people = detectPeopleHOG(hog, frame) 
+        
+        for person in people:
+            (x, y, w, h) = person
+            for x, y, w, h in rects:
+                pad_w, pad_h = int(0.15*w), int(0.05*h)
+                cv2.rectangle(frame, (x+pad_w, y+pad_h), (x+w-pad_w, y+h-pad_h), (0, 255, 0), 1)
+        # the HOG detector returns slightly larger rectangles than the real objects.
+        # so we slightly shrink the rectangles to get a nicer output.
+        
+        
+           
         
         found = False
         for rect in rects:
             (x, y, w, h) = rect
-            frame = cv2.rectangle(frame, (x, y), (x + w, y + h), (255, 0, 0), 2)   
+            #frame = cv2.rectangle(frame, (x, y), (x + w, y + h), (255, 0, 0), 1)   
             if(boundingBoxIntersect(bb, rect)):
                 #rect = adjustBoundingBox(bb, rect)
                 obj = {'x': rect[0], 'y': rect[1], 'width': rect[2], 'height': rect[3]}
                 out.append(obj)
                           
-                frame = cv2.rectangle(frame, (x, y), (x + w, y + h), (0, 0, 0), 2)                        
+                frame = cv2.rectangle(frame, (x, y), (x + w, y + h), (0, 0, 255), 1)                        
                              
                 previousFrames.append([nextFrames[i], rect])
                 found = True
@@ -119,11 +167,10 @@ def predictPerson(camera, previousFrames, nextFrames):
             obj = {'x' : bb[0], 'y' : bb[1], 'width' : bb[2], 'height': bb[3]}
             out.append(obj)
             previousFrames.append([nextFrames[i], bb])
+            (x, y, w, h) = bb
+            frame = cv2.rectangle(frame, (x, y), (x + w, y + h), (0, 0, 255), 3)   
             
-            #(x, y, w, h) = bb
-            #frame = cv2.rectangle(frame, (x, y), (x + w, y + h), (0, 0, 0), 2)                        
-            
-        #cv2.imshow('img', frame)    
-        #cv2.waitKey(0)    
+        cv2.imshow('img', frame)    
+        cv2.waitKey(0)    
         
     return out
