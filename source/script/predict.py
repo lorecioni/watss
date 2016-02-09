@@ -27,6 +27,9 @@ else:
         frames.append([args.frames[i], (args.x[i], args.y[i], args.width[i], args.height[i])])
     
     #Forward prediction
-    out = predictPerson(args.camera, frames, args.predict)
+    tracker = PedestrianTracking(frames, args.predict, args.camera)
+    out = tracker.predict()
+    
+    #out = predictPerson(args.camera, frames, args.predict)
     print(json.dumps(out))
  
