@@ -653,6 +653,7 @@
 		 */
 		case 'propagate':
 			$success = true;
+			$log = '';
 			
 			$personid = $_REQUEST['person'];
 			$length = $_REQUEST['length'];
@@ -706,8 +707,7 @@
 				if(!$success) break;
 			}
 
-			jecho($success);
-			//jecho($log);
+			jecho($command);
 			break;
 					
 		/**
