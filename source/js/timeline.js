@@ -26,6 +26,9 @@
 	var displayedFrames = [];
 	//Current frame number in timeline
 	var currentFrame;
+	//Current intervals displayed on timeline
+	var currentPerson;
+	var currentIntervals;
 
 	//Loading image over timeline
 	var loading = $('<img></img>')
@@ -227,9 +230,7 @@
 					}
 					offset += e.deltaY; //If necessary multiply for e.deltaFactor
 				}
-				
-				console.log(e.deltaFactor);
-				console.log(e.deltaX)
+
 				//Limiting scolling
 				if(offset > 0)
 					offset = 0;
@@ -244,6 +245,11 @@
 					extendTimelineFrame(direction);
 				}		
 				updateCursor();
+				
+				if(currentPerson != undefined){
+					selectPerson(currentPerson, currentIntervals)
+				}
+				
 			});
 		}
 		
@@ -432,7 +438,7 @@
 	}
 	
 	//Displaying annotation duration for a selected person
-	function selectPerson(person){
+	function selectPerson(person, intervals){
 		
 		deselectAll();
 		
@@ -442,35 +448,21 @@
 
 		//Person is already present in timeline
 		if(!$('#timeline-person-' + person.id).hasClass('selected')){
+			currentPerson = person;
 			$('#timeline-person-' + person.id).addClass('selected');
 			$('.timeline-annotation-' + person.id).remove();
-			var matches = [];
-			for ( var i in timelineFrames) {
-				if(timelineFrames[i].people.length > 0){
-					for ( var j in timelineFrames[i].people) {
-						if(timelineFrames[i].people[j].id == person.id){
-							matches.push(parseInt(i) + 1);
-						}
-					}
-				}
-			}
 			
-			var intervals = [];
-			var start = matches[0];
-			var end = 0;
-			for (var k = 0; k < matches.length; k++){
-				if(matches[k] + 1 != matches[k + 1]){
-					end = matches[k];
-					intervals.push({start: start, end: end});
-					start = matches[k + 1];
-				}
-			}
-				
+			//Updating intervals
+			if(intervals == undefined){
+				var intervals = getPersonIntervals(person.id);
+			}		
+			currentIntervals = intervals;
+						
 			var annotationContainer = $('<div></div>')
 				.addClass('timeline-annotation-container')
 				.addClass('timeline-annotation-' + person.id);
 				
-			for ( var i in intervals) {
+			for (var i = 0; i < intervals.length; i++) {
 				var width = 0;
 				var left = -100;
 				if($('#timeline-frame-' + intervals[i].start).length > 0 ){
@@ -493,9 +485,15 @@
 					.attr('data-end', intervals[i].end)
 					.attr('data-person', person.id);
 				
+				var maxWidth = null;
+				if(intervals[i + 1] != undefined){
+					maxWidth = over.width() + (intervals[i + 1].start - intervals[i].end - 1) * 20;
+				}
+				
 				over.resizable({
 					handles: 'e',
 					minWidth: over.width(),
+					maxWidth: maxWidth,
 					grid: 20,
 					start: function(e, ui){
 						console.log('Start propagation selection');
@@ -505,10 +503,12 @@
 						var start = $(this).data('start');
 						var end = $(this).data('end');
 						var offset = ($(this).width() - (end - start + 1) * 20)/20;
-						var person = $(this).data('person');
-						$('.timeline-frames').append('<div class="timeline-loading-container"></div>');
-						$('.timeline-loading-container').append(loading);
-						propagate(person, offset, start, end);
+						if(offset > 0){
+							var person = $(this).data('person');
+							$('.timeline-frames').append('<div class="timeline-loading-container"></div>');
+							$('.timeline-loading-container').append(loading);
+							propagate(person, offset, start, end);
+						}
 					}
 				});
 
@@ -519,13 +519,42 @@
 		} else {
 			$('#timeline-person-' + person.id).removeClass('selected');
 			$('.timeline-annotation-' + person.id).remove();
+			currentPerson = undefined;
+			currentIntervals = undefined;
 		}		
+	}
+	
+	//Returning intervals list
+	function getPersonIntervals(id){
+		var matches = [];
+		for ( var i in timelineFrames) {
+			if(timelineFrames[i].people.length > 0){
+				for ( var j in timelineFrames[i].people) {
+					if(timelineFrames[i].people[j].id == id){
+						matches.push(parseInt(i) + 1);
+					}
+				}
+			}
+		}		
+		var intervals = [];
+		var start = matches[0];
+		var end = 0;
+		for (var k = 0; k < matches.length; k++){
+			if(matches[k] + 1 != matches[k + 1]){
+				end = matches[k];
+				intervals.push({start: start, end: end});
+				start = matches[k + 1];
+			}
+		}		
+		return intervals;
 	}
 	
 	//Deselect all people
 	function deselectAll(){
 		$('.timeline-person').removeClass('selected');
 		$('.timeline-annotation-container').remove();
+		currentPerson = undefined;
+		currentIntervals = undefined;
 	}
 	
 	//Center timeline on cursor

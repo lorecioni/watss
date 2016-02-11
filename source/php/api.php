@@ -693,10 +693,11 @@
 			while ($row = mysql_fetch_array($result)){
 				$command .= " ".$row['path'];				
 			}
-		
+				
 			$output = shell_exec($command);
 			$output = preg_replace('~[[:cntrl:]]~', '', $output);
 			$output = preg_replace('~[.[:cntrl:]]~', '', $output);
+					
 			$predictions = json_decode($output);
 		
 			for ($i = 0; $i < count($predictions); $i++){
@@ -708,14 +709,13 @@
 					$hex = $row['color'];
 				}
 				
-				$sql = $QUERIES->insertPerson($personid, ($frame + $i + 1), $camera, $predictions[$i]->x, $predictions[$i]->y, $predictions[$i]->width, $predictions[$i]->height,
-						$predictions[$i]->x, $predictions[$i]->y, $predictions[$i]->width, $predictions[$i]->height, 0, 0, 0, 0, $hex, 0, $_SESSION['user'], 0);
-				$result = mysql_query($sql) or $success = false;
+				$sql = $QUERIES->insertPerson($personid, ($lastFrame + $i + 1), $camera, $predictions[$i]->x, $predictions[$i]->y, $predictions[$i]->width, $predictions[$i]->height,
+						$predictions[$i]->x, $predictions[$i]->y, $predictions[$i]->width, $predictions[$i]->height, 0, 0, 0, 0, $hex, 0, $_SESSION['user'], 0);				
+				$result = mysql_query($sql) or $success = false;			
 				if(!$success) break;
 			}
 
-			
-			jecho($command);
+			jecho($success);
 			break;
 					
 		/**
