@@ -26,6 +26,12 @@
 	var displayedFrames = [];
 	//Current frame number in timeline
 	var currentFrame;
+
+	//Loading image over timeline
+	var loading = $('<img></img>')
+		.addClass('timeline-loading')
+		.attr('src', '../img/loading.gif')
+		.attr('alt', 'loading');
 	
 	/**
 	 * Timeline public methods
@@ -242,10 +248,6 @@
 		}
 		
 		//Displaying loading gif
-		var loading = $('<img></img>')
-			.addClass('timeline-loading')
-			.attr('src', '../img/loading.gif')
-			.attr('alt', 'loading');
 		$('.timeline-frames').append(loading);
 		
 		//Getting frames
@@ -504,7 +506,9 @@
 						var end = $(this).data('end');
 						var offset = ($(this).width() - (end - start + 1) * 20)/20;
 						var person = $(this).data('person');
-						propagate(person, offset, currentFrame);
+						$('.timeline-frames').append('<div class="timeline-loading-container"></div>');
+						$('.timeline-loading-container').append(loading);
+						propagate(person, offset, [end]);
 					}
 				});
 
@@ -554,6 +558,11 @@
 	 * @param len: length od the propagation
 	 */
 	function propagate(person, len, frames){
+		console.log(frames.length)
+		var last = frames[frames.length - 1];
+		
+		
+		
 		var color = $('#color-' + person).css('background-color');
 		$.ajax({
 			type: "POST",
@@ -565,10 +574,11 @@
 				frames: frames
 			},
 			success: function(response){
-				if(response){
+				if(response){	
 					for (var i = 0; i < len; i++){
-						timelineFrames[currentFrame + i].people.push({id: person, color: color});
-						$('#timeline-frame-' + (currentFrame + 1 + i)).addClass('people');
+						timelineFrames[last + i].people.push({id: person, color: color});
+						$('#timeline-frame-' + (last + 1 + i)).addClass('people');
+						$('.timeline-loading-container').remove();
 					}
 				}	
 			},

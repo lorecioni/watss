@@ -653,35 +653,42 @@
 		 */
 		case 'propagate':
 			$success = true;
-			$log = '';
-			
+						
 			$personid = $_REQUEST['person'];
 			$length = $_REQUEST['length'];
-			$frame = $_REQUEST['frames'];
+			$frames = $_REQUEST['frames'];
+			$lastFrame = $frames[count($frames) - 1];
 			$camera = $_SESSION['camera_id'];
 			
-			//Previous frames
-			$path = '';
-			$bb = new stdClass();
-			$sql = $QUERIES->getPreviousFrameBB($frame, $camera, $personid);			
-			$result = mysql_query($sql) or $success = false;
-			while ($row = mysql_fetch_array($result)){
-				$path = $row['path'];
-				$bb->x = $row['bb_x'];
-				$bb->y = $row['bb_y'];
-				$bb->width = $row['bb_width'];
-				$bb->height = $row['bb_height'];
-			}
-						
 			//Building python command
 			$command = $config->python_interpreter.' '.$config->predict_script_path;
 			
-			$command .= " -x ".$bb->x." -y ".$bb->y." -width ".$bb->width." -height ".$bb->height;
-			$command .= " -camera ".$camera;
-			$command .= " -frames ".$path;
-			$command .= " -predict";
+			$bbXlist = '';
+			$bbYlist = '';
+			$bbWidthList = '';
+			$bbHeightList = '';
+			$pathList = '';
+			for($i = 0; $i < count($frames); $i++){
+				//Previous frames
+				$path = '';
+				$bb = new stdClass();
+				$sql = $QUERIES->getPreviousFrameBB($frames[$i], $camera, $personid);
+				$result = mysql_query($sql) or $success = false;
+				while ($row = mysql_fetch_array($result)){
+					$pathList .= $row['path'].' ';
+					$bbXlist .= $row['bb_x'].' ';
+					$bbYlist .= $row['bb_y'].' ';
+					$bbWidthList .= $row['bb_width'].' ';
+					$bbHeightList .= $row['bb_height'].' ';
+				}
+			}					
 			
-			$sql = $QUERIES->getNextFramesPath($frame, $camera, $length);
+			$command .= " -x ".$bbXlist."-y ".$bbYlist."-width ".$bbWidthList."-height ".$bbHeightList;
+			$command .= "-camera ".$camera;
+			$command .= " -frames ".$pathList;
+			$command .= "-predict";
+			
+			$sql = $QUERIES->getNextFramesPath($lastFrame, $camera, $length);
 			$result = mysql_query($sql) or $success = false;
 			while ($row = mysql_fetch_array($result)){
 				$command .= " ".$row['path'];				
@@ -703,11 +710,12 @@
 				
 				$sql = $QUERIES->insertPerson($personid, ($frame + $i + 1), $camera, $predictions[$i]->x, $predictions[$i]->y, $predictions[$i]->width, $predictions[$i]->height,
 						$predictions[$i]->x, $predictions[$i]->y, $predictions[$i]->width, $predictions[$i]->height, 0, 0, 0, 0, $hex, 0, $_SESSION['user'], 0);
-				$result = mysql_query($sql) or $success = false;
+				//$result = mysql_query($sql) or $success = false;
 				if(!$success) break;
 			}
 
-			jecho($success);
+			
+			jecho($command);
 			break;
 					
 		/**
