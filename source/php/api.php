@@ -710,7 +710,7 @@
 				
 				$sql = $QUERIES->insertPerson($personid, ($frame + $i + 1), $camera, $predictions[$i]->x, $predictions[$i]->y, $predictions[$i]->width, $predictions[$i]->height,
 						$predictions[$i]->x, $predictions[$i]->y, $predictions[$i]->width, $predictions[$i]->height, 0, 0, 0, 0, $hex, 0, $_SESSION['user'], 0);
-				//$result = mysql_query($sql) or $success = false;
+				$result = mysql_query($sql) or $success = false;
 				if(!$success) break;
 			}
 

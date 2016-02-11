@@ -508,7 +508,7 @@
 						var person = $(this).data('person');
 						$('.timeline-frames').append('<div class="timeline-loading-container"></div>');
 						$('.timeline-loading-container').append(loading);
-						propagate(person, offset, [end]);
+						propagate(person, offset, start, end);
 					}
 				});
 
@@ -557,11 +557,11 @@
 	 * Propagating annotation with computer vision
 	 * @param len: length od the propagation
 	 */
-	function propagate(person, len, frames){
-		console.log(frames.length)
-		var last = frames[frames.length - 1];
-		
-		
+	function propagate(person, len, start, end){
+		var frames = []
+		for(var i = start; i <= end; i++){
+			frames.push(i);
+		}
 		
 		var color = $('#color-' + person).css('background-color');
 		$.ajax({
@@ -576,14 +576,15 @@
 			success: function(response){
 				if(response){	
 					for (var i = 0; i < len; i++){
-						timelineFrames[last + i].people.push({id: person, color: color});
-						$('#timeline-frame-' + (last + 1 + i)).addClass('people');
+						timelineFrames[end + i].people.push({id: person, color: color});
+						$('#timeline-frame-' + (end + 1 + i)).addClass('people');
 						$('.timeline-loading-container').remove();
 					}
 				}	
 			},
 			error: function(error){
 				console.log(error);
+				$('.timeline-loading-container').remove();
 			}
 		});
 	}
