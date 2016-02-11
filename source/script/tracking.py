@@ -92,7 +92,7 @@ class PedestrianTracking:
             #self.center = np.array([[np.float32(x + w/2)],[np.float32(y + h/2)]])
             
                         
-            cv2.rectangle(frame, (x, y), (x + w, y + h), (0,255, 0),4) #green
+            #cv2.rectangle(frame, (x, y), (x + w, y + h), (0,255, 0),4) #green
 
             people = self.detectPeople(roi)
             
@@ -113,6 +113,7 @@ class PedestrianTracking:
             if best_people != None:
                 (x, y, w, h) = best_people[0]
                 #cv2.rectangle(frame, (x, y), (x + w, y + h), (255,0, 0),2) #blue
+                #print('Best peoples ' + str(best_people[1]))
             
             best_contour = None    
             for c in contours:
@@ -129,25 +130,28 @@ class PedestrianTracking:
             if best_contour != None:
                 (x, y, w, h) = best_contour[0]
                 #cv2.rectangle(frame, (x, y), (x + w, y + h), (0,0, 255),2) #red
+                #print('Best contours ' + str(best_contour[1]))
                         
-            result = None
+            result = self.track_window
             if(best_people != None and best_contour != None and best_people[1] > best_contour[1]):
                 result = best_people[0]
+                #print('Selecting people')
             elif(best_people != None and best_contour != None and best_people[1] < best_contour[1]):
                 result = best_contour[0]
+                #print('Selecting contour')
             elif(best_people != None and best_contour == None):
                 result = best_people[0]
+                #print('Selecting people')
             elif(best_people == None and best_contour != None):
                 result = best_contour[0]
-            else:
-                result = self.track_window
+                #print('Selecting contour')
 
-            self.track_window = self.adjustBoundingBox(result)
-            
+            #self.track_window = self.adjustBoundingBox(result)
+            self.track_window = result
             (x, y, w, h) = self.track_window
-            cv2.rectangle(frame, (x, y), (x + w, y + h), (255,0,0),2)
+            #cv2.rectangle(frame, (x, y), (x + w, y + h), (255,0,0),2)
             
-            obj = {'x' : x, 'y' : y, 'width' : w, 'height': h}
+            obj = {'x' : int(x), 'y' : int(y), 'width' : int(w), 'height': int(h)}
             out.append(obj)
             
             #cv2.rectangle(frame, (x, y), (x + w, y + h), (0, 0, 255), 3)  

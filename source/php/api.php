@@ -707,7 +707,7 @@
 				if(!$success) break;
 			}
 
-			jecho($command);
+			jecho($success);
 			break;
 					
 		/**

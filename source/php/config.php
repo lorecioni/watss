@@ -30,5 +30,5 @@ $config->realPeopleDefaultImg = "../img/avatars/default.png";
 $config->tables = array('cameras', 'poi', 'users', 'groups', 'avatars', 'people', 'frames');
 
 //Python configuration
-$config->python_interpreter = '/usr/local/bin/python';
+$config->python_interpreter = '/usr/local/bin/python3';
 $config->predict_script_path = '/Applications/MAMP/htdocs/watss/source/script/predict.py';
