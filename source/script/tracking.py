@@ -4,35 +4,43 @@ import os
 import random
 
 '''Pedestrian tracker configuration'''
+#Relative path of frames
 FRAMES_PATH = '../frames/'
-
-
+#Training size for MOG background substractor
 TRAIN_SIZE = 40
+#Tolerance for considering two bb similar
 TOLERANCE = 80
+#Padding for the current window
 DELTA = 150
-
-
-HOG_STRIDE = 8
-HOG_PADDING = 32
+#Showing result frames
+DISPLAY_RESULT = True
+#Minimum and maximum bounding box dimension
+MIN_BB_WIDTH = 30
+MIN_BB_HEIGHT = 50
+#HOG people detector configuration
+HOG_STRIDE = (8, 8)
+HOG_PADDING = (8, 16)
 HOG_SCALE = 1.05
 
+'''Pedestrian tracking class'''
 class PedestrianTracking:
     
     '''Initializing of the pedestrian tracker'''
     def __init__(self, previousFrames, nextFrames, camera):
         path = os.path.abspath(FRAMES_PATH)
+        #Retrieving frames list
         imagesPath = os.path.join(path, str(camera) + '/')
-        self.images = [os.path.join(imagesPath, f) for f in os.listdir(os.path.abspath(imagesPath)) if os.path.isfile(os.path.join(imagesPath, f))]
+        self.images = [os.path.join(imagesPath, f) 
+            for f in os.listdir(os.path.abspath(imagesPath)) 
+            if os.path.isfile(os.path.join(imagesPath, f))]
         self.nextImages = []
         self.previousImages = []
         self.previosuBB = []
         for i in range(len(previousFrames)):
             self.previousImages.append(os.path.join(path, previousFrames[i][0]))
             self.previosuBB.append(previousFrames[i][1])
-            
         for j in range(len(nextFrames)):
-            self.nextImages.append(os.path.join(path, nextFrames[j]))
-        
+            self.nextImages.append(os.path.join(path, nextFrames[j]))     
         self.setup()
          
     '''Initializing of the pedestrian tracker'''
@@ -47,27 +55,27 @@ class PedestrianTracking:
         self.kalman = cv2.KalmanFilter(4, 2, 0)
         self.kalman.measurementMatrix = np.array([[1,0,0,0],[0,1,0,0]],np.float32)
         self.kalman.transitionMatrix = np.array([[1,0,1,0],[0,1,0,1],[0,0,1,0],[0,0,0,1]],np.float32)
-        self.kalman.processNoiseCov = np.array([[1,0,0,0],[0,1,0,0],[0,0,1,0],[0,0,0,1]],np.float32) * 1
-        self.kalman.measurementNoiseCov = self.kalman.measurementNoiseCov * 0.02
+        self.kalman.processNoiseCov = np.array([[1e-2,0,0,0],[0,1e-2,0,0],[0,0,20,0],[0,0,0,20]],np.float32)
+        self.kalman.measurementNoiseCov = self.kalman.measurementNoiseCov * 2
         self.kalman.errorCovPre = np.identity(4, np.float32) 
 
         self.prediction = np.zeros((2,1), np.float32)
         self.measurement = np.zeros((2,1), np.float32)
-        
+
         #Elaborating previous frames (generating Kalman history)
         for k in range(len(self.previousImages)):
-            frame = cv2.imread(self.previousImages[k])
-                
+            frame = cv2.imread(self.previousImages[k])   
             #Current bounding box
             self.track_window = self.previosuBB[k]
             x, y , w, h = self.track_window 
-            
             #Adding previous state to the kalman filter
-            self.measurement = np.array([[np.float32(x + w/2)], [np.float32(y + h/2)]])
-            self.kalman.correct(self.measurement)     
+            if k == 0:
+                self.kalman.statePre = np.array([[np.float32(x + w/2)], [np.float32(y + h/2)], [0.], [0.]], np.float32)     
+            else:    
+                self.measurement = np.array([[np.float32(x + w/2)], [np.float32(y + h/2)]])
+                self.kalman.correct(self.measurement)
 
-             
-                         
+    '''Predicting person position based on motion, people detection and Kalman filter'''
     def predict(self):
         out = []
         for k in range(len(self.nextImages)):
@@ -80,6 +88,7 @@ class PedestrianTracking:
             roi = frame[r:r+h, c:c+w]  
             fgmask = self.bgs.apply(frame) 
 
+            #Mask preprocessing, removing noise
             _, fgmask = cv2.threshold(fgmask, 200, 255, cv2.THRESH_BINARY) 
             fgmask = cv2.dilate(fgmask, cv2.getStructuringElement(cv2.MORPH_ELLIPSE, (8,8)))
             fgmask = cv2.morphologyEx(fgmask, cv2.MORPH_OPEN, cv2.getStructuringElement(cv2.MORPH_ELLIPSE, (15,20)))
@@ -87,16 +96,15 @@ class PedestrianTracking:
             
             (x, y, w, h) = self.track_window
             (wx, wy, ww, wh) = self.window
-            #self.center = np.array([[np.float32(x + w/2)],[np.float32(y + h/2)]])    
                         
-            cv2.rectangle(frame, (x, y), (x + w, y + h), (0,255, 0),4) #green
-
+            #Detect people on the current window
             people = self.detectPeople(roi)
             
             best_people = None
             for person in people:
                 (x, y, w, h) = person
-                pad_w, pad_h = int(0.15*w), int(0.05*h)
+                #Adjusting detection
+                pad_w, pad_h = int(0.15 * w), int(0.05 * h)
                 p = (wx + x + pad_w, wy + y + pad_h, w - pad_w, h - pad_h)
                 intersect, score = self.boundingBoxIntersect(frame, self.track_window, p)
                 if intersect:
@@ -106,12 +114,6 @@ class PedestrianTracking:
                     else:
                         best_people = (p, score)
                     
-                    
-            if best_people != None:
-                (x, y, w, h) = best_people[0]
-                #cv2.rectangle(frame, (x, y), (x + w, y + h), (255,0, 0),2) #blue
-                #print('Best peoples ' + str(best_people[1]))
-            
             best_contour = None    
             for c in contours:
                 if cv2.contourArea(c) > 500:
@@ -124,52 +126,53 @@ class PedestrianTracking:
                         else:
                             best_contour = (rect, score)
             
-            if best_contour != None:
-                (x, y, w, h) = best_contour[0]
-                #cv2.rectangle(frame, (x, y), (x + w, y + h), (0,0, 255),2) #red
-                #print('Best contours ' + str(best_contour[1]))
-                        
             result = self.track_window
+            found = False
             if(best_people != None and best_contour != None and best_people[1] > best_contour[1]):
                 result = best_people[0]
-                #print('Selecting people')
+                found = True
             elif(best_people != None and best_contour != None and best_people[1] < best_contour[1]):
                 result = best_contour[0]
-                #print('Selecting contour')
+                found = True
             elif(best_people != None and best_contour == None):
                 result = best_people[0]
-                #print('Selecting people')
+                found = True
             elif(best_people == None and best_contour != None):
                 result = best_contour[0]
-                #print('Selecting contour')
+                found = True
 
-            #self.track_window = self.adjustBoundingBox(result)
-            self.track_window = result
-            (x, y, w, h) = self.track_window
-            cv2.rectangle(frame, (x, y), (x + w, y + h), (255,0,0),2)
+            prediction = self.kalman.predict() 
+            (x, y, w, h) = result
             
+            if(found):
+                #Using people detector/motion         
+                self.measurement = np.array([[np.float32(x + w/2)],[np.float32(y + h/2)]])
+                cv2.circle(frame, (int (prediction[0]), int(prediction[1])), 4, (0, 255, 0), 4)
+                self.kalman.correct(self.measurement)
+                self.track_window = result
+                print('Not using kalman')
+            else:
+                #Using Kalman prediction
+                self.kalman.statePost = prediction
+                #cv2.circle(frame, (int (prediction[0]), int(prediction[1])), 4, (0, 255, 0), 4)
+                self.track_window = (int(prediction[0] - w/2), int(prediction[1] - h/2), w, h)
+                print('Using kalman')
+                
+                       
+            (x, y, w, h) = self.track_window
             obj = {'x' : int(x), 'y' : int(y), 'width' : int(w), 'height': int(h)}
             out.append(obj)
             
-            #cv2.rectangle(frame, (x, y), (x + w, y + h), (0, 0, 255), 3)  
-            
-            
-            ''' In caso di mancanza di misura imposto statePost e faccio predict (do fiducia al filtro di Kalman)'''      
-            
-            prediction = self.kalman.predict()
-            #print(prediction)
-            self.measurement = np.array([[np.float32(x + w/2)],[np.float32(y + h/2)]])
-            cv2.circle(frame, (int (prediction[0]), int(prediction[1])), 4, (0, 255, 0), 4)
-            
-            self.kalman.correct(self.measurement)
-                
-            cv2.imshow('img', frame)    
-            cv2.waitKey(0)            
+            if(DISPLAY_RESULT):
+                cv2.rectangle(frame, (x, y), (x + w, y + h), (255, 0, 0), 2)             
+                cv2.imshow('img', frame)    
+                cv2.waitKey(0)            
             
         return out
     
+    '''Returns a list of detections of people'''
     def detectPeople(self, frame):
-        found, w = self.hog.detectMultiScale(frame, winStride=(8,8), padding=(8,16), scale=1.02)#todo
+        found, w = self.hog.detectMultiScale(frame, winStride=HOG_STRIDE, padding=HOG_PADDING, scale=HOG_SCALE)
         filtered = []
         for ri, r in enumerate(found):
             for qi, q in enumerate(found):
@@ -181,6 +184,7 @@ class PedestrianTracking:
               
         return filtered
 
+    '''Methods over bounding boxes'''
     def contains(self, list, bb):
         found = False
         rx, ry, rw, rh = bb
@@ -195,24 +199,21 @@ class PedestrianTracking:
         qx, qy, qw, qh = q
         return rx > qx and ry > qy and rx + rw < qx + qw and ry + rh < qy + qh
     
+    '''Returning True if two bounding boxes intersect and evaluating score (based on intersect area)'''
     def boundingBoxIntersect(self, frame, r1, r2):
         (x1, y1, w1, h1) = r1
-        (x2, y2, w2, h2) = r2
-        
-        if w2 < 30 or h2 < 50:
+        (x2, y2, w2, h2) = r2       
+        if w2 < MIN_BB_WIDTH or h2 < MIN_BB_HEIGHT:
             return (False, 0)
-        
         separate = (x1 + w1 < x2 or
             x1 > x2 + w2 or
             y1 > y2 + h2 or
             y1 + h1 < y2)
         compatible = (abs(w1 - w2) < TOLERANCE and
              abs(h1 - h2) < TOLERANCE)
-        
         #Intersect area
         w = abs(w1 - abs(x1 - x2))
         h = abs(h1 - abs(h1 - h2))
-        
         return ((not separate) and compatible, (w * h/(w1 * h1)))
     
     '''Try to ajdust bounding box dimensione based on previous detection'''
@@ -226,6 +227,7 @@ class PedestrianTracking:
             ox, oy, oh = (cx + x)/2, (cy + y)/2, min([ch, h]) + TOLERANCE/4    
         return (int(ox), int(oy), int(ow), int(oh))      
     
+    '''Generating current window (bounding box and padding)'''
     def getCurrentWindow(self, maxw, maxh):
         (x, y, w, h) = self.track_window
         if x >= DELTA:
@@ -246,19 +248,16 @@ class PedestrianTracking:
             h = h + abs(maxh - (y + h))           
         self.window = (x, y, w, h)
          
-    
+    '''Train MOG background substractor'''
     def trainBackgroundSubstractor(self):
-        self.bgs = cv2.createBackgroundSubtractorMOG2()
-            
+        self.bgs = cv2.createBackgroundSubtractorMOG2()         
         for i in range(len(self.previousImages)):
             frame = cv2.imread(self.previousImages[i])
             self.bgs.apply(frame)
-            
         for i in range(TRAIN_SIZE):
             id = random.choice(range(len(self.images)));
             frame = cv2.imread(self.images[id])
             self.bgs.apply(frame)
-            
         for i in range(len(self.nextImages)):
             frame = cv2.imread(self.nextImages[i])
             self.bgs.apply(frame)
