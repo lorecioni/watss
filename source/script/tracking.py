@@ -2,7 +2,6 @@ import cv2
 import numpy as np
 import os
 import random
-import os
 from os import listdir
 from os.path import isfile, join
 
