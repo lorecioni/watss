@@ -449,7 +449,7 @@
 		var drawAnnotations = true;
 		
 		if($('#timeline-person-' + person.id).length == 0 ){
-			if(previous != undefined && !previous){
+			if(previous == undefined || !previous){
 				methods.addPerson(person);
 			} else{
 				drawAnnotations = false;
@@ -474,9 +474,25 @@
 			for (var i = 0; i < intervals.length; i++) {
 				var width = 0;
 				var left = -100;
+				var offset = 0;
+				
+				console.log(displayedFrames)
+				
 				if($('#timeline-frame-' + intervals[i].start).length > 0 ){
 					width = $('#timeline-frame-' + intervals[i].start).width();
 					left = $('#timeline-frame-' + intervals[i].start).position().left;
+					offset = width * (intervals[i].end - intervals[i].start) + width;
+				} else {
+					if($('#timeline-frame-' + intervals[i].end).length > 0 ){
+						width = $('#timeline-frame-' + intervals[i].end).width();
+						offset = width * (intervals[i].end - intervals[i].start) + width;
+						left = $('#timeline-frame-' + intervals[i].end).position().left - offset + width;
+					} else {
+						if(parseInt(displayedFrames[0].id) > intervals[i].start
+								&& parseInt(displayedFrames[displayedFrames.length - 1].id) < intervals[i].end){
+							console.log('color everything')
+						}
+					}
 				}
 				
 				var over = $('<div></div>')
@@ -484,8 +500,7 @@
 					.css({
 						'position': 'absolute',
 						'background-color': person.color,
-						'width' :  width * (intervals[i].end - intervals[i].start)
-								+ width,
+						'width' :  offset,
 						'height': '18px',
 						'left' : left,
 						'top' :  '40px'
