@@ -2,87 +2,80 @@ import cv2
 import numpy as np
 import os
 import random
-from os import listdir
-from os.path import isfile, join
+
+'''Pedestrian tracker configuration'''
+FRAMES_PATH = '../frames/'
+
 
 TRAIN_SIZE = 40
 TOLERANCE = 80
 DELTA = 150
+
 
 HOG_STRIDE = 8
 HOG_PADDING = 32
 HOG_SCALE = 1.05
 
 class PedestrianTracking:
+    
+    '''Initializing of the pedestrian tracker'''
     def __init__(self, previousFrames, nextFrames, camera):
-        """init the pedestrian object with track window coordinates"""
-        path = os.path.abspath('/Applications/MAMP/htdocs/watss/source/frames/')
-        imagesPath = join(path, str(camera) + '/')
-        self.images = [join(imagesPath, f) for f in listdir(os.path.abspath(imagesPath)) if isfile(join(imagesPath, f))]
+        path = os.path.abspath(FRAMES_PATH)
+        imagesPath = os.path.join(path, str(camera) + '/')
+        self.images = [os.path.join(imagesPath, f) for f in os.listdir(os.path.abspath(imagesPath)) if os.path.isfile(os.path.join(imagesPath, f))]
         self.nextImages = []
         self.previousImages = []
         self.previosuBB = []
         for i in range(len(previousFrames)):
-            self.previousImages.append(join(path, previousFrames[i][0]))
+            self.previousImages.append(os.path.join(path, previousFrames[i][0]))
             self.previosuBB.append(previousFrames[i][1])
             
         for j in range(len(nextFrames)):
-            self.nextImages.append(join(path, nextFrames[j]))
+            self.nextImages.append(os.path.join(path, nextFrames[j]))
         
         self.setup()
-        
-    
+         
+    '''Initializing of the pedestrian tracker'''
     def setup(self):
-        #train background substractor
+        #Train background substractor
         self.trainBackgroundSubstractor()
-
+        #Initializing HOG descriptor for people detection
         self.hog = cv2.HOGDescriptor()
         self.hog.setSVMDetector(cv2.HOGDescriptor_getDefaultPeopleDetector())
-        
-        bb = self.previosuBB[0]
-        x, y , w, h = bb #first bounding box
-        self.track_window = bb
-        
-        
-        #getting first frame
-        frame = cv2.imread(self.previousImages[0])
-        height, width, channels = frame.shape
-        
-        #Generating current window
-        self.getCurrentWindow(width, height)
-        
-        # set up the kalman
+
+        #Set up the Kalman Filter
         self.kalman = cv2.KalmanFilter(4, 2, 0)
         self.kalman.measurementMatrix = np.array([[1,0,0,0],[0,1,0,0]],np.float32)
         self.kalman.transitionMatrix = np.array([[1,0,1,0],[0,1,0,1],[0,0,1,0],[0,0,0,1]],np.float32)
         self.kalman.processNoiseCov = np.array([[1,0,0,0],[0,1,0,0],[0,0,1,0],[0,0,0,1]],np.float32) * 1
-        self.kalman.measurementNoiseCov = self.kalman.measurementNoiseCov * 0.001
+        self.kalman.measurementNoiseCov = self.kalman.measurementNoiseCov * 0.02
         self.kalman.errorCovPre = np.identity(4, np.float32) 
-        self.measurement = np.array((2,1), np.float32)
+
         self.prediction = np.zeros((2,1), np.float32)
+        self.measurement = np.zeros((2,1), np.float32)
         
-        self.center = None
-        
-        #initialization
-        self.center = np.array([[np.float32(x + w/2)],[np.float32(y + h/2)]])
-        
+        #Elaborating previous frames (generating Kalman history)
         for k in range(len(self.previousImages)):
-            frame = cv2.imread(self.previousImages[k])            
-            (x, y, w, h) = self.track_window
-            #self.kalman.statePre = np.array([[200.], [100.], [0.], [0.]], np.float32)
-           
-           
+            frame = cv2.imread(self.previousImages[k])
+                
+            #Current bounding box
+            self.track_window = self.previosuBB[k]
+            x, y , w, h = self.track_window 
             
-            
-            self.center = np.array([[np.float32(x + w/2)],[np.float32(y + h/2)]])            
-            self.kalman.correct(self.center)
+            #Adding previous state to the kalman filter
+            self.measurement = np.array([[np.float32(x + w/2)], [np.float32(y + h/2)]])
+            self.kalman.correct(self.measurement)     
+
              
-        print (self.kalman.statePre)
-            
+                         
     def predict(self):
         out = []
         for k in range(len(self.nextImages)):
             frame = cv2.imread(self.nextImages[k])
+            height, width, channels = frame.shape
+            #Generating current window
+            self.getCurrentWindow(width, height)
+            
             (c, r, w, h) = self.window
             roi = frame[r:r+h, c:c+w]  
             fgmask = self.bgs.apply(frame) 
@@ -90,12 +83,11 @@ class PedestrianTracking:
             _, fgmask = cv2.threshold(fgmask, 200, 255, cv2.THRESH_BINARY) 
             fgmask = cv2.dilate(fgmask, cv2.getStructuringElement(cv2.MORPH_ELLIPSE, (8,8)))
             fgmask = cv2.morphologyEx(fgmask, cv2.MORPH_OPEN, cv2.getStructuringElement(cv2.MORPH_ELLIPSE, (15,20)))
-            image, contours, hierarchy = cv2.findContours(fgmask.copy(),cv2.RETR_TREE,cv2.CHAIN_APPROX_SIMPLE)
+            image, contours, hierarchy = cv2.findContours(fgmask.copy(),cv2.RETR_TREE,cv2.CHAIN_APPROX_SIMPLE)            
             
             (x, y, w, h) = self.track_window
             (wx, wy, ww, wh) = self.window
-            #self.center = np.array([[np.float32(x + w/2)],[np.float32(y + h/2)]])
-            
+            #self.center = np.array([[np.float32(x + w/2)],[np.float32(y + h/2)]])    
                         
             cv2.rectangle(frame, (x, y), (x + w, y + h), (0,255, 0),4) #green
 
@@ -165,11 +157,11 @@ class PedestrianTracking:
             ''' In caso di mancanza di misura imposto statePost e faccio predict (do fiducia al filtro di Kalman)'''      
             
             prediction = self.kalman.predict()
-            print(prediction)
-            self.center = np.array([[np.float32(x + w/2)],[np.float32(y + h/2)]])
+            #print(prediction)
+            self.measurement = np.array([[np.float32(x + w/2)],[np.float32(y + h/2)]])
             cv2.circle(frame, (int (prediction[0]), int(prediction[1])), 4, (0, 255, 0), 4)
             
-            self.kalman.correct(self.center)
+            self.kalman.correct(self.measurement)
                 
             cv2.imshow('img', frame)    
             cv2.waitKey(0)            
