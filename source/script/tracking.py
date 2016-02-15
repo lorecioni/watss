@@ -13,7 +13,7 @@ TOLERANCE = 80
 #Padding for the current window
 DELTA = 150
 #Showing result frames
-DISPLAY_RESULT = True
+DISPLAY_RESULT = False
 #Minimum and maximum bounding box dimension
 MIN_BB_WIDTH = 30
 MIN_BB_HEIGHT = 50
@@ -147,16 +147,14 @@ class PedestrianTracking:
             if(found):
                 #Using people detector/motion         
                 self.measurement = np.array([[np.float32(x + w/2)],[np.float32(y + h/2)]])
-                cv2.circle(frame, (int (prediction[0]), int(prediction[1])), 4, (0, 255, 0), 4)
+                #cv2.circle(frame, (int (prediction[0]), int(prediction[1])), 4, (0, 255, 0), 4)
                 self.kalman.correct(self.measurement)
                 self.track_window = result
-                print('Not using kalman')
             else:
                 #Using Kalman prediction
                 self.kalman.statePost = prediction
                 #cv2.circle(frame, (int (prediction[0]), int(prediction[1])), 4, (0, 255, 0), 4)
                 self.track_window = (int(prediction[0] - w/2), int(prediction[1] - h/2), w, h)
-                print('Using kalman')
                 
                        
             (x, y, w, h) = self.track_window
