@@ -56,7 +56,9 @@ class PedestrianTracking:
         self.kalman = cv2.KalmanFilter(4, 2, 0)
         self.kalman.measurementMatrix = np.array([[1,0,0,0],[0,1,0,0]],np.float32)
         self.kalman.transitionMatrix = np.array([[1,0,1,0],[0,1,0,1],[0,0,1,0],[0,0,0,1]],np.float32)
-        self.kalman.processNoiseCov = np.array([[1,0,0,0],[0,1,0,0],[0,0,1,0],[0,0,0,1]],np.float32) * 0.03
+        self.kalman.processNoiseCov = np.array([[1,0,0,0],[0,1,0,0],[0,0,1,0],[0,0,0,1]],np.float32) * 1
+        self.kalman.measurementNoiseCov = self.kalman.measurementNoiseCov * 0.001
+        self.kalman.errorCovPre = np.identity(4, np.float32) 
         self.measurement = np.array((2,1), np.float32)
         self.prediction = np.zeros((2,1), np.float32)
         
@@ -68,11 +70,15 @@ class PedestrianTracking:
         for k in range(len(self.previousImages)):
             frame = cv2.imread(self.previousImages[k])            
             (x, y, w, h) = self.track_window
+            #self.kalman.statePre = np.array([[200.], [100.], [0.], [0.]], np.float32)
+           
+           
             
-            self.kalman.statePre[0]  = 200
-            self.kalman.statePre[1]  = 100
-#             self.kalman.statePre[2]  = 0
-#             self.kalman.statePre[3]  = 0
+            
+            self.center = np.array([[np.float32(x + w/2)],[np.float32(y + h/2)]])            
+            self.kalman.correct(self.center)
+             
+        print (self.kalman.statePre)
             
     def predict(self):
         out = []
@@ -92,7 +98,7 @@ class PedestrianTracking:
             #self.center = np.array([[np.float32(x + w/2)],[np.float32(y + h/2)]])
             
                         
-            #cv2.rectangle(frame, (x, y), (x + w, y + h), (0,255, 0),4) #green
+            cv2.rectangle(frame, (x, y), (x + w, y + h), (0,255, 0),4) #green
 
             people = self.detectPeople(roi)
             
@@ -149,20 +155,25 @@ class PedestrianTracking:
             #self.track_window = self.adjustBoundingBox(result)
             self.track_window = result
             (x, y, w, h) = self.track_window
-            #cv2.rectangle(frame, (x, y), (x + w, y + h), (255,0,0),2)
+            cv2.rectangle(frame, (x, y), (x + w, y + h), (255,0,0),2)
             
             obj = {'x' : int(x), 'y' : int(y), 'width' : int(w), 'height': int(h)}
             out.append(obj)
             
             #cv2.rectangle(frame, (x, y), (x + w, y + h), (0, 0, 255), 3)  
-            #self.center = np.array([[np.float32(x + w/2)],[np.float32(y + h/2)]])        
-                                
-            #self.kalman.correct(self.center)
-            #prediction = self.kalman.predict()
-            #cv2.circle(frame, (int (prediction[0]), int(prediction[1])), 4, (0, 255, 0), 4)
             
-            #cv2.imshow('img', frame)    
-            #cv2.waitKey(0)            
+            
+            ''' In caso di mancanza di misura imposto statePost e faccio predict (do fiducia al filtro di Kalman)'''      
+            
+            prediction = self.kalman.predict()
+            print(prediction)
+            self.center = np.array([[np.float32(x + w/2)],[np.float32(y + h/2)]])
+            cv2.circle(frame, (int (prediction[0]), int(prediction[1])), 4, (0, 255, 0), 4)
+            
+            self.kalman.correct(self.center)
+                
+            cv2.imshow('img', frame)    
+            cv2.waitKey(0)            
             
         return out
     
