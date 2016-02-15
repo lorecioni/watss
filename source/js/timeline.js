@@ -57,7 +57,8 @@
 		 * Go to the previous frame
 		 */
 	    previousFrame : function(){
-	    	var prev = currentFrame - 1;    	
+	    	var prev = currentFrame - 1;  
+	    	extendTimelineFrame('right');
 	    	if($('#timeline-frame-' + prev).data('id') != undefined){
 	    		selectFrame(prev);
 	    		currentFrame = prev;
@@ -70,13 +71,14 @@
 				}
 	    		showFrames(displayedFrames);
 	    		selectFrame(prev);
-	    	}
+	    	}    	
 	    },
 	    /**
 		 * Go to the next frame
 		 */
 	    nextFrame : function(){
-	    	var next = currentFrame + 1;    	
+	    	var next = currentFrame + 1;   
+	    	extendTimelineFrame('left')
 	    	if($('#timeline-frame-' + next).data('id') != undefined){
 	    		selectFrame(next);
 	    		currentFrame = next;
@@ -89,7 +91,7 @@
 				}
 	    		showFrames(displayedFrames);
 	    		selectFrame(next);
-	    	} 
+	    	}
 	    },
 	    /**
 		 * Function handler on frame selected
@@ -398,7 +400,7 @@
 	}
 	
 	//Goes to frame (no callback)
-	function gotoFrame(id){
+	function gotoFrame(id){		
 		if(id < config.loadedFrames/2){
 			displayedFrames = timelineFrames.slice(0, config.loadedFrames);
 		} else {
@@ -420,7 +422,11 @@
 		currentFrame = id;
 		updateCursor();
 		methods.onFrameSelected(id);
-		loadPeople(timelineFrames[id - 1].people)
+		loadPeople(timelineFrames[id - 1].people)	
+		//Selecting current person
+		if(currentPerson != undefined){
+			selectPerson(currentPerson, currentIntervals, true)
+		}
 	}
 	
 	//Updates cursor position pointing to the current frame
@@ -438,13 +444,14 @@
 	}
 	
 	//Displaying annotation duration for a selected person
-	function selectPerson(person, intervals){
+	function selectPerson(person, intervals, previous){
 		
 		deselectAll();
 		
-		if($('#timeline-person-' + person.id).length == 0){
+		if($('#timeline-person-' + person.id).length == 0 ){
 			methods.addPerson(person);
-		}
+		} 
+		
 
 		//Person is already present in timeline
 		if(!$('#timeline-person-' + person.id).hasClass('selected')){
