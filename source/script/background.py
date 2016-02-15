@@ -3,12 +3,11 @@ import numpy as np
 import os
 import random
 
-IMAGES_PATH = '/Applications/MAMP/htdocs/watss/source/frames/'
-OUTPUT_PATH = '/Applications/MAMP/htdocs/watss/results/'
+IMAGES_PATH = '../frames/'
+OUTPUT_PATH = '../../results/'
 OUTPUT_SIZE = (600, 420)
-TRAIN_SIZE = 20
+TRAIN_SIZE = 40
 LIMIT = 200
-
 
 def trainBackgroundSubstractorMOG(images):
     bgs = cv2.createBackgroundSubtractorMOG2()
@@ -23,6 +22,7 @@ def saveMotionImages(camera):
     imagesPath = os.path.join(path, str(camera) + '/')
     images = [os.path.join(imagesPath, f) for f in os.listdir(os.path.abspath(imagesPath)) if os.path.isfile(os.path.join(imagesPath, f))]
     
+    print('Training of background substractor')
     bgs = trainBackgroundSubstractorMOG(images)
     
     for i in range(LIMIT):                
@@ -40,10 +40,10 @@ def saveMotionImages(camera):
             
         out = np.hstack((frame, motion))
         
-        cv2.imwrite(OUTPUT_PATH + "frame_mog_" + str(i) + ".jpg", out) 
-        #cv2.imshow('img', out)    
-        #cv2.waitKey(100)    
+        filename = os.path.join(os.path.abspath(OUTPUT_PATH), "frame_mog_" + str(i) + ".jpg")  
+        cv2.imwrite(filename, out) 
+        print('Exported images ' + str(i + 1)) 
         
-    return out
+    print('Success!')
 
 saveMotionImages(1)
