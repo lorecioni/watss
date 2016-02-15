@@ -445,16 +445,18 @@
 	
 	//Displaying annotation duration for a selected person
 	function selectPerson(person, intervals, previous){
-		
 		deselectAll();
+		var drawAnnotations = true;
 		
 		if($('#timeline-person-' + person.id).length == 0 ){
-			methods.addPerson(person);
+			if(previous != undefined && !previous){
+				methods.addPerson(person);
+			} else{
+				drawAnnotations = false;
+			}
 		} 
-		
 
-		//Person is already present in timeline
-		if(!$('#timeline-person-' + person.id).hasClass('selected')){
+		if(drawAnnotations && !$('#timeline-person-' + person.id).hasClass('selected')){
 			currentPerson = person;
 			$('#timeline-person-' + person.id).addClass('selected');
 			$('.timeline-annotation-' + person.id).remove();
