@@ -1,0 +1,112 @@
+%%%  Pacchetto di stile A4  %%%
+\documentclass[12pt,a4paper,oneside,italian]{book}
+\usepackage[italian]{babel} 
+\usepackage[T1]{fontenc} 
+\usepackage[utf8]{inputenc}
+\usepackage{phdthesis} % Pacchetto di stile per le tesi
+% Ridefiniamo la riga di testa delle pagine:
+\usepackage{fancyhdr}
+\pagestyle{fancy}
+\usepackage{titlesec}
+\usepackage{setspace}
+\usepackage{wrapfig}
+\usepackage{sectsty}
+\usepackage{lipsum}
+\usepackage[font=footnotesize]{caption}
+\usepackage{listings} %Per inserire codice
+\usepackage[usenames]{color} %Per permettere la colorazione dei caratteri 
+\definecolor{dkgreen}{rgb}{0,0.6,0}
+\definecolor{gray}{rgb}{0.5,0.5,0.5}
+\definecolor{mauve}{rgb}{0.58,0,0.82}
+\usepackage[Algoritmo]{algorithm}
+\usepackage{algpseudocode}
+
+\definecolor{lightgray}{rgb}{.9,.9,.9}
+\definecolor{darkgray}{rgb}{.4,.4,.4}
+\definecolor{purple}{rgb}{0.65, 0.12, 0.82}
+\renewcommand{\chaptermark}[1]{\markboth{#1}{}}
+\renewcommand{\sectionmark}[1]{\markright{\thesection\ #1}}
+\fancyhf{}
+\fancyhead[RO]{\thepage}
+\fancyhead[LO]{\leftmark}
+\renewcommand{\headrulewidth}{0.1pt}
+\renewcommand{\footrulewidth}{0pt}
+\headsep=20pt
+\sectionfont{\Large} 
+\subsectionfont{\itshape\large} 
+\titleformat{\chapter}[display]
+  {\normalfont\huge\bfseries}{\chaptertitlename\ \thechapter}{20pt}{\huge}
+\titlespacing*{\chapter}{0pt}{-10pt}{40pt}
+
+\setlength{\skip\footins}{1cm}
+\setlength{\footnotesep}{0.4cm}
+
+\graphicspath{{./images/}}	% path directory figure
+\linespread{1.5}	% interlinea
+%%%%%%
+
+\usepackage{graphics,graphicx}
+
+\usepackage{amsmath,amsfonts,amssymb,amsthm} % pacchetti tipici per scrivere matematica  
+\usepackage{latexsym}
+\usepackage{array}
+\usepackage{tocbibind}
+
+\usepackage{cite}
+\usepackage{color}
+
+\usepackage{textcomp}
+\usepackage{caption}
+\usepackage{subcaption}
+% TOC INFO: sono le info salvate nelle proprieta' del file pdf
+\hypersetup{ 
+  pdftitle=Relazione Basi di Dati Multimediali,
+  pdfauthor=Lorenzo Cioni,
+  pdfsubject=Miglioramento sistema di annotazione WATSS con tecniche di Computer Vision
+}    
+
+%%%  Frontespizio  %%%
+
+\university{}	% Universita' degli Studi di xxx (Firenze)
+\faculty{Scuola di Ingegneria} %Nome della Scuola
+\degree{}
+\dept{} % nome dipartimento
+\course{Corso di Laurea in Ingegneria Informatica} %Corso di Laurea
+
+\accademicyear{Anno Accademico 2015/2016} %anno accademico
+\supervisor{Prof. Alberto Del Bimbo} % relatore
+\author{Lorenzo Cioni}
+
+%titolo in italiano
+\title{\textbf{Miglioramento del sistema di annotazione WATSS con tecniche di Computer Vision}}
+
+
+%%%  BEGIN DOCUMENT  %%%
+\begin{document}
+
+%%%  FRONT MATTER  %%%
+\frontmatter
+\maketitle  	% stampa la pagina di frontespizio
+
+\tableofcontents
+
+%% Corpo della tesi
+
+\mainmatter{
+\input{introduzione}
+\input{capitolo1}
+\input{capitolo2}
+\input{capitolo3}
+\input{capitolo4}
+\input{conclusioni}
+}
+
+%%%  BACK MATTER  %%%  (bibliografia)
+\backmatter
+\bibliographystyle{ieee}
+\bibliography{biblio}
+
+%pagina bianca (da usare, nei punti giusti, x avere una pag bianca invece che vuota con intestazione)
+%\newpage{ \thispagestyle{empty}\null\vfil}
+
+\end{document}
