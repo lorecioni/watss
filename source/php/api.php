@@ -734,8 +734,16 @@
 			$sql = $QUERIES->getExportQuery();
 			$result=mysql_query($sql) or $people = array();
 
+			//Inserting header
+			$header = array("people", "frame", "camera", "bb_x", "bb_y", "bb_width", 
+					"bb_height", "bbV_x", "bbV_y", "bbV_width", "bbV_height", 
+					"gazeAngle_face", "gazeAngle_face_z", "gazeAngle_body", "gazeAngle_body_z", 
+					"path", "poi", "group");
+			fputcsv($output, $header);
+			
 			//Loop over the rows, outputting them
-			while ($row = mysql_fetch_assoc($result)) fputcsv($output, $row);	
+			while ($row = mysql_fetch_assoc($result)) 
+				fputcsv($output, $row);	
             break;
 
 	}
