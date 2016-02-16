@@ -475,9 +475,7 @@
 				var width = 0;
 				var left = -100;
 				var offset = 0;
-				
-				console.log(displayedFrames)
-				
+								
 				if($('#timeline-frame-' + intervals[i].start).length > 0 ){
 					width = $('#timeline-frame-' + intervals[i].start).width();
 					left = $('#timeline-frame-' + intervals[i].start).position().left;
@@ -632,6 +630,7 @@
 						timelineFrames[end + i].people.push({id: person, color: color});
 						$('#timeline-frame-' + (end + 1 + i)).addClass('people');
 						$('.timeline-loading-container').remove();
+						currentIntervals = getPersonIntervals(person)
 					}
 				}	
 			},
