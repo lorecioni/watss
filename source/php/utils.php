@@ -72,6 +72,8 @@ function createAvatar($id){
 	$defaultAvatar = false;
 	$dim = array();
 
+	$log = "";
+	
 	$sql = $QUERIES->getAvatar($id);
 	$result = mysql_query($sql) or $done = false;
 	
@@ -109,8 +111,11 @@ function createAvatar($id){
 	}
 	
 	$oldScore = computeAvatarScore($oldFace, $oldFaceZ, $dim[0], $dim[1]);
+	$log .= "OLD: ".$oldScore;
+	
 	$newScore = computeAvatarScore($facePeople, $facePeopleZ, $bbV->width, $bbV->height);
-
+	$log .= " NEW: ".$newScore;
+	
 	if ( $newScore > $oldScore || $defaultAvatar){
 		$sql = $QUERIES->getFrameById($_SESSION["frame_id"], $_SESSION["camera_id"]);
 		$result = mysql_query($sql) or $done = false;		
@@ -154,12 +159,12 @@ function createAvatar($id){
  * @param float $h
  */
 function computeAvatarScore($y, $z, $w, $h){
-	$alpha = 0.09;
-	$gamma = 0.9;
+	$alpha = 0.2;
+	$gamma = 0.7;
 	$beta = 1 - ($alpha + $gamma);
 	
 	return exp(-($alpha * abs($y - 180))) + $beta * abs($z)/360 
-		+ 2 * $gamma * (1/(($w * $h)/(1280*800) + 1) - 1/2);
+		+ 2 * $gamma * abs(($w * $h)/(320 * 200));
 }
 
 /**
