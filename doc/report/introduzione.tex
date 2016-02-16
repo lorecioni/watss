@@ -2,4 +2,11 @@
 \addcontentsline{toc}{chapter}{Introduzione}
 \chaptermark{Introduzione}
 
-Introduzione alla relazione
+L'obiettivo di questo elaborato è di migliorare, anche tramite tecniche della \emph{Computer Vision}, il sistema di annotazione web \emph{WATSS}\cite{Bartoli:2015:WWA:2733373.2807411}.
+
+WATSS, abbreviazione per \emph{Web Annotation Tool for Surveillance Scenarios}, è un sistema di annotazione web per la creazione di un groundtruth di scenari di sorveglianza. Il sistema consente infatti di annotare persone all'interno dei singoli frame di un video, assegnandogli una posizione (determinata tramite una \emph{bounding box}), una identità (tramite \emph{avatar}), la parte visibile e le orientazioni del corpo e dello sguardo. E' inoltre possibile associare più persone ad un medesimo gruppo e il punto di interesse presso il quale la persona si trova.
+
+Uno dei principali obiettivi è quello di introdurre nel sistema un meccanismo di predizione delle annotazioni, andando a generare, a partire da una o più annotazioni consecutive di una stessa persona, una serie di \emph{proposals} per i frames successivi. 
+L'elaborazione dell'immagine a questi scopi viene effettuata tramite l'utilizzo di OpenCV, una libreria open source, nativa per C++, per la Computer Vision e l'Image Analysis.
+
+Nelle sezioni successive viene presentata inizialmente un'analisi comparativa tra i vari sistemi di annotazione che vanno a costituire l'attuale stato dell'arte. Viene poi presentata la parte relativa alle migliorie apportate al sistema e le tecniche di Computer Vision utilizzate. Infine viene presentata un'analisi di usabilità a posteriori, mettendo in evidenza anche eventuali sviluppi futuri per l'applicazione.
