@@ -4,7 +4,6 @@
  * 
  * @param title: title displayed above timeline
  * @param mouseScrolling: true/false, enabling/disabling mouse scrolling for navigating timeline
- * @param cursorDraggable: enabling/disabling draggable cursor (not yet finished)
  * @param getFrames: function for getting frames
  * @param onFrameSelected: callback function after a frame is selected in timeline
  * 
@@ -15,7 +14,6 @@
 	
 	var config = {
 		title: 'Timeline',
-		cursorDraggable: false,
 		mouseScrolling: true,
 		loadedFrames: 100
 	}
@@ -152,7 +150,6 @@
             //Setting default parameters
     		params = $.extend({
     			title: config.title,
-    			cursorDraggable: config.cursorDraggable,
     			mouseScrolling: config.mouseScrolling,
     			loadedFrames: config.loadedFrames,
     			getFrames: function(){},
@@ -176,17 +173,6 @@
 			var cursor = $('<span></span>')
 				.addClass('timeline-cursor glyphicon glyphicon-arrow-down');
 			
-			//Enabling draggable cursor
-			if(params.cursorDraggable){
-				cursor.draggable({
-					containment: "parent",
-					drag: function( event, ui ) {
-						ui.position.top = ui.originalPosition.top;
-						
-						if(ui.position.left) console.log(ui.position.left)
-					}
-				});
-			}
 			cursorContainer.append(cursor);
 			
 			//Timeline heading

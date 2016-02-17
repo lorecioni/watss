@@ -1,3 +1,4 @@
+'''Pedestrian tracking utilities for generating annotation proposals'''
 import cv2
 import numpy as np
 import os
