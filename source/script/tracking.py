@@ -3,29 +3,36 @@ import cv2
 import numpy as np
 import os
 import random
+import configparser
 
 '''Pedestrian tracker configuration'''
+
+config = configparser.RawConfigParser()
+configPath = './tracKingconf.conf'
+config.read(configPath)
+section = 'options'
+
 #Relative path of frames
-FRAMES_PATH = '../frames/'
+FRAMES_PATH = config.get(section, 'FRAMES_PATH')
 #Tracking options
-USE_MOTION = True
-USE_PEDESTRIAN_DETECTOR = True
-USE_KALMAN_FILTER = True
+USE_MOTION = config.getboolean(section, 'USE_MOTION')
+USE_PEDESTRIAN_DETECTOR = config.getboolean(section, 'USE_PEDESTRIAN_DETECTOR')
+USE_KALMAN_FILTER = config.getboolean(section, 'USE_KALMAN_FILTER')
 #Training size for MOG background substractor
-TRAIN_SIZE = 40
+TRAIN_SIZE = config.getint(section, 'TRAIN_SIZE')
 #Tolerance for considering two bb similar
-TOLERANCE = 0.8
+TOLERANCE = config.getfloat(section, 'TOLERANCE')
 #Padding for the current window
-DELTA = 150
+DELTA = config.getint(section, 'DELTA')
 #Showing result frames
-DISPLAY_RESULT = True
+DISPLAY_RESULT = config.getboolean(section, 'DISPLAY_RESULT')
 #Minimum and maximum bounding box dimension
-MIN_BB_WIDTH = 30
-MIN_BB_HEIGHT = 50
+MIN_BB_WIDTH = config.getint(section, 'MIN_BB_WIDTH')
+MIN_BB_HEIGHT = config.getint(section, 'MIN_BB_HEIGHT')
 #HOG people detector configuration
-HOG_STRIDE = (8, 8)
-HOG_PADDING = (8, 16)
-HOG_SCALE = 1.05
+HOG_STRIDE = (config.getint(section, 'HOG_STRIDE'), config.getint(section, 'HOG_STRIDE'))
+HOG_PADDING = (config.getint(section, 'HOG_PADDING'), config.getint(section, 'HOG_STRIDE') * 2)
+HOG_SCALE = config.getfloat(section, 'HOG_SCALE')
 
 '''Pedestrian tracking class'''
 class PedestrianTracking:
@@ -102,8 +109,6 @@ class PedestrianTracking:
                 image, contours, hierarchy = cv2.findContours(fgmask.copy(),cv2.RETR_TREE,cv2.CHAIN_APPROX_SIMPLE)            
             
             (x, y, w, h) = self.track_window
-            
-            
             (wx, wy, ww, wh) = self.window
             
             if DISPLAY_RESULT:            
