@@ -31,3 +31,5 @@ results/*.jpg
 *.blg
 *.bbl
 *.def
+
+doc/credenziali.txt
