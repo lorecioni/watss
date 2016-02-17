@@ -34,6 +34,9 @@ HOG_STRIDE = (config.getint(section, 'HOG_STRIDE'), config.getint(section, 'HOG_
 HOG_PADDING = (config.getint(section, 'HOG_PADDING'), config.getint(section, 'HOG_STRIDE') * 2)
 HOG_SCALE = config.getfloat(section, 'HOG_SCALE')
 
+FONT = cv2.FONT_HERSHEY_SIMPLEX
+FONT_SIZE = 0.5
+
 '''Pedestrian tracking class'''
 class PedestrianTracking:
     
@@ -80,7 +83,6 @@ class PedestrianTracking:
             #Current bounding box
             self.track_window = self.previosuBB[k]
             x, y , w, h = self.track_window 
-            print(self.track_window)
             #Adding previous state to the kalman filter
             if k == 0:
                 self.kalman.statePre = np.array([[np.float32(x + w/2)], [np.float32(y + h/2)], [0.], [0.]], np.float32)     
@@ -106,6 +108,10 @@ class PedestrianTracking:
                 _, fgmask = cv2.threshold(fgmask, 200, 255, cv2.THRESH_BINARY) 
                 fgmask = cv2.dilate(fgmask, cv2.getStructuringElement(cv2.MORPH_ELLIPSE, (8,8)))
                 fgmask = cv2.morphologyEx(fgmask, cv2.MORPH_OPEN, cv2.getStructuringElement(cv2.MORPH_ELLIPSE, (15,20)))
+                
+                cv2.imshow('img', fgmask)
+                cv2.waitKey(0)
+                
                 image, contours, hierarchy = cv2.findContours(fgmask.copy(),cv2.RETR_TREE,cv2.CHAIN_APPROX_SIMPLE)            
             
             (x, y, w, h) = self.track_window
@@ -113,7 +119,8 @@ class PedestrianTracking:
             
             if DISPLAY_RESULT:            
                 cv2.rectangle(frame, (x, y), (x + w, y + h), (0, 255, 0), 2)     
-               
+                cv2.putText(frame, 'previous', (x + 5, y + 15), FONT, FONT_SIZE, (0, 255, 0), 1)
+                
             best_people = None
             best_contour = None
 
@@ -137,7 +144,8 @@ class PedestrianTracking:
                     if best_people != None:
                         print('Best person detected: ' + str(best_people[1]))
                         (x, y, w, h) = best_people[0]
-                        cv2.rectangle(frame, (x, y), (x + w, y + h), (255, 0, 0), 2)    
+                        cv2.rectangle(frame, (x, y), (x + w, y + h), (255, 0, 0), 2)
+                        cv2.putText(frame, 'person', (x + 5, y + 15), FONT, FONT_SIZE, (255, 0, 0), 1)
             
             if USE_MOTION:
                 for c in contours:
@@ -155,7 +163,8 @@ class PedestrianTracking:
                     if best_contour != None:
                         print('Best contour detected: ' + str(best_contour[1]))
                         (x, y, w, h) = best_contour[0]
-                        cv2.rectangle(frame, (x, y), (x + w, y + h), (0, 0, 255), 2)    
+                        cv2.rectangle(frame, (x, y), (x + w, y + h), (0, 0, 255), 2)
+                        cv2.putText(frame, 'contour', (x + 5, y + 15), FONT, FONT_SIZE, (0, 0, 255), 1)
             
             result = self.track_window
             found = False
