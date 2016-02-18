@@ -112,7 +112,7 @@ class Queries {
 	}
 	
 	function getFirstUntaggedFrameId($userid, $cameraid){
-		return "SELECT MIN(frameid) as id FROM ".$this->tables->frames." WHERE frameid not in (SELECT frameid FROM ".$this->tables->people." WHERE userid=".$userid." AND cameraid=".$cameraid.")";
+		return "SELECT MIN(frameid) as id FROM ".$this->tables->frames." WHERE frameid not in (SELECT frameid FROM ".$this->tables->people." WHERE userid = ".$userid." AND cameraid = ".$cameraid.") AND cameraid = ".$cameraid;
 	}
 	
 	function getFramesByQuery($cameraid, $term, $limit){
