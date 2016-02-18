@@ -111,20 +111,20 @@
 		 * Adding person to the current frame in timeline
 		 */
 	    addPerson : function(person){
-	    	timelineFrames[currentFrame - 1].people.push(person);
-	    	loadPeople(timelineFrames[currentFrame - 1].people);
+	    	timelineFrames[currentFrame].people.push(person);
+	    	loadPeople(timelineFrames[currentFrame].people);
 	    },
 	    /**
 		 * Remove person from the current frame in timeline with the given id
 		 */
 	    removePerson : function(id){
-	    	for ( var i = 0; i < timelineFrames[currentFrame - 1].people.length; i++) {
-				if(timelineFrames[currentFrame - 1].people[i].id == id){
-					timelineFrames[currentFrame - 1].people.splice(i, 1);
+	    	for ( var i = 0; i < timelineFrames[currentFrame].people.length; i++) {
+				if(timelineFrames[currentFrame].people[i].id == id){
+					timelineFrames[currentFrame].people.splice(i, 1);
 				}
 			}
 	    	$('.timeline-annotation-' + id).remove();
-	    	loadPeople(timelineFrames[currentFrame - 1].people)
+	    	loadPeople(timelineFrames[currentFrame].people)
 	    },
 	    /** Go to frame in timeline **/
 	    gotoFrame: function(id){
@@ -253,11 +253,11 @@
 	//Build and display timeline frames
 	function showFrames(frames){
 		$('.timeline-frames-container').empty();
-		for (var i in frames) {
+		for (var i = 0; i < frames.length; i++) {
 			var frame = $('<div></div>')
 				.addClass('timeline-frame')
-				.attr('id', 'timeline-frame-' + frames[i].id)
-				.attr('data-id', frames[i].id)
+				.attr('id', 'timeline-frame-' + i)
+				.attr('data-id', i)
 				.attr('title', 'Go to frame ' + frames[i].id)
 				.append('<div class="timeline-frame-indicator"></div>')
 				.append('<span class="timeline-frame-number">' + frames[i].id + '</span>');
@@ -266,7 +266,7 @@
 				frame.addClass('people');
 			}
 			
-			if(frames[i].id == currentFrame){
+			if(i == currentFrame){
 				frame.addClass('current');
 				loadPeople(frames[i].people)
 			}
@@ -287,11 +287,11 @@
 	//Extend timeline frames
 	function extendTimelineFrame(direction){
 		var frame, id;
-		var start = parseInt(displayedFrames[0].id);
-		var end = parseInt(displayedFrames[displayedFrames.length - 1].id);
+		var start = 0;
+		var end = displayedFrames.length - 1;
 		if(direction == 'right'){
 			frame = displayedFrames[0];
-			if (parseInt(frame.id) <= 1) return;
+			if (parseInt(frame.id) == parseInt(timelineFrames[0].id)) return;
 			$('#timeline-frame-' + end).remove();
 			id = parseInt(frame.id) - 1;
 			start = start - 1;
@@ -408,7 +408,7 @@
 		currentFrame = id;
 		updateCursor();
 		methods.onFrameSelected(id);
-		loadPeople(timelineFrames[id - 1].people)	
+		loadPeople(timelineFrames[id].people)	
 		//Selecting current person
 		if(currentPerson != undefined){
 			selectPerson(currentPerson, currentIntervals, true)
@@ -586,7 +586,7 @@
 				}
 			}
 		}
-		loadPeople(timelineFrames[currentFrame - 1].people);
+		loadPeople(timelineFrames[currentFrame].people);
 	}
 	
 	

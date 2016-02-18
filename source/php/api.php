@@ -612,20 +612,26 @@
 			}
 			
 			$frame_id = intval($_SESSION['frame_id']);
-			$output->current = $frame_id;
-		
+			$output->current = 0;
+
 			//Retrieving previous and next frames
 			if(isset($_REQUEST['limit'])){
 				$sql = $QUERIES->getFrameIdList($_SESSION['camera_id'], $_REQUEST['limit'], $frame_id);
 			} else {
 				$sql = $QUERIES->getFrameIdList($_SESSION['camera_id'], null, null);
 			}
+			
 			$result = mysql_query($sql) or $done = false;
+			$count = 0;
 			while ($row = mysql_fetch_array($result) ){
 				$frame = new stdClass();
 				$frame->id = $row["frameid"];
+				if($frame->id == $frame_id){
+					$output->current = $count;
+				}
 				array_push($frames, $frame);
-			}
+				$count++;
+			}	
 			
 			//Loading people for each frame
 			foreach ($frames as $frame){

@@ -129,12 +129,12 @@ class Queries {
 	
 	function getFrameIdList($cameraid, $limit, $current){
 		if($limit == null){
-			return "SELECT frameid FROM ".$this->tables->frames." WHERE cameraid = ".$cameraid.";";
+			return "SELECT frameid FROM ".$this->tables->frames." WHERE cameraid = ".$cameraid;
 		} else {
 			return "SELECT frameid FROM ".$this->tables->frames."
                   WHERE frameid >= ".($current - $limit)."
                   		and frameid <= ".($current + $limit)."
-                  		and cameraid = '".$cameraid."';";
+                  		and cameraid = '".$cameraid;
 		}
 	}
 
