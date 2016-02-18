@@ -135,6 +135,10 @@
 			}
 	    	$('.timeline-annotation-' + id).remove();
 	    	loadPeople(timelineFrames[currentFrame].people)
+	    	if(id == currentPerson.id){
+	    		currentPerson = undefined;
+	    		currentIntervals = undefined;
+	    	}
 	    },
 	    /** Go to frame in timeline **/
 	    gotoFrame: function(id){
@@ -494,7 +498,7 @@
 					if($('#timeline-frame-' + intervals[i].end).length > 0 ){
 						width = $('#timeline-frame-' + intervals[i].end).width();
 						offset = width * (intervals[i].end - intervals[i].start) + width;
-						left = $('#timeline-frame-' + intervals[i].end).position().left - offset + width;
+						left = $('#timeline-frame-' + intervals[i].end).position().left - offset;
 					} else {
 						console.log('color everything')
 					}
@@ -560,7 +564,7 @@
 			if(timelineFrames[i].people.length > 0){
 				for ( var j in timelineFrames[i].people) {
 					if(timelineFrames[i].people[j].id == id){
-						matches.push(parseInt(i) + 1);
+						matches.push(parseInt(i));
 					}
 				}
 			}
