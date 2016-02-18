@@ -21,7 +21,8 @@
 	//List of frames
 	var timelineFrames = [];
 	//Preloaded frames in timeline
-	var displayedFrames = [];
+	var displayStartIndex = 0;
+	var displaEndIndex = 0;
 	//Current frame number in timeline
 	var currentFrame;
 	//Current intervals displayed on timeline
@@ -45,11 +46,13 @@
 			timelineFrames = data.frames;
 			currentFrame = data.current;
 			if(data.current < config.loadedFrames/2){
-				displayedFrames = timelineFrames.slice(0, config.loadedFrames);
+				displayStartIndex = 0;
+				displayEndIndex = config.loadedFrames;
 			} else {
-				displayedFrames = timelineFrames.slice(currentFrame - config.loadedFrames/2, currentFrame + config.loadedFrames/2);
+				displayStartIndex = currentFrame - config.loadedFrames/2;
+				displayEndIndex = currentFrame + config.loadedFrames/2;
 			}		
-			showFrames(displayedFrames);
+			showFrames();
 		},
 	    /**
 		 * Go to the previous frame
@@ -62,14 +65,17 @@
 	    		currentFrame = prev;
 	    	} else {
 	    		currentFrame = prev;
-	    		if(currentFrame < config.loadedFrames/2){
-					displayedFrames = timelineFrames.slice(0, config.loadedFrames);
+	    		if(data.current < config.loadedFrames/2){
+					displayStartIndex = 0;
+					displayEndIndex = config.loadedFrames;
 				} else {
-					displayedFrames = timelineFrames.slice(currentFrame - config.loadedFrames/2, currentFrame + config.loadedFrames/2);
+					displayStartIndex = currentFrame - config.loadedFrames/2;
+					displayEndIndex = currentFrame + config.loadedFrames/2;
 				}
-	    		showFrames(displayedFrames);
+	    		showFrames();
 	    		selectFrame(prev);
-	    	}    	
+	    	}
+	    	centerTimeline();
 	    },
 	    /**
 		 * Go to the next frame
@@ -82,14 +88,18 @@
 	    		currentFrame = next;
 	    	} else {
 	    		currentFrame = next;
-	    		if(currentFrame < config.loadedFrames/2){
-					displayedFrames = timelineFrames.slice(0, config.loadedFrames);
+	    		if(data.current < config.loadedFrames/2){
+					displayStartIndex = 0;
+					displayEndIndex = config.loadedFrames;
 				} else {
-					displayedFrames = timelineFrames.slice(currentFrame - config.loadedFrames/2, currentFrame + config.loadedFrames/2);
+					displayStartIndex = currentFrame - config.loadedFrames/2;
+					displayEndIndex = currentFrame + config.loadedFrames/2;
 				}
-	    		showFrames(displayedFrames);
+	    		showFrames();
 	    		selectFrame(next);
 	    	}
+	    	centerTimeline();
+	    	updateCursor();
 	    },
 	    /**
 		 * Function handler on frame selected
@@ -251,24 +261,24 @@
 	};
 	
 	//Build and display timeline frames
-	function showFrames(frames){
+	function showFrames(){
 		$('.timeline-frames-container').empty();
-		for (var i = 0; i < frames.length; i++) {
+		for (var i = displayStartIndex; i <= displayEndIndex; i++) {
 			var frame = $('<div></div>')
 				.addClass('timeline-frame')
 				.attr('id', 'timeline-frame-' + i)
 				.attr('data-id', i)
-				.attr('title', 'Go to frame ' + frames[i].id)
+				.attr('title', 'Go to frame ' + timelineFrames[i].id)
 				.append('<div class="timeline-frame-indicator"></div>')
-				.append('<span class="timeline-frame-number">' + frames[i].id + '</span>');
+				.append('<span class="timeline-frame-number">' + timelineFrames[i].id + '</span>');
 			
-			if(frames[i].people.length > 0){
+			if(timelineFrames[i].people.length > 0){
 				frame.addClass('people');
 			}
 			
 			if(i == currentFrame){
 				frame.addClass('current');
-				loadPeople(frames[i].people)
+				loadPeople(timelineFrames[i].people)
 			}
 			
 			//On click change frame
@@ -287,31 +297,44 @@
 	//Extend timeline frames
 	function extendTimelineFrame(direction){
 		var frame, id;
-		var start = 0;
-		var end = displayedFrames.length - 1;
+
 		if(direction == 'right'){
-			frame = displayedFrames[0];
-			if (parseInt(frame.id) == parseInt(timelineFrames[0].id)) return;
-			$('#timeline-frame-' + end).remove();
-			id = parseInt(frame.id) - 1;
-			start = start - 1;
-			end = end - 1;
+			frame = timelineFrames[displayStartIndex];
+			if (displayStartIndex > 0){
+				$('#timeline-frame-' + displayEndIndex).remove();
+				id = displayStartIndex - 1;
+				num = frame.id;
+				displayStartIndex = displayStartIndex - 1;
+				displayEndIndex = displayEndIndex - 1;
+			} else {
+				id = displayStartIndex;		
+			}
 		} else {
-			frame = displayedFrames[displayedFrames.length - 1];
-			if(parseInt(frame.id) >= parseInt(timelineFrames[timelineFrames.length - 1].id)) return;
-			$('#timeline-frame-' + start).remove();
-			id = parseInt(frame.id) + 1;
-			start = start + 1;
-			end = end + 1;
+			frame = timelineFrames[displayEndIndex];
+			if(displayEndIndex < timelineFrames.length){
+				$('#timeline-frame-' + displayStartIndex).remove();
+				id = displayEndIndex + 1;
+				num = frame.
+				displayStartIndex = displayStartIndex + 1;
+				displayEndIndex = displayEndIndex + 1;
+			} else {
+				id = displaEndIndex;
+			}
 		}
+		
+		if($('#timeline-frame-' + id).length > 0){
+			return;
+		}
+		var num = frame.id;
+		
 		var frame = $('<div></div>')
 			.addClass('timeline-frame')
 			.attr('id', 'timeline-frame-' + id)
 			.attr('data-id', id)
 			.append('<div class="timeline-frame-indicator"></div>')
-			.append('<span class="timeline-frame-number">' + id + '</span>');
+			.append('<span class="timeline-frame-number">' + num + '</span>');
 		
-		if(timelineFrames[id - 1].people.length > 0){
+		if(timelineFrames[id].people.length > 0){
 			frame.addClass('people');
 		}
 		
@@ -339,8 +362,6 @@
 			$(this).css('left', left);
 		});
 		
-		//Updating displayed frames list
-		displayedFrames = timelineFrames.slice(start - 1, end);
 	}
 	
 	//Loading current frame people
@@ -386,18 +407,21 @@
 	}
 	
 	//Goes to frame (no callback)
-	function gotoFrame(id){		
-		if(id < config.loadedFrames/2){
-			displayedFrames = timelineFrames.slice(0, config.loadedFrames);
-		} else {
-			displayedFrames = timelineFrames.slice(id - config.loadedFrames/2, id + config.loadedFrames/2);
-		}		
+	function gotoFrame(id){	
+		id = getIndexFromId(id);
 		currentFrame = id;
-		showFrames(displayedFrames);
+		if(currentFrame < config.loadedFrames/2){
+			displayStartIndex = 0;
+			displayEndIndex = config.loadedFrames;
+		} else {
+			displayStartIndex = currentFrame - config.loadedFrames/2;
+			displayEndIndex = currentFrame + config.loadedFrames/2;
+		}			
+		showFrames();
 		$('.timeline-annotation').remove();
 		centerTimeline();
 		updateCursor();
-		loadPeople(timelineFrames[id - 1].people)
+		loadPeople(timelineFrames[id].people)
 	}
 	
 	//Selects frame with the given id in timeline
@@ -407,7 +431,7 @@
 		$('.timeline-annotation').remove();
 		currentFrame = id;
 		updateCursor();
-		methods.onFrameSelected(id);
+		methods.onFrameSelected(timelineFrames[id].id);
 		loadPeople(timelineFrames[id].people)	
 		//Selecting current person
 		if(currentPerson != undefined){
@@ -472,10 +496,7 @@
 						offset = width * (intervals[i].end - intervals[i].start) + width;
 						left = $('#timeline-frame-' + intervals[i].end).position().left - offset + width;
 					} else {
-						if(parseInt(displayedFrames[0].id) > intervals[i].start
-								&& parseInt(displayedFrames[displayedFrames.length - 1].id) < intervals[i].end){
-							console.log('color everything')
-						}
+						console.log('color everything')
 					}
 				}
 				
@@ -625,5 +646,14 @@
 				$('.timeline-loading-container').remove();
 			}
 		});
+	}
+	
+	
+	function getIndexFromId(id){
+		for ( var i = 0; i < timelineFrames.length; i++) {
+			if(timelineFrames[i].id == id){
+				return i;
+			}			
+		}
 	}
 })(jQuery);
