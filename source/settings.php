@@ -63,7 +63,7 @@
 							  <div class="form-group">
 							    <label for="db-password" class="col-sm-3 control-label">Password</label>
 							    <div class="col-sm-8">
-							      <input type="text" class="form-control" id="db-password" placeholder="Password">
+							      <input type="password" class="form-control" id="db-password" placeholder="Password">
 							    </div>
 							  </div>
 							  <div class="form-group">
