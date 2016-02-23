@@ -112,13 +112,13 @@
 							<p>With the "Export all" button you can download all data (frames and annotations).</p>
 							<div class="checkbox">
 								  <label>
-								    <input type="radio" value="" checked>
+								    <input type="radio" name="frames" value="annotated" checked>
 								    Export only annotated frames
 								  </label>
 								</div>
 								<div class="checkbox">
 								  <label>
-								    <input type="radio" value="">
+								    <input type="radio" name="frames" value="all">
 								    Export all frames
 								  </label>
 								</div>	

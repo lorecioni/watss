@@ -919,15 +919,40 @@
             	case "exportAll":
             	
             		//Output headers so that the file is downloaded rather than displayed
-				    header("Content-Type: application/zip");
-				    header("Content-Disposition: attachment; filename=MuseumVisitors.zip");
+				    //header("Content-Type: application/zip");
+				    //header("Content-Disposition: attachment; filename=MuseumVisitors.zip");
 				    
+				    $limit = 'annotated';
+				    if(isset($_REQUEST['limit'])){
+				    	$limit = $_REQUEST['limit'];
+				    }
+				    
+				    $sql = "";
+				    switch ($limit){
+				    	case 'annotated':
+				    		$sql = $QUERIES->getExportAnnotatedFramesPath();
+				    		break;
+				    		
+				    	case 'all':
+				    		$sql = $QUERIES->getExportFramesPath();
+				    		break;
+				    }
             	
+				    mkdir("./tmp/") or die("error");
+				    chmod("./tmp/", 777);
+				    
+				    $result = mysql_query($sql);
+				    while ($row = mysql_fetch_array($result)){
+				    	$path = "../".$config->framesDir."/".$row[0];
+				    	//if(file_exists($path))
+				    	echo $path;
+				    }
+				    
+				    
             		//Create a file pointer connected to the output stream
-            		$output = fopen('php://output', 'w');
-            		fwrite($output, file_get_contents("../database/createSchema.sql"));
+            		//$output = fopen('php://output', 'w');
             		
-            		header("Content-Length: " . filesize($output));
+//            		header("Content-Length: " . filesize($output));
             		break;
             	
 	}

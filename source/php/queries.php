@@ -379,5 +379,13 @@ class Queries {
 	function getExportFrames(){
 		return 	"SELECT * FROM `".$this->tables->frames."`";
 	}
+	
+	function getExportAnnotatedFramesPath(){
+		return "SELECT DISTINCT f.path FROM `".$this->tables->frames."` f, `".$this->tables->people."` p WHERE f.frameid = p.frameid";
+	}
+	
+	function getExportFramesPath(){
+		return "SELECT DISTINCT f.path FROM `".$this->tables->frames."` f";
+	}
 }
 

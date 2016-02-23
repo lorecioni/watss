@@ -23,6 +23,9 @@ $config->bbV->y = -100;
 $config->bbV->width = 40;
 $config->bbV->height = 50;
 
+//Frames path
+$config->framesDir = 'frames';
+
 //Real people
 $config->realPeopleDefaultImg = "../img/avatars/default.png";
 
