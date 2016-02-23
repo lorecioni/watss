@@ -308,11 +308,48 @@ class Queries {
 	 * ****************************
 	 * */
 	
-	function getExportQuery(){
+	function getAnnotationExportQueryBase(){
 		return "SELECT p.peopleid,p.frameid,p.cameraid, p.bb_x, p.bb_y, p.bb_width, p.bb_height, p.bbV_x, p.bbV_y, p.bbV_width, p.bbV_height, 
 				p.gazeAngle_face, p.gazeAngle_face_z, p.gazeAngle_body, p.gazeAngle_body_z,  v.path , ".$this->tables->poi.".name , g.groupid FROM ".$this->tables->people." as p  
 				LEFT JOIN ".$this->tables->frames." as v ON p.frameid = v.frameid and p.cameraid=v.cameraid LEFT JOIN ".$this->tables->poi." ON p.poiid=".$this->tables->poi.".poiid and p.cameraid=".$this->tables->poi.".cameraid 
 				LEFT JOIN ".$this->tables->groups." as g ON p.groupid=g.groupid;";
+	}
+	
+	function getAnnotationExportQuery($exclude){	
+		$sql = "SELECT ";
+		$excluding = $exclude;
+		if(!in_array("peopleid", $excluding)){
+			$sql .= "p.peopleid,";
+		}
+		if(!in_array("frameid", $excluding)){
+			$sql .= "p.frameid,";
+		}
+		if(!in_array("cameraid", $excluding)){
+			$sql .= "p.cameraid,";
+		}
+		if(!in_array("bb", $excluding)){
+			$sql .= "p.bb_x, p.bb_y, p.bb_width, p.bb_height,";
+		}
+		if(!in_array("bbV", $excluding)){
+			$sql .= "p.bbV_x, p.bbV_y, p.bbV_width, p.bbV_height,";
+		}
+		if(!in_array("face", $excluding)){
+			$sql .= "p.gazeAngle_face, p.gazeAngle_face_z,";
+		}
+		if(!in_array("body", $excluding)){
+			$sql .= "p.gazeAngle_body, p.gazeAngle_body_z,";
+		}
+		if(!in_array("poiid", $excluding)){
+			$sql .= $this->tables->poi.".name,";
+		}
+		if(!in_array("groupid", $excluding)){
+			$sql .= "p.groupid,";
+		}
+		
+		$sql .= "v.path FROM ".$this->tables->people." as p
+				LEFT JOIN ".$this->tables->frames." as v ON p.frameid = v.frameid and p.cameraid=v.cameraid LEFT JOIN ".$this->tables->poi." ON p.poiid=".$this->tables->poi.".poiid and p.cameraid=".$this->tables->poi.".cameraid
+				LEFT JOIN ".$this->tables->groups." as g ON p.groupid=g.groupid;";
+		return $sql;
 	}
 	
 	

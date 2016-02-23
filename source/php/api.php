@@ -725,20 +725,26 @@
 			break;
 					
 		/**
-		 * Export function for DB
+		 * Exporting functions
 		 */
-		case "export":	
+		case "exportAnnotations":	
 			
 			//Output headers so that the file is downloaded rather than displayed
 			header('Content-Type: text/csv; charset=utf-8');
-			header('Content-Disposition: attachment; filename=data.csv');
+			header('Content-Disposition: attachment; filename=annotations.csv');
 
 			//Create a file pointer connected to the output stream	
 			$output = fopen('php://output', 'w');		
-
 			$people = array();	
-			$sql = $QUERIES->getExportQuery();
-			$result=mysql_query($sql) or $people = array();
+			
+			
+			if(!isset($_REQUEST['exclude'])){
+				$sql = $QUERIES->getAnnotationExportQueryBase();
+			} else {
+				$sql = $QUERIES->getAnnotationExportQuery($_REQUEST['exclude']);
+			}
+
+			$result = mysql_query($sql) or $people = array();
 
 			//Inserting header
 			/*$header = array("people", "frame", "camera", "bb_x", "bb_y", "bb_width", 
@@ -752,6 +758,36 @@
 				fputcsv($output, $row);	
             break;
 
+            case "exportDatabase":
+            		
+            	//Output headers so that the file is downloaded rather than displayed
+            	header('Content-Type: text/sql; charset=utf-8');
+            	header('Content-Disposition: attachment; filename=database.sql');
+            
+            	//Create a file pointer connected to the output stream
+            	$output = fopen('php://output', 'w');
+            	$people = array();
+            		
+            		
+            	if(!isset($_REQUEST['exclude'])){
+            		$sql = $QUERIES->getAnnotationExportQueryBase();
+            	} else {
+            		$sql = $QUERIES->getAnnotationExportQuery($_REQUEST['exclude']);
+            	}
+            
+            	$result = mysql_query($sql) or $people = array();
+            
+            	//Inserting header
+            	/*$header = array("people", "frame", "camera", "bb_x", "bb_y", "bb_width",
+            			"bb_height", "bbV_x", "bbV_y", "bbV_width", "bbV_height",
+            			"gazeAngle_face", "gazeAngle_face_z", "gazeAngle_body", "gazeAngle_body_z",
+            			"path", "poi", "group");
+            	fputcsv($output, $header);
+            	*/
+            	//Loop over the rows, outputting them
+            	while ($row = mysql_fetch_assoc($result))
+            	fputcsv($output, $row);
+            	break;
 	}
 
 	

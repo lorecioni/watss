@@ -55,61 +55,55 @@
 								<p>Select annotation attributes you want to export</p>
 							    <div class="checkbox">
 								  <label>
-								    <input type="checkbox" value="" checked>
+								    <input type="checkbox" name="attributes" value="peopleid" checked>
 								    Person
 								  </label>
 								</div>
 								<div class="checkbox">
 								  <label>
-								    <input type="checkbox" value="" checked>
+								    <input type="checkbox" name="attributes" value="frameid" checked>
 								    Frame
 								  </label>
 								</div>
 								<div class="checkbox">
 								  <label>
-								    <input type="checkbox" value="" checked>
+								    <input type="checkbox" name="attributes" value="cameraid" checked>
 								    Camera
 								  </label>
 								</div>
 								<div class="checkbox">
 								  <label>
-								    <input type="checkbox" value="" checked>
+								    <input type="checkbox" name="attributes" value="bb" checked>
 								    Bounding Box
 								  </label>
 								</div>
 								<div class="checkbox">
 								  <label>
-								    <input type="checkbox" value="" checked>
+								    <input type="checkbox" name="attributes" value="bbV" checked>
 								    Bounding Box visible
 								  </label>
 								</div>
 								<div class="checkbox">
 								  <label>
-								    <input type="checkbox" value="" checked>
+								    <input type="checkbox" name="attributes" value="face" checked>
 								    Gaze angle face
 								  </label>
 								</div>
 								<div class="checkbox">
 								  <label>
-								    <input type="checkbox" value="" checked>
+								    <input type="checkbox" name="attributes"  value="body" checked>
 								    Gaze angle body
 								  </label>
 								</div>
 								<div class="checkbox">
 								  <label>
-								    <input type="checkbox" value="" checked>
-								    Color
-								  </label>
-								</div>
-								<div class="checkbox">
-								  <label>
-								    <input type="checkbox" value="" checked>
+								    <input type="checkbox" name="attributes"  value="poiid" checked>
 								    Point of Interest
 								  </label>
 								</div>
 								<div class="checkbox">
 								  <label>
-								    <input type="checkbox" value="" checked>
+								    <input type="checkbox" name="attributes"  value="groupid" checked>
 								    Group
 								  </label>
 								</div>				
@@ -144,43 +138,43 @@
 						  <p>Select database table you want to export</p>
 							    <div class="checkbox">
 								  <label>
-								    <input type="checkbox" value="" checked>
+								    <input type="checkbox" name="tables" value="" checked>
 								    Avatars
 								  </label>
 								</div>
 								<div class="checkbox">
 								  <label>
-								    <input type="checkbox" value="" checked>
+								    <input type="checkbox" name="tables" value="" checked>
 								    Cameras
 								  </label>
 								</div>
 								<div class="checkbox">
 								  <label>
-								    <input type="checkbox" value="" checked>
+								    <input type="checkbox" name="tables" value="" checked>
 								    Frames
 								  </label>
 								</div>
 								<div class="checkbox">
 								  <label>
-								    <input type="checkbox" value="" checked>
+								    <input type="checkbox" name="tables" value="" checked>
 								    Groups
 								  </label>
 								</div>
 								<div class="checkbox">
 								  <label>
-								    <input type="checkbox" value="" checked>
+								    <input type="checkbox" name="tables" value="" checked>
 								    People
 								  </label>
 								</div>
 								<div class="checkbox">
 								  <label>
-								    <input type="checkbox" value="" checked>
+								    <input type="checkbox" name="tables" value="" checked>
 								    Poi
 								  </label>
 								</div>
 								<div class="checkbox">
 								  <label>
-								    <input type="checkbox" value="" checked>
+								    <input type="checkbox" name="tables" value="" checked>
 								    Users
 								  </label>
 								</div>
@@ -201,13 +195,6 @@
 	    <script src="js/jquery-1.11.1.min.js"></script>
 	    <!-- Include all compiled plugins (below), or include individual files as needed -->
 	    <script src="js/bootstrap.min.js"></script>
-		<script>
-		$(document).ready(function(){
-			$('#export_res').click(function(){
-				console.log("exporting");
-                window.location.href="php/api.php?action=export"
-			});			
-		});
-		</script>
+		<script src="js/export.js"></script>
 	</body>
 </html>
