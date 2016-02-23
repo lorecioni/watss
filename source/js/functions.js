@@ -629,6 +629,10 @@ function selectBox(el){
 	el.addClass('info');
 	updateBoxGraphics(el);
 	changeBoxMode("#box-"+el.data("id"),"bbV");
+	
+	$('#video-box #box-' + el.data("id")).addClass('bb-selected');
+	$('#video-box #box-' + el.data("id") + '-bbV').addClass('bb-selected');
+	$('#video-box #box-' + el.data("id") + '-face').addClass('bb-selected');
 
 	//ZOOM
 	if(panzoom_scale> 1.0){
@@ -648,6 +652,9 @@ function deselectBox(el){
 	el.removeClass('info');
 	updateBoxGraphics(el);
 	changeBoxMode("#box-"+row_el.data("id"),"bb")
+	$('#video-box .bb').removeClass('bb-selected');
+	$('#video-box .bbV').removeClass('bb-selected');
+	$('#video-box .face').removeClass('bb-selected');
 }
 
 /**
@@ -703,7 +710,9 @@ function deselectAllBox(table_id){
 	resetPeopleMode(table_id);
 	updateBoxGraphics(table.$('tr.info'));
 	table.$('tr.info').removeClass('info');
-	$('.bb').removeClass('selected');
+	$('#video-box .bb').removeClass('bb-selected');
+	$('#video-box .bbV').removeClass('bb-selected');
+	$('#video-box .face').removeClass('bb-selected');
 }
 
 /* CHANGE AND SELECT BOX */
@@ -834,13 +843,17 @@ function setFrame(frame){
 		
 
 	    panzoom.on('mousewheel.focal', function( e ) {
-	    	e.preventDefault();			
-	        var delta = e.delta || e.originalEvent.wheelDelta;
-	        var zoomOut = delta ? delta < 0 : e.originalEvent.deltaY > 0;
-	        panzoom.panzoom('zoom', zoomOut, {
-	        	increment: 1,
-	            focal: e
-	        });
+	    	e.preventDefault();	
+	    	var sel = $(e.toElement);
+	    	if(!sel.hasClass('bb-selected')){
+		        var delta = e.delta || e.originalEvent.wheelDelta;
+		        var zoomOut = delta ? delta < 0 : e.originalEvent.deltaY > 0;
+		        panzoom.panzoom('zoom', zoomOut, {
+		        	increment: 1,
+		            focal: e
+		        });
+	    	}
+	    
 	    });
 	    
 	}

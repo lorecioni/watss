@@ -114,9 +114,33 @@
 					break;
 			}
 		}
-
 	});
 	
+	/** Enabling bounding box scaling with mousewheel **/
+	$('#video-box').on('mousewheel', function(e){
+		if($('.bb.bb-selected').length > 0){
+			e.preventDefault();
+			var sel = $(e.toElement);
+			if(sel.hasClass('bb-selected')){
+				var delta = 2;
+				if(Math.abs(e.deltaY) != 0){
+					if(e.deltaY > 0){
+						$('.bb-selected').css('left', parseFloat(sel.css('left')) - delta);
+						$('.bb-selected').css('width', parseFloat(sel.css('width')) + 2 * delta);
+						$('.bb-selected').css('top', parseFloat(sel.css('top')) - delta);
+						$('.bb-selected').css('height', parseFloat(sel.css('height')) + 2 * delta);
+					} else {
+						$('.bb-selected').css('left', parseFloat(sel.css('left')) + delta);
+						$('.bb-selected').css('width', parseFloat(sel.css('width')) - 2 * delta);
+						$('.bb-selected').css('top', parseFloat(sel.css('top')) + delta);
+						$('.bb-selected').css('height', parseFloat(sel.css('height')) - 2 * delta);
+					}
+				}
+			}
+		}
+	});
+	
+
 	$(document).bind('keydown', 'esc', function (e){
 		if($('.bb.init').length > 0){
 			var addedId = $('.bb.init').first().data('id');
