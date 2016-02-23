@@ -753,7 +753,9 @@
 			*/
 			//Loop over the rows, outputting them
 			while ($row = mysql_fetch_assoc($result)) 
-				fputcsv($output, $row);	
+				fputcsv($output, $row);
+
+			header("Content-Length: " . filesize($output));
             break;
             
             /**
@@ -768,6 +770,7 @@
             	//Create a file pointer connected to the output stream
             	$output = fopen('php://output', 'w');
             	fwrite($output, file_get_contents("../database/createSchema.sql"));
+            	header("Content-Length: " . filesize($output));
             	break;
             
             /**
@@ -905,8 +908,28 @@
             		}
             	}
             	
-            	fwrite($output, $text);            	
+            	fwrite($output, $text);
+            	header("Content-Length: " . filesize($output));
             	break;
+            	
+            	
+            	/**
+            	 * Exporting all (annotations and frames)
+            	 */
+            	case "exportAll":
+            	
+            		//Output headers so that the file is downloaded rather than displayed
+				    header("Content-Type: application/zip");
+				    header("Content-Disposition: attachment; filename=MuseumVisitors.zip");
+				    
+            	
+            		//Create a file pointer connected to the output stream
+            		$output = fopen('php://output', 'w');
+            		fwrite($output, file_get_contents("../database/createSchema.sql"));
+            		
+            		header("Content-Length: " . filesize($output));
+            		break;
+            	
 	}
 
 	

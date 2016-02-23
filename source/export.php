@@ -43,7 +43,7 @@
 			
 			<div id="content-wrapper">
 
-		    <h1>Export Results</h1>
+		    <h1>Export</h1>
 		    <p>Export annotations or the whole database in a SQL script.</p>
 		    <div class="export row">
 				  <div class="col-xs-6 col-sm-6">
