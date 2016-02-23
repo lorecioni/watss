@@ -46,7 +46,7 @@
 		    <h1>Export Results</h1>
 		    <p>Export annotations or the whole database in a SQL script.</p>
 		    <div class="export row">
-				  <div class="col-xs-6">
+				  <div class="col-xs-6 col-sm-6">
 					    <div id="db-connection-settings" class="settings-panel panel panel-default">
 						  <div class="panel-heading">
 						    <h3 class="panel-title">Annotations</h3>
@@ -135,7 +135,7 @@
 						</div>				
 				  </div>
 				  
-				  <div class="col-xs-6">
+				  <div class="col-xs-4">
 				  	<div id="user-settings" class="settings-panel panel panel-default">
 						  <div class="panel-heading">
 						    <h3 class="panel-title">Database</h3>
