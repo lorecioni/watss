@@ -100,6 +100,12 @@
 	    	}
 	    	centerTimeline();
 	    	updateCursor();
+	    	
+	    	if(currentPerson != undefined){
+	    		$('#people-table #tr-' + currentPerson.id).click();
+	    	}
+	    	
+	    	
 	    },
 	    /**
 		 * Function handler on frame selected
@@ -135,7 +141,7 @@
 			}
 	    	$('.timeline-annotation-' + id).remove();
 	    	loadPeople(timelineFrames[currentFrame].people)
-	    	if(id == currentPerson.id){
+	    	if(currentPerson != undefined && id == currentPerson.id){
 	    		currentPerson = undefined;
 	    		currentIntervals = undefined;
 	    	}
@@ -554,7 +560,8 @@
 			$('.timeline-annotation-' + person.id).remove();
 			currentPerson = undefined;
 			currentIntervals = undefined;
-		}		
+		}
+		
 	}
 	
 	//Returning intervals list
