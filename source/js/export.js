@@ -1,7 +1,7 @@
 $(document).ready(function(){
 	
-	/** Exporting database as SQL script **/
-	$('#export_databasesss').click(function(e){
+	/** Exporting data **/
+	$('#export_data').click(function(e){
 		e.preventDefault();
 		
 		$.ajax({
@@ -28,6 +28,11 @@ $(document).ready(function(){
 		window.location.href = "php/api.php?action=exportAnnotations" + unchecked; 
 	})
 	
+	/** Exporting database schema **/
+	$('#export_schema').click(function(e){
+		e.preventDefault();
+		window.location.href = "php/api.php?action=exportSchema"; 
+	})
 	
 	/** Exporting database as SQL script **/
 	$('#export_database').click(function(e){

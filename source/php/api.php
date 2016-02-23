@@ -725,7 +725,7 @@
 			break;
 					
 		/**
-		 * Exporting functions
+		 * Exporting function fro annotations
 		 */
 		case "exportAnnotations":	
 			
@@ -734,9 +734,7 @@
 			header('Content-Disposition: attachment; filename=annotations.csv');
 
 			//Create a file pointer connected to the output stream	
-			$output = fopen('php://output', 'w');		
-			$people = array();	
-			
+			$output = fopen('php://output', 'w');					
 			
 			if(!isset($_REQUEST['exclude'])){
 				$sql = $QUERIES->getAnnotationExportQueryBase();
@@ -744,7 +742,7 @@
 				$sql = $QUERIES->getAnnotationExportQuery($_REQUEST['exclude']);
 			}
 
-			$result = mysql_query($sql) or $people = array();
+			$result = mysql_query($sql);
 
 			//Inserting header
 			/*$header = array("people", "frame", "camera", "bb_x", "bb_y", "bb_width", 
@@ -757,7 +755,24 @@
 			while ($row = mysql_fetch_assoc($result)) 
 				fputcsv($output, $row);	
             break;
-
+            
+            /**
+             * Exporting database script
+             */
+            case "exportSchema":
+            
+            	//Output headers so that the file is downloaded rather than displayed
+            	header('Content-Type: text/sql; charset=utf-8');
+            	header('Content-Disposition: attachment; filename=schema.sql');
+            
+            	//Create a file pointer connected to the output stream
+            	$output = fopen('php://output', 'w');
+            	fwrite($output, file_get_contents("../database/createSchema.sql"));
+            	break;
+            
+            /**
+             * Exporting database script
+             */
             case "exportDatabase":
             		
             	//Output headers so that the file is downloaded rather than displayed
@@ -766,27 +781,131 @@
             
             	//Create a file pointer connected to the output stream
             	$output = fopen('php://output', 'w');
-            	$people = array();
-            		
-            		
-            	if(!isset($_REQUEST['exclude'])){
-            		$sql = $QUERIES->getAnnotationExportQueryBase();
-            	} else {
-            		$sql = $QUERIES->getAnnotationExportQuery($_REQUEST['exclude']);
+
+            	$text = "-- Exported WATSS database --";
+            	
+            	if(!isset($_REQUEST['exclude']) || 
+            			(isset($_REQUEST['exclude']) && !in_array("avatars", $_REQUEST['exclude']))){
+            		//Adding avatars data
+            		$result = mysql_query($QUERIES->getExportAvatars());
+            		if(mysql_num_rows ($result) > 0){
+            			$text .= "\n\nINSERT INTO avatars VALUES ";
+            		}
+            		$count = 0;
+            		while ($row = mysql_fetch_array($result)){
+            			$text .= "(".$row[0].", ".$row[1].", ".$row[2].", '".$row[3]."')";
+            			$count++;
+            			if($count < mysql_num_rows ($result)){
+            				$text .= ",\n";
+            			}	
+            		}	
             	}
-            
-            	$result = mysql_query($sql) or $people = array();
-            
-            	//Inserting header
-            	/*$header = array("people", "frame", "camera", "bb_x", "bb_y", "bb_width",
-            			"bb_height", "bbV_x", "bbV_y", "bbV_width", "bbV_height",
-            			"gazeAngle_face", "gazeAngle_face_z", "gazeAngle_body", "gazeAngle_body_z",
-            			"path", "poi", "group");
-            	fputcsv($output, $header);
-            	*/
-            	//Loop over the rows, outputting them
-            	while ($row = mysql_fetch_assoc($result))
-            	fputcsv($output, $row);
+            	
+            	if(!isset($_REQUEST['exclude']) ||
+            			(isset($_REQUEST['exclude']) && !in_array("cameras", $_REQUEST['exclude']))){
+            		//Adding cameras data
+            		$result = mysql_query($QUERIES->getExportAvatars());
+            		if(mysql_num_rows ($result) > 0){
+            			$text .= "\n\nINSERT INTO cameras VALUES ";
+            		}
+            		$count = 0;
+            		while ($row = mysql_fetch_array($result)){
+            			$text .= "(".$row[0].", ".$row[1].")";
+            			$count++;
+            			if($count < mysql_num_rows ($result)){
+            				$text .= ",\n";
+            			}
+            		}
+            	}
+            	
+            	if(!isset($_REQUEST['exclude']) ||
+            			(isset($_REQUEST['exclude']) && !in_array("users", $_REQUEST['exclude']))){
+            		//Adding users data
+            		$result = mysql_query($QUERIES->getExportUsers());
+            		if(mysql_num_rows ($result) > 0){
+            			$text .= "\n\nINSERT INTO users VALUES ";
+            		}
+            		$count = 0;
+            		while ($row = mysql_fetch_array($result)){
+            			$text .= "(".$row[0].", '".$row[1]."')";
+            			$count++;
+            			if($count < mysql_num_rows ($result)){
+            				$text .= ",\n";
+            			}
+            		}
+            	}
+            	
+            	if(!isset($_REQUEST['exclude']) ||
+            			(isset($_REQUEST['exclude']) && !in_array("poi", $_REQUEST['exclude']))){
+            		//Adding poi data
+            		$result = mysql_query($QUERIES->getExportPoi());
+            		if(mysql_num_rows ($result) > 0){
+            			$text .= "\n\nINSERT INTO poi VALUES ";
+            		}
+            		$count = 0;
+            		while ($row = mysql_fetch_array($result)){
+            			$text .= "(".$row[0].", ".$row[1].", ".$row[2].", ".$row[3].", ".$row[4].", ".$row[5].", '".$row[6]."')";
+            			$count++;
+            			if($count < mysql_num_rows ($result)){
+            				$text .= ",\n";
+            			}
+            		}
+            	}
+            	
+            	if(!isset($_REQUEST['exclude']) ||
+            			(isset($_REQUEST['exclude']) && !in_array("groups", $_REQUEST['exclude']))){
+            		//Adding poi data
+            		$result = mysql_query($QUERIES->getExportGroups());
+            		if(mysql_num_rows ($result) > 0){
+            			$text .= "\n\nINSERT INTO groups VALUES ";
+            		}
+            		$count = 0;
+            		while ($row = mysql_fetch_array($result)){
+            			$text .= "(".$row[0].", '".$row[1]."', ".$row[2].", ".$row[3].")";
+            			$count++;
+            			if($count < mysql_num_rows ($result)){
+            				$text .= ",\n";
+            			}
+            		}
+            	}
+            	
+            	if(!isset($_REQUEST['exclude']) ||
+            			(isset($_REQUEST['exclude']) && !in_array("frames", $_REQUEST['exclude']))){
+            		//Adding poi data
+            		$result = mysql_query($QUERIES->getExportFrames());
+            		if(mysql_num_rows ($result) > 0){
+            			$text .= "\n\nINSERT INTO frames VALUES ";
+            		}
+            		$count = 0;
+            		while ($row = mysql_fetch_array($result)){
+            			$text .= "(".$row[0].", ".$row[1].", '".$row[2]."', '".$row[3]."')";
+            			$count++;
+            			if($count < mysql_num_rows ($result)){
+            				$text .= ",\n";
+            			}
+            		}
+            	}
+            	
+            	if(!isset($_REQUEST['exclude']) ||
+            			(isset($_REQUEST['exclude']) && !in_array("people", $_REQUEST['exclude']))){
+            		//Adding poi data
+            		$result = mysql_query($QUERIES->getExportPeople());
+            		if(mysql_num_rows ($result) > 0){
+            			$text .= "\n\nINSERT INTO people VALUES ";
+            		}
+            		$count = 0;
+            		while ($row = mysql_fetch_array($result)){
+            			$text .= "(".$row[0].", ".$row[1].", ".$row[2].", ".$row[3].", ".$row[4].", ";
+            			$text .= $row[5].", ".$row[6].", ".$row[7].", ".$row[8].", ".$row[9].", ".$row[10].", ";
+            			$text .= $row[11].", ".$row[12].", ".$row[13].", ".$row[14].", ".$row[15].", '".$row[16]."', ".$row[17].", ".$row[18].")";
+            			$count++;
+            			if($count < mysql_num_rows ($result)){
+            				$text .= ",\n";
+            			}
+            		}
+            	}
+            	
+            	fwrite($output, $text);            	
             	break;
 	}
 

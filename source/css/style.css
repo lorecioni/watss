@@ -338,3 +338,7 @@ button#add-poi-submit {
 .export.row {
     margin-top: 30px;
 }
+
+a#export_schema {
+    margin-right: 5px;
+}

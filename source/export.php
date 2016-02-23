@@ -123,7 +123,7 @@
 								  </label>
 								</div>	
 							<div class="col-sm-offset-6 col-sm-10">
-								<a href="#" class="btn btn-default" id="export_annotations">Export Annotations</a> <a href="#" class="btn btn-default" id="export_all">Export All</a>
+								<a href="#" class="btn btn-default" id="export_annotations">Export Annotations</a> <a href="#" class="btn btn-default" id="export_data">Export All</a>
 							</div>
 						  </div>
 						</div>				
@@ -138,48 +138,48 @@
 						  <p>Select database table you want to export</p>
 							    <div class="checkbox">
 								  <label>
-								    <input type="checkbox" name="tables" value="" checked>
+								    <input type="checkbox" name="tables" value="avatars" checked>
 								    Avatars
 								  </label>
 								</div>
 								<div class="checkbox">
 								  <label>
-								    <input type="checkbox" name="tables" value="" checked>
+								    <input type="checkbox" name="tables" value="cameras" checked>
 								    Cameras
 								  </label>
 								</div>
 								<div class="checkbox">
 								  <label>
-								    <input type="checkbox" name="tables" value="" checked>
+								    <input type="checkbox" name="tables" value="frames" checked>
 								    Frames
 								  </label>
 								</div>
 								<div class="checkbox">
 								  <label>
-								    <input type="checkbox" name="tables" value="" checked>
+								    <input type="checkbox" name="tables" value="groups" checked>
 								    Groups
 								  </label>
 								</div>
 								<div class="checkbox">
 								  <label>
-								    <input type="checkbox" name="tables" value="" checked>
+								    <input type="checkbox" name="tables" value="people" checked>
 								    People
 								  </label>
 								</div>
 								<div class="checkbox">
 								  <label>
-								    <input type="checkbox" name="tables" value="" checked>
+								    <input type="checkbox" name="tables" value="poi" checked>
 								    Poi
 								  </label>
 								</div>
 								<div class="checkbox">
 								  <label>
-								    <input type="checkbox" name="tables" value="" checked>
+								    <input type="checkbox" name="tables" value="users" checked>
 								    Users
 								  </label>
 								</div>
-						  	<div class="col-sm-offset-6 col-sm-10">
-								<a href="#" class="btn btn-default" id="export_database">Export SQL script</a>
+						  	<div class="col-sm-offset-2">
+								<a href="#" class="btn btn-default" id="export_schema">Export Schema</a><a href="#" class="btn btn-default" id="export_database"> Export SQL script</a>
 							</div>
 						  </div>
 						</div>

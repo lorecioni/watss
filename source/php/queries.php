@@ -352,7 +352,32 @@ class Queries {
 		return $sql;
 	}
 	
+	function getExportAvatars(){
+		return 	"SELECT * FROM `".$this->tables->avatars."`";	
+	}
 	
-
+	function getExportCameras(){
+		return 	"SELECT * FROM `".$this->tables->cameras."`";
+	}
+	
+	function getExportUsers(){
+		return 	"SELECT * FROM `".$this->tables->users."`";
+	}
+	
+	function getExportPeople(){
+		return 	"SELECT * FROM `".$this->tables->people."`";
+	}
+	
+	function getExportPoi(){
+		return 	"SELECT * FROM `".$this->tables->poi."`";
+	}
+	
+	function getExportGroups(){
+		return 	"SELECT * FROM `".$this->tables->groups."`";
+	}
+	
+	function getExportFrames(){
+		return 	"SELECT * FROM `".$this->tables->frames."`";
+	}
 }
 
