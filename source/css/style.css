@@ -334,3 +334,7 @@ button#add-poi-submit {
 .panel-heading .radio input {
     left: -18px;
 }
+
+.export.row {
+    margin-top: 50px;
+}
