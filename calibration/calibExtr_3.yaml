@@ -1,0 +1,14 @@
+%YAML:1.0
+Rotation: !!opencv-matrix
+   rows: 3
+   cols: 1
+   dt: d
+   data: [ 8.1799488517081476e-01, 2.1198735302659877e+00,
+       -1.4997868194561006e+00 ]
+%YAML:1.0
+Translation: !!opencv-matrix
+   rows: 3
+   cols: 1
+   dt: d
+   data: [ -6.6753417003213701e+02, 5.9542881048342799e+01,
+       5.1186885590969916e+02 ]
