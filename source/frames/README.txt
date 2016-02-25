@@ -11,7 +11,7 @@ In order to assess the difficulties of this dataset we have also performed some 
 
 
 CONTENTS:
-- /frames: contains the labeled frames acquired in the National Museum of Bargello. The images are grouped with rescpect to the three cameras [1-3].
+- /frames: contains the labeled frames acquired in the National Museum of Bargello. The images are grouped with rescpect to the three cameras [1-4].
 - annotations.csv: contains all annotations of the visitors in the frames
 - README: The file you are reading now :)...
 
@@ -25,11 +25,11 @@ The annotations are stored in this csv file. In particular, each row contains th
    - [cameraid, frameid ]: indentifies uniquely a frame in the camera
    - [bb_x, bb_y, bb_width , bb_height]: full bounding boxes of the visitor (included the occlusion area)
    - [bbV_x, bbV_y, bbV_width, bbV_height, bbV_height]: bounding boxes of the visitor (only the visible part of the people)
-   - [gazeAngle_x, gazeAngle_y]: head gaze
+   - [gazeAngle_face, gazeAngle_face_z]: head gaze
+   - [gazeAngle_body, gazeAngle_body_z]: body gaze
    - filename: partial path to the specific image in the folder '/frames'. 
-   - operaid: artwork under observation
+   - poiid: poi under observation
    - groupid: group belonging
-
 
 
 [WATSS: a Web Annotation Tool for Surveillance Scenarios]

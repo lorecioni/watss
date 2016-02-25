@@ -33,3 +33,5 @@ results/*.jpg
 *.def
 
 doc/credenziali.txt
+
+source/php/tmp/*

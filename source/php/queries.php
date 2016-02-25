@@ -381,7 +381,7 @@ class Queries {
 	}
 	
 	function getExportAnnotatedFramesPath(){
-		return "SELECT DISTINCT f.path FROM `".$this->tables->frames."` f, `".$this->tables->people."` p WHERE f.frameid = p.frameid";
+		return "SELECT DISTINCT f.path FROM `".$this->tables->frames."` f, `".$this->tables->people."` p WHERE f.frameid = p.frameid LIMIT 50";//TODO remove limit
 	}
 	
 	function getExportFramesPath(){

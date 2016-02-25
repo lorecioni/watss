@@ -922,6 +922,23 @@
 				    //header("Content-Type: application/zip");
 				    //header("Content-Disposition: attachment; filename=MuseumVisitors.zip");
 				    
+            		$tmpdir = './tmp/';
+
+				    
+				    if (mkdir($tmpdir, 0777, true)) {	
+				    	$sql = $QUERIES->getExportCameras();
+				    	$result = mysql_query($sql);
+				    	while ($row = mysql_fetch_array($result)){
+				    		$camdir = $tmpdir.$row[0].'/';
+				    		if (!mkdir($camdir, 0777, true)) {
+				    			die('Failed to create camera folder');
+				    		}
+				    	}			    	
+				    } else {
+				    	die('Failed to create output folder');
+				    }
+				    
+
 				    $limit = 'annotated';
 				    if(isset($_REQUEST['limit'])){
 				    	$limit = $_REQUEST['limit'];
@@ -932,20 +949,20 @@
 				    	case 'annotated':
 				    		$sql = $QUERIES->getExportAnnotatedFramesPath();
 				    		break;
-				    		
+				    
 				    	case 'all':
 				    		$sql = $QUERIES->getExportFramesPath();
 				    		break;
 				    }
-            	
-				    mkdir("./tmp/") or die("error");
-				    chmod("./tmp/", 777);
 				    
 				    $result = mysql_query($sql);
 				    while ($row = mysql_fetch_array($result)){
 				    	$path = "../".$config->framesDir."/".$row[0];
-				    	//if(file_exists($path))
-				    	echo $path;
+				    	$filename = $row[0];	    	
+				    	if(file_exists($path)){
+				    		copy($path, $tmpdir.$filename);
+				    		//echo  $tmpdir.$filename;
+				    	}
 				    }
 				    
 				    
