@@ -728,43 +728,30 @@
 		 * Exporting function fro annotations
 		 */
 		case "exportAnnotations":	
-			
-			//Output headers so that the file is downloaded rather than displayed
-			header('Content-Type: text/csv; charset=utf-8');
-			header('Content-Disposition: attachment; filename=annotations.csv');
-
 			//Create a file pointer connected to the output stream	
-			$output = fopen('php://output', 'w');
+			$output = fopen('output/annotations.csv', 'w');
 			$output = createAnnotationsCSV($output);
-			header("Content-Length: " . filesize($output));
+			fclose($output);
+			jecho('output/annotations.csv');
             break;
             
             /**
              * Exporting database script
              */
             case "exportSchema":
-            
-            	//Output headers so that the file is downloaded rather than displayed
-            	header('Content-Type: text/sql; charset=utf-8');
-            	header('Content-Disposition: attachment; filename=schema.sql');
-            
             	//Create a file pointer connected to the output stream
-            	$output = fopen('php://output', 'w');
+            	$output = fopen('output/schema.sql', 'w');
             	fwrite($output, file_get_contents("../database/createSchema.sql"));
-            	header("Content-Length: " . filesize($output));
+            	fclose($output);
+            	jecho('output/schema.sql');
             	break;
             
             /**
              * Exporting database script
              */
             case "exportDatabase":
-            		
-            	//Output headers so that the file is downloaded rather than displayed
-            	header('Content-Type: text/sql; charset=utf-8');
-            	header('Content-Disposition: attachment; filename=database.sql');
-            
-            	//Create a file pointer connected to the output stream
-            	$output = fopen('php://output', 'w');
+               	//Create a file pointer connected to the output stream
+            	$output = fopen('output/database.sql', 'w');
 
             	$text = "-- Exported WATSS database --";
             	
@@ -890,7 +877,8 @@
             	}
             	
             	fwrite($output, $text);
-            	header("Content-Length: " . filesize($output));
+            	fclose($output);
+            	jecho('output/database.sql');
             	break;
             	
             	
@@ -899,14 +887,17 @@
             	 */
             	case "exportAll":
 				    
-            		$tmpdir = './tmp/';
-
+            		$tmpdir = './output/tmp/';
+            		if(is_dir($tmpdir)){
+            			removeDirectory($tmpdir);
+            		}
+            		
             		//Creating output tmp folders
 				    if (mkdir($tmpdir, 0777, true)) {	
 				    	$sql = $QUERIES->getExportCameras();
 				    	$result = mysql_query($sql);
 				    	while ($row = mysql_fetch_array($result)){
-				    		$camdir = $tmpdir.$row[0].'/';
+				    		$camdir = $tmpdir.$row[0].'/'.$config->framesDir;
 				    		if (!mkdir($camdir, 0777, true)) {
 				    			die('Failed to create camera folder');
 				    		}
@@ -934,15 +925,19 @@
 				    //Copying frames to tmp folder
 				    $result = mysql_query($sql);
 				    while ($row = mysql_fetch_array($result)){
-				    	$path = "../".$config->framesDir."/".$row[0];
-				    	$filename = $row[0];	    	
+				    	$path = "../frames/".$row[0];
+				    	$filename = $row[0];	
 				    	if(file_exists($path)){
-				    		copy($path, $tmpdir.$filename);
-				    	}
+				    		if(!copy($path, $tmpdir.$filename)){
+				    			die('Error copying files');
+				    		}
+						} else {
+							die('Error retrieving frames');
+						}
 				    }
 				    
 				    //Copying README
-				    $readme = '../frames/README.txt';
+				    $readme = 'output/README.txt';
 				    copy($readme, $tmpdir.'README.txt');
 				    
 				    //Creating annotations file
@@ -977,14 +972,41 @@
 					$zip->close();
 				    
 					//Removing temporary folder
-					removeDirectory($tmpdir);
-				    
-				    header('Content-Type: application/zip');
-				    header("Content-Disposition: attachment; filename='".$output."'");
-				    header('Content-Length: ' . filesize($zip));
-				    header("Location: output/".$output);
-				    
+					removeDirectory($tmpdir);  
+					jecho('output/MuseumVisitors.zip');
             		break; 	
+            		
+            	case 'download':
+            		$type = $_REQUEST['type'];
+            		$location = $_REQUEST['location'];
+            		$name = $_REQUEST['name'];
+            		switch ($type){
+            			case 'csv':
+            				$output = fopen($location, 'r');   				
+            				header('Content-Type: text/csv; charset=utf-8');
+            				header('Content-Disposition: attachment; filename='.$name);
+            				header("Content-Length: " . filesize($output));
+            				fclose($output);
+            				break;
+            				
+            			case 'sql':
+            				$output = fopen($location, 'r');
+            				header('Content-Type: text/sql; charset=utf-8');
+            				header('Content-Disposition: attachment; filename='.$name);
+            				header("Content-Length: " . filesize($output));
+            				fclose($output);
+            				break;
+            				
+            			case 'zip':
+            				$output = fopen($location, 'r');
+            				header('Content-Type: application/zip');
+            				header("Content-Disposition: attachment; filename='".$name."'");
+            				header('Content-Length: ' . filesize($output));
+            				header('Location: '.$location);
+            				fclose($output);
+            				break;
+            		}
+	
 	}
 	
 
