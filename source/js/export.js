@@ -3,7 +3,7 @@ $(document).ready(function(){
 	/** Exporting data **/
 	$('#export_data').click(function(e){
 		e.preventDefault();
-		window.location.href = "php/api.php?action=exportAnnotations&limit" + $('input[name="frames"]:checked').val();
+		window.location.href = "php/api.php?action=exportAll&limit" + $('input[name="frames"]:checked').val();
 	})
 	
 	/** Exporting annotations as CSV file **/
