@@ -734,27 +734,8 @@
 			header('Content-Disposition: attachment; filename=annotations.csv');
 
 			//Create a file pointer connected to the output stream	
-			$output = fopen('php://output', 'w');					
-			
-			if(!isset($_REQUEST['exclude'])){
-				$sql = $QUERIES->getAnnotationExportQueryBase();
-			} else {
-				$sql = $QUERIES->getAnnotationExportQuery($_REQUEST['exclude']);
-			}
-
-			$result = mysql_query($sql);
-
-			//Inserting header
-			/*$header = array("people", "frame", "camera", "bb_x", "bb_y", "bb_width", 
-					"bb_height", "bbV_x", "bbV_y", "bbV_width", "bbV_height", 
-					"gazeAngle_face", "gazeAngle_face_z", "gazeAngle_body", "gazeAngle_body_z", 
-					"path", "poi", "group");
-			fputcsv($output, $header);
-			*/
-			//Loop over the rows, outputting them
-			while ($row = mysql_fetch_assoc($result)) 
-				fputcsv($output, $row);
-
+			$output = fopen('php://output', 'w');
+			$output = createAnnotationsCSV($output);
 			header("Content-Length: " . filesize($output));
             break;
             
@@ -917,14 +898,10 @@
             	 * Exporting all (annotations and frames)
             	 */
             	case "exportAll":
-            	
-            		//Output headers so that the file is downloaded rather than displayed
-				    //header("Content-Type: application/zip");
-				    //header("Content-Disposition: attachment; filename=MuseumVisitors.zip");
 				    
             		$tmpdir = './tmp/';
 
-				    
+            		//Creating output tmp folders
 				    if (mkdir($tmpdir, 0777, true)) {	
 				    	$sql = $QUERIES->getExportCameras();
 				    	$result = mysql_query($sql);
@@ -938,7 +915,6 @@
 				    	die('Failed to create output folder');
 				    }
 				    
-
 				    $limit = 'annotated';
 				    if(isset($_REQUEST['limit'])){
 				    	$limit = $_REQUEST['limit'];
@@ -954,25 +930,63 @@
 				    		$sql = $QUERIES->getExportFramesPath();
 				    		break;
 				    }
-				    
+				  
+				    //Copying frames to tmp folder
 				    $result = mysql_query($sql);
 				    while ($row = mysql_fetch_array($result)){
 				    	$path = "../".$config->framesDir."/".$row[0];
 				    	$filename = $row[0];	    	
 				    	if(file_exists($path)){
 				    		copy($path, $tmpdir.$filename);
-				    		//echo  $tmpdir.$filename;
 				    	}
 				    }
 				    
+				    //Copying README
+				    $readme = '../frames/README.txt';
+				    copy($readme, $tmpdir.'README.txt');
 				    
-            		//Create a file pointer connected to the output stream
-            		//$output = fopen('php://output', 'w');
-            		
-//            		header("Content-Length: " . filesize($output));
-            		break;
-            	
+				    //Creating annotations file
+				    $annotations = fopen($tmpdir.'annotations.csv', 'w');
+				    $annotations = createAnnotationsCSV($annotations);
+				    
+				    //Creating ZIP file
+				    $rootPath = realpath($tmpdir);
+				    $zip = new ZipArchive();
+				    $output = 'MuseumVisitors.zip';
+				    $zip->open('output/'.$output, ZipArchive::CREATE | ZipArchive::OVERWRITE);
+
+					// Create recursive directory iterator
+					$files = new RecursiveIteratorIterator(
+					    new RecursiveDirectoryIterator($rootPath),
+					    RecursiveIteratorIterator::LEAVES_ONLY
+					);
+					
+					foreach ($files as $name => $file){
+					    // Skip directories (they would be added automatically)
+					    if (!$file->isDir()){
+					        // Get real and relative path for current file
+					        $filePath = $file->getRealPath();
+					        $relativePath = substr($filePath, strlen($rootPath) + 1);
+					
+					        // Add current file to archive
+					        $zip->addFile($filePath, $relativePath);
+					    }
+					}
+					
+					// Zip archive will be created only after closing object
+					$zip->close();
+				    
+					//Removing temporary folder
+					removeDirectory($tmpdir);
+				    
+				    header('Content-Type: application/zip');
+				    header("Content-Disposition: attachment; filename='".$output."'");
+				    header('Content-Length: ' . filesize($zip));
+				    header("Location: output/".$output);
+				    
+            		break; 	
 	}
+	
 
 	
 	

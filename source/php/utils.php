@@ -227,5 +227,49 @@ function SQLParse($sql){
 }
 
 
+/**
+ * Creates annotations file in CSV format for export
+ * @param output file $file
+ * @return file with annotations
+ */
+function createAnnotationsCSV($file){
+	global $QUERIES;
+	
+	if(!isset($_REQUEST['exclude'])){
+		$sql = $QUERIES->getAnnotationExportQueryBase();
+	} else {
+		$sql = $QUERIES->getAnnotationExportQuery($_REQUEST['exclude']);
+	}
+	
+	$result = mysql_query($sql);
+	
+	//Inserting header
+	/*$header = array("people", "frame", "camera", "bb_x", "bb_y", "bb_width",
+	 "bb_height", "bbV_x", "bbV_y", "bbV_width", "bbV_height",
+			"gazeAngle_face", "gazeAngle_face_z", "gazeAngle_body", "gazeAngle_body_z",
+			"path", "poi", "group");
+	fputcsv($output, $header);
+	*/
+	//Loop over the rows, outputting them
+	while ($row = mysql_fetch_assoc($result))
+		fputcsv($file, $row);
+	
+	return $file;
+}
+
+
+/**
+ * Remove a directory
+ * @param unknown $path
+ */
+function removeDirectory($path) {
+	$files = glob($path . '/*');
+	foreach ($files as $file) {
+		is_dir($file) ? removeDirectory($file) : unlink($file);
+	}
+	rmdir($path);
+	return;
+}
+
 
 ?>
