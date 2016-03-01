@@ -132,8 +132,48 @@
 				  </div>		    	
 		    	 <!-- end of camera setting -->
 		    	 
+		    	 <!-- Propagation settings -->
+				  <div class="col-xs-6 col-sm-4">
+				  	<div id="propagation-settings" class="settings-panel panel panel-default">
+						  <div class="panel-heading">
+						    <h3 class="panel-title">Propagation</h3>
+						  </div>
+						  <div class="panel-body">
+						  	<form id="db-form" class="form-horizontal">
+							  <div class="form-group">
+							    <label for="propagation-motion" class="col-sm-6 control-label">Use motion</label>
+							    <div class="col-sm-4">
+							      <div class="checkbox">
+ 						 			<label><input type="checkbox" id="propagation-motion" value="" checked></label>
+    							  </div>
+							    </div>
+							  </div>
+							  <div class="form-group">
+							    <label for="propagation-people" class="col-sm-6 control-label">Use people detector</label>
+							    <div class="col-sm-4">
+							      <div class="checkbox">
+ 						 			<label><input type="checkbox" id="propagation-people" value="" checked></label>
+    							  </div>
+							    </div>
+							  </div>
+							  <div class="form-group">
+							    <label for="propagation-kf" class="col-sm-6 control-label">Use Kalman filter</label>
+							    <div class="col-sm-4">
+							      <div class="checkbox">
+ 						 			<label><input type="checkbox" id="propagation-kf" value="" checked></label>
+    							  </div>
+							    </div>
+							  </div>
+							  <div class="col-sm-offset-6 col-sm-10">
+							      <button type="submit" class="btn btn-primary">Save</button>
+							    </div>	
+							</form>
+						  </div>
+						</div>
+				  </div>
+		    	 
 		    	 <!-- POI settings -->
-				  <div class="col-xs-12 col-sm-12">
+				  <div class="col-xs-8 col-sm-8">
 				  	<div id="poi-settings" class="settings-panel panel panel-default">
 						  <div class="panel-heading">
 						    <h3 class="panel-title">Points of Interest</h3>
@@ -148,9 +188,9 @@
 							    <input type="number" class="form-control number" id="add-poi-locx" placeholder="X">
 							    <input type="number" class="form-control number" id="add-poi-locy" placeholder="Y">
 							    <input type="number" class="form-control number" id="add-poi-width" placeholder="Width">	
-							    <input type="number" class="form-control number" id="add-poi-height" placeholder="Height">						    
-							  </div>
-							  <button type="submit" id="add-poi-submit" class="btn btn-primary">Add POI</button>
+							    <input type="number" class="form-control number" id="add-poi-height" placeholder="Height">
+							    <button type="submit" id="add-poi-submit" class="btn btn-primary">Add POI</button>						    
+							  </div>		  
 							</form>
 							<div class="scrollable-container">
 								<div class="scrollable">
