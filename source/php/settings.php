@@ -43,7 +43,30 @@ if(isset($_REQUEST['action'])){
 	switch($_REQUEST['action']) {
 		
 		case 'init':
-			jecho($dbInfo);
+			$useMotion = false;
+			$usePeople = false;
+			$useKalman = false;
+			$trackingconf = file_get_contents('../script/trackingconf.conf');
+			$parsed = explode("\n", $trackingconf);
+			foreach ($parsed as $row){
+				$row = explode("=", $row);
+				$key = trim($row[0]);
+				$value = trim($row[1]);
+				if(strcmp($key, "USE_MOTION") == 0){
+					$useMotion = $value == 'True' ? true : false;
+				} else if(strcmp($key, "USE_PEDESTRIAN_DETECTOR") == 0){
+					$usePeople = $value == 'True' ? true : false;
+				} else if(strcmp($key, "USE_KALMAN_FILTER") == 0){
+					$useKalman = $value == 'True' ? true : false;
+				}	
+			}
+			
+			$info = $dbInfo;
+			$info['useMotion'] = $useMotion;
+			$info['usePeople'] = $usePeople;
+			$info['useKalman'] = $useKalman;
+			
+			jecho($info);
 			break;
 		
 		/**
@@ -287,7 +310,36 @@ if(isset($_REQUEST['action'])){
 					$output->id = mysql_insert_id();
 					
 					jecho($output);
-					break;		
+					break;	
+
+					
+					case 'update-propagation':
+						$useMotion = $_REQUEST['useMotion'] ? "True" : "False";
+						$usePeople = $_REQUEST['usePeople'] ? "True" : "False";
+						$useKalman = $_REQUEST['useKalman'] ? "True" : "False";
+						
+						$trackconf = "";
+						$trackingconf = file_get_contents('../script/trackingconf.conf');
+						$parsed = explode("\n", $trackingconf);
+						foreach ($parsed as $conf){
+							$row = explode("=", $conf);
+							$key = trim($row[0]);
+							$value = trim($row[1]);
+							if(strcmp($key, "USE_MOTION") == 0){
+								$trackconf .= "USE_MOTION = ".$useMotion."\n";
+							} else if(strcmp($key, "USE_PEDESTRIAN_DETECTOR") == 0){
+								$trackconf .= "USE_PEDESTRIAN_DETECTOR = ".$usePeople."\n";
+							} else if(strcmp($key, "USE_KALMAN_FILTER") == 0){
+								$trackconf .= "USE_KALMAN_FILTER = ".$useKalman."\n";
+							} else {
+								$trackconf .= $conf."\n";
+							}
+						}
+						jecho($trackconf);
+						$out = fopen("../script/trackingconf.conf", "w");
+						fwrite($out, $trackconf);
+						fclose($out);
+						break;
 	}
 	
 }

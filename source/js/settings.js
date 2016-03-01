@@ -92,6 +92,27 @@ $(document).ready(function(){
 			addPoi({id: id, cameraid: cameraid, name: name, x: x, y: y, width: width, height: height});
 		}
 	});
+	
+	
+	$('#propagation-form').submit(function(e){
+		e.preventDefault();
+		$.ajax({
+			type: "POST",
+			url: "php/settings.php",
+			data: {
+				action: "update-propagation",
+				useMotion : $('#propagation-motion').is(':checked'),
+				usePeople : $('#propagation-people').is(':checked'),
+				useKalman : $('#propagation-kf').is(':checked')
+			},
+			success: function(response){
+				console.log('Propagation settings updated');
+				console.log(response);
+				$('#propagation-settings .alert').remove();
+				displayMessage($('#propagation-form').parent(), 'Tracking configuration updated correctly', 'success');
+			}
+		});	
+	});
 
 });
 
@@ -124,6 +145,10 @@ function init(){
 			getUsers();
 			getCameras();
 			getPoi();
+			
+			$('#propagation-motion').prop('checked', response.useMotion);
+			$('#propagation-people').prop('checked', response.usePeople);
+			$('#propagation-kf').prop('checked', response.useKalman);		
 		}
 	});	
 }

@@ -139,12 +139,12 @@
 						    <h3 class="panel-title">Propagation</h3>
 						  </div>
 						  <div class="panel-body">
-						  	<form id="db-form" class="form-horizontal">
+						  	<form id="propagation-form" class="form-horizontal">
 							  <div class="form-group">
 							    <label for="propagation-motion" class="col-sm-6 control-label">Use motion</label>
 							    <div class="col-sm-4">
 							      <div class="checkbox">
- 						 			<label><input type="checkbox" id="propagation-motion" value="" checked></label>
+ 						 			<label><input type="checkbox" id="propagation-motion" value=""></label>
     							  </div>
 							    </div>
 							  </div>
@@ -152,7 +152,7 @@
 							    <label for="propagation-people" class="col-sm-6 control-label">Use people detector</label>
 							    <div class="col-sm-4">
 							      <div class="checkbox">
- 						 			<label><input type="checkbox" id="propagation-people" value="" checked></label>
+ 						 			<label><input type="checkbox" id="propagation-people" value=""></label>
     							  </div>
 							    </div>
 							  </div>
@@ -160,7 +160,7 @@
 							    <label for="propagation-kf" class="col-sm-6 control-label">Use Kalman filter</label>
 							    <div class="col-sm-4">
 							      <div class="checkbox">
- 						 			<label><input type="checkbox" id="propagation-kf" value="" checked></label>
+ 						 			<label><input type="checkbox" id="propagation-kf" value=""></label>
     							  </div>
 							    </div>
 							  </div>
@@ -168,6 +168,7 @@
 							      <button type="submit" class="btn btn-primary">Save</button>
 							    </div>	
 							</form>
+							<div class="clearfix"></div>
 						  </div>
 						</div>
 				  </div>
