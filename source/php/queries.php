@@ -387,5 +387,9 @@ class Queries {
 	function getExportFramesPath(){
 		return "SELECT DISTINCT f.path FROM `".$this->tables->frames."` f LIMIT 100";
 	}
+	
+	function getTableSchema($table){
+		return "SHOW CREATE TABLE ".$table;
+	}
 }
 

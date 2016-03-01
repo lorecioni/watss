@@ -40,8 +40,9 @@ $(document).ready(function(){
 	$('#export_schema').click(function(e){
 		e.preventDefault();
 		$('#loadingDialog').modal();
+		var unchecked =  $('input[name="tables"]:not(:checked)').map(function() {return '&exclude[]=' + this.value;}).get().join("")
 		$.ajax({
-			url: "php/api.php?action=exportSchema",
+			url: "php/api.php?action=exportSchema" + unchecked,
 			method: 'get',
 			success: function(data){
 				$('#loadingDialog').modal('hide');

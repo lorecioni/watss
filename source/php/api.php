@@ -741,7 +741,72 @@
             case "exportSchema":
             	//Create a file pointer connected to the output stream
             	$output = fopen('output/schema.sql', 'w');
-            	fwrite($output, file_get_contents("../database/createSchema.sql"));
+            	$text = "-- Exported WATSS database --\n\n";
+            	 
+            	if(!isset($_REQUEST['exclude']) ||
+            			(isset($_REQUEST['exclude']) && !in_array("avatars", $_REQUEST['exclude']))){
+            		//Adding avatars data
+            		$result = mysql_query($QUERIES->getTableSchema('avatars'));
+            		while ($row = mysql_fetch_array($result)){
+            			$text .= $row[1].";\n\n";
+            		}
+            	}
+            	 
+            	if(!isset($_REQUEST['exclude']) ||
+            			(isset($_REQUEST['exclude']) && !in_array("cameras", $_REQUEST['exclude']))){
+            		//Adding cameras data
+            		$result = mysql_query($QUERIES->getTableSchema('cameras'));
+            		while ($row = mysql_fetch_array($result)){
+            			$text .= $row[1].";\n\n";
+            		}
+            	}
+            	 
+            	if(!isset($_REQUEST['exclude']) ||
+            			(isset($_REQUEST['exclude']) && !in_array("users", $_REQUEST['exclude']))){
+            		//Adding users data
+            		$result = mysql_query($QUERIES->getTableSchema('users'));
+            		while ($row = mysql_fetch_array($result)){
+            			$text .= $row[1].";\n\n";
+            		}
+            	}
+            	 
+            	if(!isset($_REQUEST['exclude']) ||
+            			(isset($_REQUEST['exclude']) && !in_array("poi", $_REQUEST['exclude']))){
+            		//Adding poi data
+            		$result = mysql_query($QUERIES->getTableSchema('poi'));
+            		while ($row = mysql_fetch_array($result)){
+            			$text .= $row[1].";\n\n";
+            		}
+            	}
+            	 
+            	if(!isset($_REQUEST['exclude']) ||
+            			(isset($_REQUEST['exclude']) && !in_array("groups", $_REQUEST['exclude']))){
+            		//Adding poi data
+            		$result = mysql_query($QUERIES->getTableSchema('groups'));
+            		while ($row = mysql_fetch_array($result)){
+            			$text .= $row[1].";\n\n";
+            		}
+            	}
+            	 
+            	if(!isset($_REQUEST['exclude']) ||
+            			(isset($_REQUEST['exclude']) && !in_array("frames", $_REQUEST['exclude']))){
+            		//Adding poi data
+            		$result = mysql_query($QUERIES->getTableSchema('frames'));
+            		while ($row = mysql_fetch_array($result)){
+            			$text .= $row[1].";\n\n";
+            		}
+            	}
+            	 
+            	if(!isset($_REQUEST['exclude']) ||
+            			(isset($_REQUEST['exclude']) && !in_array("people", $_REQUEST['exclude']))){
+            		//Adding poi data
+            		$result = mysql_query($QUERIES->getTableSchema('people'));
+            		while ($row = mysql_fetch_array($result)){
+            			$text .= $row[1].";\n\n";
+            		}
+            	}      	
+            	
+            	fwrite($output, $text);
             	fclose($output);
             	jecho('output/schema.sql');
             	break;
@@ -982,30 +1047,27 @@
             		$name = $_REQUEST['name'];
             		switch ($type){
             			case 'csv':
-            				$output = fopen($location, 'r');   				
             				header('Content-Type: text/csv; charset=utf-8');
             				header('Content-Disposition: attachment; filename='.$name);
-            				header("Content-Length: " . filesize($output));
-            				fclose($output);
+            				header("Content-Length: " . filesize($location));
+            				readfile($location);
             				break;
             				
             			case 'sql':
-            				$output = fopen($location, 'r');
             				header('Content-Type: text/sql; charset=utf-8');
             				header('Content-Disposition: attachment; filename='.$name);
-            				header("Content-Length: " . filesize($output));
-            				fclose($output);
+            				header("Content-Length: " . filesize($location));
+            				readfile($location);
             				break;
             				
             			case 'zip':
-            				$output = fopen($location, 'r');
             				header('Content-Type: application/zip');
             				header("Content-Disposition: attachment; filename='".$name."'");
-            				header('Content-Length: ' . filesize($output));
-            				header('Location: '.$location);
-            				fclose($output);
+            				header('Content-Length: ' . filesize($location));
+            				readfile($location);
             				break;
             		}
+               		break;
 	
 	}
 	

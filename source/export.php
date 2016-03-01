@@ -179,7 +179,7 @@
 								  </label>
 								</div>
 						  	<div class="col-sm-offset-2">
-								<a href="#" class="btn btn-default" id="export_schema">Export Schema</a><a href="#" class="btn btn-default" id="export_database"> Export SQL script</a>
+								<a href="#" class="btn btn-default" id="export_schema">Export Schema</a><a href="#" class="btn btn-default" id="export_database"> Export contents</a>
 							</div>
 						  </div>
 						</div>
