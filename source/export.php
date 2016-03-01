@@ -184,20 +184,28 @@
 						  </div>
 						</div>
 				  
-				  </div>		    
+				  </div>
+				  
+				  <div class="modal fade" id="loadingDialog" tabindex="-1" role="dialog" aria-labelledby="loadingDialogLabel" aria-hidden="true">
+					  <div class="modal-dialog">
+						<div class="modal-content">
+						  <div class="modal-header">
+							<button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+							<h4 class="modal-title" id="loadingDialogLabel" id="open-modal-loading">Processing</h4>
+						  </div>
+						  <div class="modal-body">
+								<div class="progress">
+									  <div class="progress-bar progress-bar-success progress-bar-striped active" role="progressbar" aria-valuenow="100" aria-valuemin="0" aria-valuemax="100" style="width: 100%">
+									    <span class="sr-only"></span>
+									  </div>
+									</div>
+						  </div>
+						</div>
+					  </div>
+					</div>		    
 		    </div>
 			</div>
 		</div>
-		<div class="modal hide" id="pleaseWaitDialog" data-backdrop="static" data-keyboard="false">
-	        <div class="modal-header">
-	            <h1>Processing...</h1>
-	        </div>
-	        <div class="modal-body">
-	            <div class="progress progress-striped active">
-	                <div class="bar" style="width: 100%;"></div>
-	            </div>
-	        </div>
-    </div>
 		</div>
 		<footer>
 			&copy; 2016, MICC University of Florence

@@ -1,29 +1,15 @@
 $(document).ready(function(){
-	
-	/*
-	var myApp;
-	myApp = myApp || (function () {
-	    var pleaseWaitDiv = $('<div class="modal hide" id="pleaseWaitDialog" data-backdrop="static" data-keyboard="false"><div class="modal-header"><h1>Processing...</h1></div><div class="modal-body"><div class="progress progress-striped active"><div class="bar" style="width: 100%;"></div></div></div></div>');
-	    return {
-	        showPleaseWait: function() {
-	            pleaseWaitDiv.modal();
-	        },
-	        hidePleaseWait: function () {
-	            pleaseWaitDiv.modal('hide');
-	        },
-
-	    };
-	})();*/
-	
+		
 	/** Exporting data **/
 	$('#export_data').click(function(e){
 		e.preventDefault();
+		$('#loadingDialog').modal();
 		var unchecked =  $('input[name="attributes"]:not(:checked)').map(function() {return '&exclude[]=' + this.value;}).get().join("");
 		$.ajax({
 			url: "php/api.php?action=exportAll&limit=" + $('input[name="frames"]:checked').val() + unchecked,
 			method: 'get',
 			success: function(data){
-				console.log(data);
+				$('#loadingDialog').modal('hide');
 				window.location.href = "php/api.php?action=download&type=zip&name=MuseumVisitors.zip&location=" + data; 
 			},
 			error: function(error){
@@ -35,11 +21,13 @@ $(document).ready(function(){
 	/** Exporting annotations as CSV file **/
 	$('#export_annotations').click(function(e){
 		e.preventDefault();
+		$('#loadingDialog').modal();
 		var unchecked =  $('input[name="attributes"]:not(:checked)').map(function() {return '&exclude[]=' + this.value;}).get().join("")
 		$.ajax({
 			url: "php/api.php?action=exportAnnotations" + unchecked,
 			method: 'get',
 			success: function(data){
+				$('#loadingDialog').modal('hide');
 				window.location.href = "php/api.php?action=download&type=csv&name=annotations.csv&location=" + data; 
 			},
 			error: function(error){
@@ -51,10 +39,12 @@ $(document).ready(function(){
 	/** Exporting database schema **/
 	$('#export_schema').click(function(e){
 		e.preventDefault();
+		$('#loadingDialog').modal();
 		$.ajax({
 			url: "php/api.php?action=exportSchema",
 			method: 'get',
 			success: function(data){
+				$('#loadingDialog').modal('hide');
 				window.location.href = "php/api.php?action=download&type=sql&name=schema.sql&location=" + data; 
 			},
 			error: function(error){
@@ -66,11 +56,13 @@ $(document).ready(function(){
 	/** Exporting database as SQL script **/
 	$('#export_database').click(function(e){
 		e.preventDefault();
+		$('#loadingDialog').modal();
 		var unchecked =  $('input[name="tables"]:not(:checked)').map(function() {return '&exclude[]=' + this.value;}).get().join("")
 		$.ajax({
 			url: "php/api.php?action=exportDatabase" + unchecked,
 			method: 'get',
 			success: function(data){
+				$('#loadingDialog').modal('hide');
 				window.location.href = "php/api.php?action=download&type=sql&name=database.sql&location=" + data; 
 			},
 			error: function(error){
