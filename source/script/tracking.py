@@ -4,36 +4,84 @@ import numpy as np
 import os
 import random
 import configparser
+from pickle import FRAME
 
 '''Pedestrian tracker configuration'''
-
 config = configparser.RawConfigParser()
-configPath = './tracKingconf.conf'
+configPath = './trackingconf.conf'
 config.read(configPath)
 section = 'options'
 
-#Relative path of frames
-FRAMES_PATH = config.get(section, 'FRAMES_PATH')
+try: 
+    FRAMES_PATH = config.get(section, 'FRAMES_PATH')
+except Exception:
+    FRAMES_PATH = '../frames/'
+
 #Tracking options
-USE_MOTION = config.getboolean(section, 'USE_MOTION')
-USE_PEDESTRIAN_DETECTOR = config.getboolean(section, 'USE_PEDESTRIAN_DETECTOR')
-USE_KALMAN_FILTER = config.getboolean(section, 'USE_KALMAN_FILTER')
+try: 
+    USE_MOTION = config.getboolean(section, 'USE_MOTION')
+except Exception:
+    USE_MOTION = True
+try: 
+    USE_PEDESTRIAN_DETECTOR = config.getboolean(section, 'USE_PEDESTRIAN_DETECTOR')
+except Exception:
+    USE_PEDESTRIAN_DETECTOR = True    
+try: 
+    USE_KALMAN_FILTER = config.getboolean(section, 'USE_KALMAN_FILTER')
+except Exception:
+    USE_KALMAN_FILTER = True      
+
 #Training size for MOG background substractor
-TRAIN_SIZE = config.getint(section, 'TRAIN_SIZE')
+try: 
+    TRAIN_SIZE = config.getint(section, 'TRAIN_SIZE')
+except Exception:
+    TRAIN_SIZE = 40
+    
 #Tolerance for considering two bb similar
-TOLERANCE = config.getfloat(section, 'TOLERANCE')
+try: 
+    TOLERANCE = config.getfloat(section, 'TOLERANCE')
+except Exception:
+    TOLERANCE = 1.5
+    
 #Padding for the current window
-DELTA = config.getint(section, 'DELTA')
+try: 
+    DELTA = config.getint(section, 'DELTA')
+except Exception:
+    DELTA = 1.5
+
 #Showing result frames
-DISPLAY_RESULT = config.getboolean(section, 'DISPLAY_RESULT')
-DISPLAY_TEXT = config.getboolean(section, 'DISPLAY_TEXT')
+try: 
+    DISPLAY_RESULT = config.getboolean(section, 'DISPLAY_RESULT')
+except Exception:
+    DISPLAY_RESULT = False    
+try: 
+    DISPLAY_TEXT = config.getboolean(section, 'DISPLAY_TEXT')
+except Exception:
+    DISPLAY_TEXT = False    
+
 #Minimum and maximum bounding box dimension
-MIN_BB_WIDTH = config.getint(section, 'MIN_BB_WIDTH')
-MIN_BB_HEIGHT = config.getint(section, 'MIN_BB_HEIGHT')
+try: 
+    MIN_BB_WIDTH = config.getint(section, 'MIN_BB_WIDTH')
+except Exception:
+    MIN_BB_WIDTH = 30
+try: 
+    MIN_BB_HEIGHT = config.getint(section, 'MIN_BB_HEIGHT')
+except Exception:
+    MIN_BB_HEIGHT = 50
+
 #HOG people detector configuration
-HOG_STRIDE = (config.getint(section, 'HOG_STRIDE'), config.getint(section, 'HOG_STRIDE'))
-HOG_PADDING = (config.getint(section, 'HOG_PADDING'), config.getint(section, 'HOG_STRIDE') * 2)
-HOG_SCALE = config.getfloat(section, 'HOG_SCALE')
+try: 
+    HOG_STRIDE = config.getint(section, 'HOG_STRIDE')
+except Exception:
+    HOG_STRIDE = 8
+try: 
+    HOG_PADDING = config.getint(section, 'HOG_PADDING')
+except Exception:
+    HOG_PADDING = 8
+try: 
+    HOG_SCALE = config.getfloat(section, 'HOG_SCALE')
+except Exception:
+    HOG_SCALE = 1.05
 
 FONT = cv2.FONT_HERSHEY_SIMPLEX
 FONT_SIZE = 0.5
@@ -213,7 +261,7 @@ class PedestrianTracking:
     
     '''Returns a list of detections of people'''
     def detectPeople(self, frame):
-        found, w = self.hog.detectMultiScale(frame, winStride=HOG_STRIDE, padding=HOG_PADDING, scale=HOG_SCALE)
+        found, w = self.hog.detectMultiScale(frame, winStride=(HOG_STRIDE, HOG_STRIDE), padding=(HOG_PADDING, HOG_PADDING), scale=HOG_SCALE)
         filtered = []
         for ri, r in enumerate(found):
             for qi, q in enumerate(found):
