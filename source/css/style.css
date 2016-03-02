@@ -266,10 +266,12 @@ div.dataTables_info {
     max-height: 182px;
     overflow-y: scroll;
     width: 100%;
+    min-height: 182px;
 }
 
 .scrollable-container {
     margin-top: 14px;
+    
 }
 
 .list-group span.badge {
@@ -345,4 +347,8 @@ button#add-poi-submit {
 
 a#export_schema {
     margin-right: 5px;
+}
+
+ul.innerlegend {
+    margin-top: 30px;
 }

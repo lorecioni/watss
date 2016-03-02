@@ -840,7 +840,7 @@
             	if(!isset($_REQUEST['exclude']) ||
             			(isset($_REQUEST['exclude']) && !in_array("cameras", $_REQUEST['exclude']))){
             		//Adding cameras data
-            		$result = mysql_query($QUERIES->getExportAvatars());
+            		$result = mysql_query($QUERIES->getExportCameras());
             		if(mysql_num_rows ($result) > 0){
             			$text .= "\n\nINSERT INTO cameras VALUES ";
             		}
