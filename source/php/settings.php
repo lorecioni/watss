@@ -312,11 +312,13 @@ if(isset($_REQUEST['action'])){
 					jecho($output);
 					break;	
 
-					
+					/**
+					 * Update propagation settings
+					 */
 					case 'update-propagation':
-						$useMotion = $_REQUEST['useMotion'] ? "True" : "False";
-						$usePeople = $_REQUEST['usePeople'] ? "True" : "False";
-						$useKalman = $_REQUEST['useKalman'] ? "True" : "False";
+						$useMotion = $_REQUEST['useMotion'] == 1 ? "True" : "False";
+						$usePeople = $_REQUEST['usePeople'] == 1 ? "True" : "False";
+						$useKalman = $_REQUEST['useKalman'] == 1 ? "True" : "False";
 						
 						$trackconf = "";
 						$trackingconf = file_get_contents('../script/trackingconf.conf');
@@ -332,10 +334,10 @@ if(isset($_REQUEST['action'])){
 							} else if(strcmp($key, "USE_KALMAN_FILTER") == 0){
 								$trackconf .= "USE_KALMAN_FILTER = ".$useKalman."\n";
 							} else {
-								$trackconf .= $conf."\n";
+								if($conf != "")	
+									$trackconf .= $conf."\n";
 							}
 						}
-						jecho($trackconf);
 						$out = fopen("../script/trackingconf.conf", "w");
 						fwrite($out, $trackconf);
 						fclose($out);

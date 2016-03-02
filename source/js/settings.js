@@ -101,13 +101,12 @@ $(document).ready(function(){
 			url: "php/settings.php",
 			data: {
 				action: "update-propagation",
-				useMotion : $('#propagation-motion').is(':checked'),
-				usePeople : $('#propagation-people').is(':checked'),
-				useKalman : $('#propagation-kf').is(':checked')
+				useMotion : $('#propagation-motion').is(':checked') ? 1 : 0,
+				usePeople : $('#propagation-people').is(':checked') ? 1 : 0,
+				useKalman : $('#propagation-kf').is(':checked') ? 1 : 0
 			},
 			success: function(response){
 				console.log('Propagation settings updated');
-				console.log(response);
 				$('#propagation-settings .alert').remove();
 				displayMessage($('#propagation-form').parent(), 'Tracking configuration updated correctly', 'success');
 			}
