@@ -4,7 +4,6 @@ import numpy as np
 import os
 import random
 import configparser
-from pickle import FRAME
 
 '''Pedestrian tracker configuration'''
 config = configparser.RawConfigParser()

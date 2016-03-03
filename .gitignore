@@ -37,3 +37,5 @@ doc/credenziali.txt
 source/php/tmp/*
 
 source/php/output/*
+
+source/img/validation/*
