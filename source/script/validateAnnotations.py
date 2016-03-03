@@ -9,7 +9,6 @@ configPath = './trackingconf.conf'
 config.read(configPath)
 section = 'options'
 
-
 try: 
     FRAMES_PATH = config.get(section, 'FRAMES_PATH')
 except Exception:
@@ -27,7 +26,7 @@ outputDirectory = '../img/validation'
 
 def validateAnnotations(camera): 
     path = os.path.abspath(FRAMES_PATH)
-    #Retrieving frames list
+    #Retrieving frames list 
     imagesPath = os.path.join(path, str(camera) + '/')
     images = [os.path.join(imagesPath, f) 
         for f in os.listdir(os.path.abspath(imagesPath)) 

@@ -992,7 +992,7 @@
 				    while ($row = mysql_fetch_array($result)){
 				    	$path = "../frames/".$row[0];
 				    	$filename = $row[0];	
-				    	if(file_exists($path)){
+				    	if(file_exists($path)){				    		
 				    		if(!copy($path, $tmpdir.$filename)){
 				    			die('Error copying files');
 				    		}
