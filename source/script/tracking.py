@@ -154,8 +154,21 @@ class PedestrianTracking:
     
                 #Mask preprocessing, removing noise
                 _, fgmask = cv2.threshold(fgmask, 200, 255, cv2.THRESH_BINARY) 
-                fgmask = cv2.dilate(fgmask, cv2.getStructuringElement(cv2.MORPH_ELLIPSE, (8,8)))
-                fgmask = cv2.morphologyEx(fgmask, cv2.MORPH_OPEN, cv2.getStructuringElement(cv2.MORPH_ELLIPSE, (15,20)))
+                cv2.imshow('img', fgmask)
+                cv2.waitKey(0)
+                fgmask = cv2.morphologyEx(fgmask, cv2.MORPH_OPEN, cv2.getStructuringElement(cv2.MORPH_ELLIPSE, (2,2)))
+                cv2.imshow('img', fgmask)
+                cv2.waitKey(0)
+                fgmask = cv2.dilate(fgmask, cv2.getStructuringElement(cv2.MORPH_ELLIPSE, (15,20)))
+                
+                cv2.imshow('img', fgmask)
+                cv2.waitKey(0)
+                fgmask = cv2.morphologyEx(fgmask, cv2.MORPH_OPEN, cv2.getStructuringElement(cv2.MORPH_ELLIPSE, (10,10)))
+               # fgmask = cv2.morphologyEx(fgmask, cv2.MORPH_CLOSE, cv2.getStructuringElement(cv2.MORPH_ELLIPSE, (8,8)))
+                
+                cv2.imshow('img', fgmask)
+                cv2.waitKey(0)
+                
                 image, contours, hierarchy = cv2.findContours(fgmask.copy(),cv2.RETR_TREE,cv2.CHAIN_APPROX_SIMPLE)            
             
             (x, y, w, h) = self.track_window
