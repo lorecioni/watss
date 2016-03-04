@@ -4,6 +4,11 @@
 		header("Location: setup.php");
 		exit;
 	}
+	//Checking if user is logged in
+	session_start();
+	if(!isset($_SESSION["user"])){
+		header("Location: gt-making/gt-making.php");
+	}
 ?>
 <!DOCTYPE html>
 <html>
