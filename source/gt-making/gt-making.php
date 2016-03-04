@@ -249,6 +249,7 @@
 					</div>
 			  	</div>
 			  <div class="modal-footer">
+			    <button type="button" class="btn btn-primary" data-dismiss="modal" id="close-login">Close</button>	
 				<button type="button" class="btn btn-primary" data-dismiss="modal" id="check-info">Send</button>					
 			  </div>
 			</div>

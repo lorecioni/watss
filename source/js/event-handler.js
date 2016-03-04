@@ -197,6 +197,10 @@ $("#checkInfoModal").on('shown.bs.modal',function(){
 	$("#username").focus();
 });
 
+$('#checkInfoModal #close-login').on('click', function(){
+	window.location = '../';
+})
+
 
 /**
  * Person in table selected, selects its bounding box in frame
