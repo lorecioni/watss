@@ -41,12 +41,17 @@ try:
     TOLERANCE = config.getfloat(section, 'TOLERANCE')
 except Exception:
     TOLERANCE = 1.5
+
+try: 
+    BOUNDING_BOX_TOLERANCE = config.getfloat(section, 'BOUNDING_BOX_TOLERANCE')
+except Exception:
+    BOUNDING_BOX_TOLERANCE = 0.5
     
 #Padding for the current window
 try: 
-    DELTA = config.getint(section, 'DELTA')
+    WINDOW_OFFSET = config.getint(section, 'WINDOW_OFFSET')
 except Exception:
-    DELTA = 1.5
+    WINDOW_OFFSET = 150
 
 #Showing result frames
 try: 
@@ -56,7 +61,7 @@ except Exception:
 try: 
     DISPLAY_TEXT = config.getboolean(section, 'DISPLAY_TEXT')
 except Exception:
-    DISPLAY_TEXT = False    
+    DISPLAY_TEXT = False  
 
 #Minimum and maximum bounding box dimension
 try: 
@@ -177,6 +182,9 @@ class PedestrianTracking:
                 
             best_people = None
             best_contour = None
+            
+            motion_score = 0
+            people_detector_score = 0
 
             if USE_PEDESTRIAN_DETECTOR:
                 #Detect people on the current window
@@ -196,7 +204,8 @@ class PedestrianTracking:
                 
                 if DISPLAY_RESULT:
                     if best_people != None:
-                        print('Best person detected: ' + str(best_people[1]))
+                        #print('Best person detected: ' + str(best_people[1]))
+                        people_detector_score = best_people[1]
                         (x, y, w, h) = best_people[0]
                         cv2.rectangle(frame, (x, y), (x + w, y + h), (255, 0, 0), 2)                            
             
@@ -214,7 +223,8 @@ class PedestrianTracking:
                 
                 if DISPLAY_RESULT:
                     if best_contour != None:
-                        print('Best contour detected: ' + str(best_contour[1]))
+                        #print('Best contour detected: ' + str(best_contour[1]))
+                        motion_score = best_contour[1]
                         (x, y, w, h) = best_contour[0]
                         cv2.rectangle(frame, (x, y), (x + w, y + h), (0, 0, 255), 2)
                             
@@ -258,10 +268,14 @@ class PedestrianTracking:
             out.append(obj)
             
             if DISPLAY_TEXT:
+                using_kalman = ''
+                if (motion_score == 0 and people_detector_score == 0):
+                    using_kalman = 'ACTIVE'
+    
                 cv2.putText(frame, 'previous', (LEGEND_POSITION_X, LEGEND_POSITION_Y), FONT, FONT_SIZE, (0, 255, 0), 1)  
-                cv2.putText(frame, 'people detector', (LEGEND_POSITION_X, LEGEND_POSITION_Y + 30), FONT, FONT_SIZE, (255, 0, 0), 1)
-                cv2.putText(frame, 'kalman filter', (LEGEND_POSITION_X, LEGEND_POSITION_Y + 90), FONT, FONT_SIZE, (0, 153, 255), 1)
-                cv2.putText(frame, 'motion', (LEGEND_POSITION_X, LEGEND_POSITION_Y + 60), FONT, FONT_SIZE, (0, 0, 255), 1)
+                cv2.putText(frame, 'people detector  {0:.2f}'.format(people_detector_score), (LEGEND_POSITION_X, LEGEND_POSITION_Y + 30), FONT, FONT_SIZE, (255, 0, 0), 1)
+                cv2.putText(frame, 'kalman filter ' + using_kalman , (LEGEND_POSITION_X, LEGEND_POSITION_Y + 90), FONT, FONT_SIZE, (0, 153, 255), 1)
+                cv2.putText(frame, 'motion {0:.2f}'.format(motion_score), (LEGEND_POSITION_X, LEGEND_POSITION_Y + 60), FONT, FONT_SIZE, (0, 0, 255), 1)
             
             if DISPLAY_RESULT:
                 #cv2.rectangle(frame, (x, y), (x + w, y + h), (255, 0, 0), 2)             
@@ -318,10 +332,16 @@ class PedestrianTracking:
         #Intersect area
         w = abs(w1 - abs(x1 - x2))
         h = abs(h1 - abs(h1 - h2))
+        
         intersectArea = w * h
         unionArea = (w1 * h1) + (w2 * h2) - intersectArea
+        score = intersectArea/unionArea
+        
+        if (score < BOUNDING_BOX_TOLERANCE):
+            return (False, 0)
+        else:
         #return ((not separate) and compatible, (w * h/(w1 * h1)))
-        return ((not separate) and compatible, (intersectArea/unionArea))
+            return ((not separate) and compatible, score)
     
     '''Try to ajdust bounding box dimensione based on previous detection'''
     def adjustBoundingBox(self, bb):
@@ -337,20 +357,20 @@ class PedestrianTracking:
     '''Generating current window (bounding box and padding)'''
     def getCurrentWindow(self, maxw, maxh):
         (x, y, w, h) = self.track_window
-        if x >= DELTA:
-            x = x - DELTA
+        if x >= WINDOW_OFFSET:
+            x = x - WINDOW_OFFSET
         else:
             x = 0
-        if y >= DELTA:
-            y = y - DELTA
+        if y >= WINDOW_OFFSET:
+            y = y - WINDOW_OFFSET
         else:
             y = 0
-        if x + w + DELTA*2 < maxw:
-            w = w + DELTA*2
+        if x + w + WINDOW_OFFSET*2 < maxw:
+            w = w + WINDOW_OFFSET*2
         else:
             w = w + abs(maxw - (x + w))
-        if y + h + DELTA*2 < maxh:
-            h = h + DELTA*2    
+        if y + h + WINDOW_OFFSET*2 < maxh:
+            h = h + WINDOW_OFFSET*2    
         else:
             h = h + abs(maxh - (y + h))           
         self.window = (x, y, w, h)
@@ -362,8 +382,8 @@ class PedestrianTracking:
             frame = cv2.imread(self.previousImages[i])
             self.bgs.apply(frame)
         for i in range(TRAIN_SIZE):
-            id = random.choice(range(len(self.images)));
-            frame = cv2.imread(self.images[id])
+           # id = random.choice(range(len(self.images)));
+            frame = cv2.imread(self.images[i])
             self.bgs.apply(frame)
         for i in range(len(self.nextImages)):
             frame = cv2.imread(self.nextImages[i])
