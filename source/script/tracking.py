@@ -83,7 +83,10 @@ except Exception:
     HOG_SCALE = 1.05
 
 FONT = cv2.FONT_HERSHEY_SIMPLEX
-FONT_SIZE = 0.5
+FONT_SIZE = 1
+
+LEGEND_POSITION_X = 50
+LEGEND_POSITION_Y = 50
 
 '''Pedestrian tracking class'''
 class PedestrianTracking:
@@ -154,30 +157,23 @@ class PedestrianTracking:
     
                 #Mask preprocessing, removing noise
                 _, fgmask = cv2.threshold(fgmask, 200, 255, cv2.THRESH_BINARY) 
-                cv2.imshow('img', fgmask)
-                cv2.waitKey(0)
-                fgmask = cv2.morphologyEx(fgmask, cv2.MORPH_OPEN, cv2.getStructuringElement(cv2.MORPH_ELLIPSE, (2,2)))
-                cv2.imshow('img', fgmask)
-                cv2.waitKey(0)
-                fgmask = cv2.dilate(fgmask, cv2.getStructuringElement(cv2.MORPH_ELLIPSE, (15,20)))
                 
-                cv2.imshow('img', fgmask)
-                cv2.waitKey(0)
+                #cv2.imshow('img', fgmask)
+                #cv2.waitKey(0)
+                
+                fgmask = cv2.morphologyEx(fgmask, cv2.MORPH_OPEN, cv2.getStructuringElement(cv2.MORPH_ELLIPSE, (2,2)))
+                fgmask = cv2.dilate(fgmask, cv2.getStructuringElement(cv2.MORPH_ELLIPSE, (15,20)))
                 fgmask = cv2.morphologyEx(fgmask, cv2.MORPH_OPEN, cv2.getStructuringElement(cv2.MORPH_ELLIPSE, (10,10)))
                # fgmask = cv2.morphologyEx(fgmask, cv2.MORPH_CLOSE, cv2.getStructuringElement(cv2.MORPH_ELLIPSE, (8,8)))
-                
-                cv2.imshow('img', fgmask)
-                cv2.waitKey(0)
-                
+                #cv2.imshow('img', fgmask)
+                #cv2.waitKey(0)
                 image, contours, hierarchy = cv2.findContours(fgmask.copy(),cv2.RETR_TREE,cv2.CHAIN_APPROX_SIMPLE)            
             
             (x, y, w, h) = self.track_window
             (wx, wy, ww, wh) = self.window
             
             if DISPLAY_RESULT:            
-                cv2.rectangle(frame, (x, y), (x + w, y + h), (0, 255, 0), 2)
-                if DISPLAY_TEXT:
-                    cv2.putText(frame, 'previous', (x + 5, y + 15), FONT, FONT_SIZE, (0, 255, 0), 1)
+                cv2.rectangle(frame, (x, y), (x + w, y + h), (0, 255, 0), 2)                    
                 
             best_people = None
             best_contour = None
@@ -202,9 +198,7 @@ class PedestrianTracking:
                     if best_people != None:
                         print('Best person detected: ' + str(best_people[1]))
                         (x, y, w, h) = best_people[0]
-                        cv2.rectangle(frame, (x, y), (x + w, y + h), (255, 0, 0), 2)
-                        if DISPLAY_TEXT:
-                            cv2.putText(frame, 'person', (x + 5, y + 15), FONT, FONT_SIZE, (255, 0, 0), 1)
+                        cv2.rectangle(frame, (x, y), (x + w, y + h), (255, 0, 0), 2)                            
             
             if USE_MOTION:
                 for c in contours:
@@ -223,8 +217,7 @@ class PedestrianTracking:
                         print('Best contour detected: ' + str(best_contour[1]))
                         (x, y, w, h) = best_contour[0]
                         cv2.rectangle(frame, (x, y), (x + w, y + h), (0, 0, 255), 2)
-                        if DISPLAY_TEXT:
-                            cv2.putText(frame, 'contour', (x + 5, y + 15), FONT, FONT_SIZE, (0, 0, 255), 1)
+                            
             
             result = self.track_window
             found = False
@@ -250,7 +243,7 @@ class PedestrianTracking:
                     self.measurement = np.array([[np.float32(x + w/2)],[np.float32(y + h/2)]])
                     self.kalman.correct(self.measurement)
                     if DISPLAY_RESULT:
-                        cv2.circle(frame, (int (prediction[0]), int(prediction[1])), 4, (0, 255, 0), 4)                    
+                        cv2.circle(frame, (int (prediction[0]), int(prediction[1])), 4, (0, 153, 255), 4)                    
                 self.track_window = result
             else:
                 if USE_KALMAN_FILTER:
@@ -258,16 +251,25 @@ class PedestrianTracking:
                     self.kalman.statePost = prediction
                     self.track_window = (int(prediction[0] - w/2), int(prediction[1] - h/2), w, h)
                     if DISPLAY_RESULT:
-                        cv2.circle(frame, (int (prediction[0]), int(prediction[1])), 4, (0, 255, 0), 4)               
+                        cv2.circle(frame, (int (prediction[0]), int(prediction[1])), 4, (0, 153, 255), 4)               
                        
             (x, y, w, h) = self.track_window
             obj = {'x' : int(x), 'y' : int(y), 'width' : int(w), 'height': int(h)}
             out.append(obj)
             
-            if(DISPLAY_RESULT):
+            if DISPLAY_TEXT:
+                cv2.putText(frame, 'previous', (LEGEND_POSITION_X, LEGEND_POSITION_Y), FONT, FONT_SIZE, (0, 255, 0), 1)  
+                cv2.putText(frame, 'people detector', (LEGEND_POSITION_X, LEGEND_POSITION_Y + 30), FONT, FONT_SIZE, (255, 0, 0), 1)
+                cv2.putText(frame, 'kalman filter', (LEGEND_POSITION_X, LEGEND_POSITION_Y + 90), FONT, FONT_SIZE, (0, 153, 255), 1)
+                cv2.putText(frame, 'motion', (LEGEND_POSITION_X, LEGEND_POSITION_Y + 60), FONT, FONT_SIZE, (0, 0, 255), 1)
+            
+            if DISPLAY_RESULT:
                 #cv2.rectangle(frame, (x, y), (x + w, y + h), (255, 0, 0), 2)             
                 cv2.imshow('img', frame)    
-                cv2.waitKey(0)            
+                cv2.waitKey(0)   
+                
+
+                     
             
         return out
     
@@ -303,7 +305,8 @@ class PedestrianTracking:
     '''Returning True if two bounding boxes intersect and evaluating score (based on intersect area)'''
     def boundingBoxIntersect(self, frame, r1, r2):
         (x1, y1, w1, h1) = r1
-        (x2, y2, w2, h2) = r2       
+        (x2, y2, w2, h2) = r2
+        
         if w2 < MIN_BB_WIDTH or h2 < MIN_BB_HEIGHT:
             return (False, 0)
         separate = (x1 + w1 < x2 or
@@ -311,12 +314,14 @@ class PedestrianTracking:
             y1 > y2 + h2 or
             y1 + h1 < y2)
                 
-        print(abs((w1*h1)/(w2*h2)))
         compatible = (abs((w1*h1)/(w2*h2)) < TOLERANCE)
         #Intersect area
         w = abs(w1 - abs(x1 - x2))
         h = abs(h1 - abs(h1 - h2))
-        return ((not separate) and compatible, (w * h/(w1 * h1)))
+        intersectArea = w * h
+        unionArea = (w1 * h1) + (w2 * h2) - intersectArea
+        #return ((not separate) and compatible, (w * h/(w1 * h1)))
+        return ((not separate) and compatible, (intersectArea/unionArea))
     
     '''Try to ajdust bounding box dimensione based on previous detection'''
     def adjustBoundingBox(self, bb):
