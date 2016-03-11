@@ -123,15 +123,18 @@ class PedestrianTracking:
         self.hog.setSVMDetector(cv2.HOGDescriptor_getDefaultPeopleDetector())
 
         #Set up the Kalman Filter
-        self.kalman = cv2.KalmanFilter(4, 2, 0)
-        self.kalman.measurementMatrix = np.array([[1,0,0,0],[0,1,0,0]],np.float32)
-        self.kalman.transitionMatrix = np.array([[1,0,1,0],[0,1,0,1],[0,0,1,0],[0,0,0,1]],np.float32)
-        self.kalman.processNoiseCov = np.array([[1e-2,0,0,0],[0,1e-2,0,0],[0,0,20,0],[0,0,0,20]],np.float32)
+        self.kalman = cv2.KalmanFilter(5, 3, 0)
+        
+        #State: [x, y, v_x, v_y, ratio]
+        #Measurement: [x, y, ratio]
+        self.kalman.measurementMatrix = np.array([[1,0,0,0,0],[0,1,0,0,0],[0,0,0,0,0]],np.float32)
+        self.kalman.transitionMatrix = np.array([[1,0,1,0,0],[0,1,0,1,0],[0,0,1,0,0],[0,0,0,1,0],[0,0,0,0,1]],np.float32)
+        self.kalman.processNoiseCov = np.array([[1e-2,0,0,0,0],[0,1e-2,0,0,0],[0,0,20,0,0],[0,0,0,20,0],[0,0,0,0,20]],np.float32)
         self.kalman.measurementNoiseCov = self.kalman.measurementNoiseCov * 2
-        self.kalman.errorCovPre = np.identity(4, np.float32) 
+        self.kalman.errorCovPre = np.identity(5, np.float32) 
 
-        self.prediction = np.zeros((2,1), np.float32)
-        self.measurement = np.zeros((2,1), np.float32)
+        self.prediction = np.zeros((3,1), np.float32)
+        self.measurement = np.zeros((3,1), np.float32)
 
         #Elaborating previous frames (generating Kalman history)
         for k in range(len(self.previousImages)):
@@ -141,9 +144,9 @@ class PedestrianTracking:
             x, y , w, h = self.track_window 
             #Adding previous state to the kalman filter
             if k == 0:
-                self.kalman.statePre = np.array([[np.float32(x + w/2)], [np.float32(y + h/2)], [0.], [0.]], np.float32)     
+                self.kalman.statePre = np.array([[np.float32(x + w/2)], [np.float32(y + h/2)], [0.], [0.], [np.float32(64/128)]], np.float32)     
             #else:    
-            self.measurement = np.array([[np.float32(x + w/2)], [np.float32(y + h/2)]])
+            self.measurement = np.array([[np.float32(x + w/2)], [np.float32(y + h/2)], [np.float32(w/h)]])
             self.kalman.correct(self.measurement)
 
     '''Predicting person position based on motion, people detection and Kalman filter'''
@@ -250,10 +253,11 @@ class PedestrianTracking:
             if(found):
                 #Using people detector/motion   
                 if USE_KALMAN_FILTER:      
-                    self.measurement = np.array([[np.float32(x + w/2)],[np.float32(y + h/2)]])
+                    self.measurement = np.array([[np.float32(x + w/2)],[np.float32(y + h/2)], [np.float32(w/h)]])
                     self.kalman.correct(self.measurement)
                     if DISPLAY_RESULT:
-                        cv2.circle(frame, (int (prediction[0]), int(prediction[1])), 4, (0, 153, 255), 4)                    
+                        cv2.circle(frame, (int (prediction[0]), int(prediction[1])), 4, (0, 153, 255), 4)
+                        print (prediction[2])
                 self.track_window = result
             else:
                 if USE_KALMAN_FILTER:
@@ -261,7 +265,8 @@ class PedestrianTracking:
                     self.kalman.statePost = prediction
                     self.track_window = (int(prediction[0] - w/2), int(prediction[1] - h/2), w, h)
                     if DISPLAY_RESULT:
-                        cv2.circle(frame, (int (prediction[0]), int(prediction[1])), 4, (0, 153, 255), 4)               
+                        cv2.circle(frame, (int (prediction[0]), int(prediction[1])), 4, (0, 153, 255), 4)
+                        print (prediction[2])            
                        
             (x, y, w, h) = self.track_window
             obj = {'x' : int(x), 'y' : int(y), 'width' : int(w), 'height': int(h)}

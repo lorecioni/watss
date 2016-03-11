@@ -39,3 +39,7 @@ source/php/tmp/*
 source/php/output/*
 
 source/img/validation/*
+
+wrapper/OpenCV-FileStorage/.cproject
+wrapper/OpenCV-FileStorage/Debug/*
+
