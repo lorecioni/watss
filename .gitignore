@@ -42,4 +42,10 @@ source/img/validation/*
 
 wrapper/OpenCV-FileStorage/.cproject
 wrapper/OpenCV-FileStorage/Debug/*
+wrapper/OpenCV-FileStorage/Test/*
+wrapper/OpenCV-FileStorage/Release/*
+wrapper/BackgroundModelSerializer/Release/*
+wrapper/BackgroundModelSerializer/Debug/*
+wrapper/BackgroundModelSerializer/.cproject
 
+wrapper/OpenCV-FileStorage/test.jpg

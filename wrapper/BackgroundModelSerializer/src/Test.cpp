@@ -14,7 +14,7 @@ using namespace std;
 
 int main() {
 
-	cout << "BackgroundModel Serializer 1.0" <<endl;
+	cout << "ciao" <<endl;
 	Ptr<BackgroundSubtractor> mog2 = createBackgroundSubtractorMOG2();
 
 	BackgroundModelSerializer* bms = new BackgroundModelSerializer(mog2, "test");
@@ -22,8 +22,10 @@ int main() {
 	Mat output;
 
 	mog2->apply(frame, output);
-	bms->train("/Applications/MAMP/htdocs/watss/source/frames/1/", 20);
-	bms->serialize();
+	bms->train("/Applications/MAMP/htdocs/watss/source/frames/1/", 200);
+	//bms->serialize();
+
+
 
 	return 0;
 }
