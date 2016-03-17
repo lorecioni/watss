@@ -129,7 +129,7 @@ class PedestrianTracking:
         #Measurement: [x, y, ratio]
         self.kalman.measurementMatrix = np.array([[1,0,0,0,0],[0,1,0,0,0],[0,0,0,0,0]],np.float32)
         self.kalman.transitionMatrix = np.array([[1,0,1,0,0],[0,1,0,1,0],[0,0,1,0,0],[0,0,0,1,0],[0,0,0,0,1]],np.float32)
-        self.kalman.processNoiseCov = np.array([[1e-2,0,0,0,0],[0,1e-2,0,0,0],[0,0,20,0,0],[0,0,0,20,0],[0,0,0,0,20]],np.float32)
+        self.kalman.processNoiseCov = np.array([[1e-2,0,0,0,0],[0,1e-2,0,0,0],[0,0,20,0,0],[0,0,0,20,0],[0,0,0,0,1e-2]],np.float32)
         self.kalman.measurementNoiseCov = self.kalman.measurementNoiseCov * 2
         self.kalman.errorCovPre = np.identity(5, np.float32) 
 

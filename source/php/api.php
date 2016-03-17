@@ -951,6 +951,7 @@
             	 * Exporting all (annotations and frames)
             	 */
             	case "exportAll":
+            		ini_set('max_execution_time', 300);
 				    
             		$tmpdir = './output/tmp/';
             		if(is_dir($tmpdir)){

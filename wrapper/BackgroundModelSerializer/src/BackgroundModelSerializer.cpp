@@ -47,6 +47,20 @@ void BackgroundModelSerializer::train(string imagesPath, int trainSize){
 }
 
 void BackgroundModelSerializer::load(){
+	FileStorage fs("test.yml", FileStorage::READ);
+	this->bgs = createBackgroundSubtractorMOG2();
+	this->bgs.dynamicCast<cv::BackgroundSubtractorMOG2>()->setHistory((int) fs["history"]);
+	this->bgs.dynamicCast<cv::BackgroundSubtractorMOG2>()->setNMixtures((int) fs["nmixtures"]);
+	this->bgs.dynamicCast<cv::BackgroundSubtractorMOG2>()->setBackgroundRatio((double) fs["backgroundRatio"]);
+	this->bgs.dynamicCast<cv::BackgroundSubtractorMOG2>()->setVarThreshold((double) fs["varThreshold"]);
+	this->bgs.dynamicCast<cv::BackgroundSubtractorMOG2>()->setVarThresholdGen((double) fs["varThresholdGen"]);
+	this->bgs.dynamicCast<cv::BackgroundSubtractorMOG2>()->setVarInit((double) fs["varInit"]);
+	this->bgs.dynamicCast<cv::BackgroundSubtractorMOG2>()->setVarMin((double) fs["varMin"]);
+	this->bgs.dynamicCast<cv::BackgroundSubtractorMOG2>()->setVarMax((double) fs["varMax"]);
+	this->bgs.dynamicCast<cv::BackgroundSubtractorMOG2>()->setComplexityReductionThreshold((double) fs["complexityReductionThreshold"]);
+	this->bgs.dynamicCast<cv::BackgroundSubtractorMOG2>()->setShadowThreshold((double) fs["shadowThreshold"]);
+
+	cout << "Load finished" << endl;
 }
 
 void BackgroundModelSerializer::serialize(){

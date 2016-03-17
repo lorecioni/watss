@@ -14,19 +14,12 @@ using namespace std;
 
 int main() {
 
-	cout << "ciao" <<endl;
+	cout << "Background Model Serializer" <<endl;
 	Ptr<BackgroundSubtractor> mog2 = createBackgroundSubtractorMOG2();
 
 	BackgroundModelSerializer* bms = new BackgroundModelSerializer(mog2, "test");
-	Mat frame = imread("/Applications/MAMP/htdocs/watss/wrapper/OpenCV-FileStorage/test.jpg");
-	Mat output;
-
-	mog2->apply(frame, output);
 	bms->train("/Applications/MAMP/htdocs/watss/source/frames/1/", 200);
 	//bms->serialize();
-
-
-
 	return 0;
 }
 
