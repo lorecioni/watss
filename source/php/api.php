@@ -1090,15 +1090,12 @@
             						$output->intrinsic = $row[0];
             						$output->intrinsic = trim($output->intrinsic);
             						$output->intrinsic = preg_replace('~[[:cntrl:]]~', '', $output->intrinsic);
-            						$output->intrinsic = preg_replace('~[.[:cntrl:]]~', '', $output->intrinsic);
             						$output->rotation = $row[1];
-            						$output->rotation = trim($output->intrinsic);
+            						$output->rotation = trim($output->rotation);
             						$output->rotation = preg_replace('~[[:cntrl:]]~', '', $output->rotation);
-            						$output->rotation = preg_replace('~[.[:cntrl:]]~', '', $output->rotation);
             						$output->translation = $row[2];
             						$output->translation = trim($output->translation);
             						$output->translation = preg_replace('~[[:cntrl:]]~', '', $output->translation);
-            						$output->translation = preg_replace('~[.[:cntrl:]]~', '', $output->translation);
             					}
             				}	
             			}

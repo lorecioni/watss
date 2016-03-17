@@ -27,6 +27,8 @@ def calibrate(cam):
     print MatCam
     
     RotTrans = np.concatenate((MatRot[0:3,0:2], VectTrans), axis=1)
+    print(RotTrans)
+    
     
     Hw = MatCam * RotTrans
     print(Hw)    

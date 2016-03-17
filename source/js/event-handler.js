@@ -358,11 +358,16 @@ function checkLogin(){
 					url: "../php/api.php",
 					data: {action:"get-calibration"},
 					success: function(response){
+						console.log(response)
 						cameraCalibration["active"] = response.calibration;
 						cameraCalibration["intrinsic"] = math.eval(response.intrinsic);
 						cameraCalibration["rotation"] = math.eval(response.rotation);
 						cameraCalibration["translation"] = math.eval(response.translation);
-						
+						P = math.concat(math.subset(cameraCalibration.rotation, math.index([0, 1, 2],[0,1])), 
+								cameraCalibration.translation, 1)
+						Hw = math.multiply(cameraCalibration.intrinsic, P);
+						cameraCalibration['HI2W'] = math.inv(Hw);
+						cameraCalibration['HW2I'] = math.transpose(math.inv(cameraCalibration.HI2W));
 						console.log(cameraCalibration)
 					}
 				});
