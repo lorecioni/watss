@@ -25,6 +25,8 @@ function loadCameraCalibration(){
 				cameraCalibration['v'] = computeV();
 				
 				computeW();
+			} else {
+				console.log('Camera calibration not set');
 			}
 		}
 	});
