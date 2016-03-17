@@ -6,6 +6,8 @@ var people_att = ["id","color","angle_face","angle_body","group","artwork"];
 var groups_att = ["id","text","people"];
 var loaded_keyboard = false;
 
+var cameraCalibration = [];
+
 $(document).ready(function(){
 	
 	//Checking user login permissions
@@ -348,6 +350,21 @@ function checkLogin(){
 							}
 						});
 					},
+				});
+				
+				//Loading camera calibration
+				$.ajax({
+					type: "POST",
+					url: "../php/api.php",
+					data: {action:"get-calibration"},
+					success: function(response){
+						cameraCalibration["active"] = response.calibration;
+						cameraCalibration["intrinsic"] = math.eval(response.intrinsic);
+						cameraCalibration["rotation"] = math.eval(response.rotation);
+						cameraCalibration["translation"] = math.eval(response.translation);
+						
+						console.log(cameraCalibration)
+					}
 				});
 
 			} else {

@@ -181,6 +181,14 @@ class Queries {
 		return "INSERT INTO `".$this->tables->cameras."` (`calibration`) VALUES ('".$calibration."');";
 	}
 	
+	function getCameraCalibration($cameraid){
+		return "SELECT calib_intrinsic, calib_rotation, calib_translation from `".$this->tables->cameras."` WHERE cameraid = ".$cameraid."";
+	}
+	
+	function getCameraCalibrationActive($cameraid){
+		return "SELECT calibration from `".$this->tables->cameras."` WHERE cameraid = ".$cameraid."";
+	}
+	
 	/**
 	 * ****************************
 	 *  	  People queries 

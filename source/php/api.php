@@ -1069,6 +1069,54 @@
             				break;
             		}
                		break;
+               		
+              /**
+               * Retrieving camera calibration
+               */
+            case 'get-calibration':
+            	$calibSet = false;
+            	$done = true;
+            	$output = new stdClass();
+            	$sql = $QUERIES->getCameraCalibrationActive($_SESSION['camera_id']);
+            	$result = mysql_query($sql) or $done = false;
+            	if($done){
+            		while ($row = mysql_fetch_array($result) ){
+            			if($row[0] == 1){
+            				$calibSet = true;
+            				$sql = $QUERIES->getCameraCalibration($_SESSION['camera_id']);
+            				$result = mysql_query($sql) or $done = false;
+            				if($done){
+            					while ($row = mysql_fetch_array($result) ){
+            						$output->intrinsic = $row[0];
+            						$output->intrinsic = trim($output->intrinsic);
+            						$output->intrinsic = preg_replace('~[[:cntrl:]]~', '', $output->intrinsic);
+            						$output->intrinsic = preg_replace('~[.[:cntrl:]]~', '', $output->intrinsic);
+            						$output->rotation = $row[1];
+            						$output->rotation = trim($output->intrinsic);
+            						$output->rotation = preg_replace('~[[:cntrl:]]~', '', $output->rotation);
+            						$output->rotation = preg_replace('~[.[:cntrl:]]~', '', $output->rotation);
+            						$output->translation = $row[2];
+            						$output->translation = trim($output->translation);
+            						$output->translation = preg_replace('~[[:cntrl:]]~', '', $output->translation);
+            						$output->translation = preg_replace('~[.[:cntrl:]]~', '', $output->translation);
+            					}
+            				}	
+            			}
+            		}	
+            	}
+            	
+            	if(!$calibSet){
+            		$output->calibration = false;
+            		$output->intrinsic = "";
+            		$output->rotation = "";
+            		$output->translation = "";
+            	} else {
+            		$output->calibration = true;
+            	}
+            	
+            	jecho($output);
+            	
+            	break;
 	
 	}
 	
