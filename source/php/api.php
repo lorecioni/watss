@@ -1096,6 +1096,7 @@
             						$output->translation = $row[2];
             						$output->translation = trim($output->translation);
             						$output->translation = preg_replace('~[[:cntrl:]]~', '', $output->translation);
+            						$output->param = $row[3];
             					}
             				}	
             			}

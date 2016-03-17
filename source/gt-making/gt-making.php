@@ -279,6 +279,7 @@
 		<script src="../js/jquery.mousewheel.js"></script> 
 		<script src="../js/timeline.js"></script>
 		<script src="../js/math.min.js"></script>
+		<script src="../js/camera-calibration.js"></script>
 		<script src="../js/handle-box.js"></script>
 		<script src="../js/handle-keyboard.js"></script>
 		<script src="../js/handle-cone.js"></script>

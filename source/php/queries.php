@@ -182,7 +182,7 @@ class Queries {
 	}
 	
 	function getCameraCalibration($cameraid){
-		return "SELECT calib_intrinsic, calib_rotation, calib_translation from `".$this->tables->cameras."` WHERE cameraid = ".$cameraid."";
+		return "SELECT calib_intrinsic, calib_rotation, calib_translation, param from `".$this->tables->cameras."` WHERE cameraid = ".$cameraid."";
 	}
 	
 	function getCameraCalibrationActive($cameraid){
