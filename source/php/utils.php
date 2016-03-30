@@ -79,7 +79,8 @@ function createAvatar($id){
 	
 	if ($done == true){
 		while ($row = mysql_fetch_array($result) ){
-			if (strcmp($row["image"], $config->realPeopleDefaultImg) != 0 && file_exists($row["image"])){
+			if (strcmp($row["image"], $config->realPeopleDefaultImg) != 0 
+					&& file_exists($row["image"])){
 				$dim = getimagesize($row["image"]);
 			} else{
 				$dim[0] = 0.1;
@@ -90,7 +91,7 @@ function createAvatar($id){
 			$oldFaceZ = intval($row["face_z"]);
 		}
 	}
-	
+		
 	//Retrieving current people in frame information
 	$sql = $QUERIES->getPersonInFrame($id, $_SESSION['camera_id'], $_SESSION['frame_id']);
 	$result = mysql_query($sql) or $done = false;
@@ -119,7 +120,7 @@ function createAvatar($id){
 	if ( $newScore > $oldScore || $defaultAvatar){
 		$sql = $QUERIES->getFrameById($_SESSION["frame_id"], $_SESSION["camera_id"]);
 		$result = mysql_query($sql) or $done = false;		
-		
+			
 		if ($done){
 			while ($row = mysql_fetch_array($result) ){
 				$crop = array('x' => $bbV->x , 'y' => $bbV->y, 'width' => $bbV->width, 'height'=> $bbV->height);
@@ -130,7 +131,7 @@ function createAvatar($id){
 				$resizedHeight = $bbV->height * $percent;
 				$dest = imagecrop($src, $crop);
 				imagejpeg($dest, "../img/avatars/".$id.".jpg", 100);	
-				
+								
 				if($defaultAvatar){
 					$sql = $QUERIES->setAvatarImage($id);
 					$result = mysql_query($sql) or $done = false;
@@ -148,7 +149,7 @@ function createAvatar($id){
 		}	
 	}
 
-	return $done;
+	return $log;
 }
 
 /**

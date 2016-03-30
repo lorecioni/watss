@@ -49,5 +49,4 @@ function computeW(){
 	console.log(num)
 	console.log(den)
 	console.log( (cameraCalibration.param - 1)* num/den);
-	
 }
