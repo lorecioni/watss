@@ -221,7 +221,6 @@ function SQLParse($sql){
 				}
 			}
 		}
-
 	}
 	
 	return $response;

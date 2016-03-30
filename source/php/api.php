@@ -701,9 +701,12 @@
 			}
 				
 			$output = shell_exec($command);
+			jecho($command);
+			
 			$output = preg_replace('~[[:cntrl:]]~', '', $output);
 			$output = preg_replace('~[.[:cntrl:]]~', '', $output);
-					
+			
+			
 			$predictions = json_decode($output);
 		
 			for ($i = 0; $i < count($predictions); $i++){
@@ -717,11 +720,12 @@
 				
 				$sql = $QUERIES->insertPerson($personid, ($lastFrame + $i + 1), $camera, $predictions[$i]->x, $predictions[$i]->y, $predictions[$i]->width, $predictions[$i]->height,
 						$predictions[$i]->x, $predictions[$i]->y, $predictions[$i]->width, $predictions[$i]->height, 0, 0, 0, 0, $hex, 0, $_SESSION['user'], 0);				
-				$result = mysql_query($sql) or $success = false;			
+				//$result = mysql_query($sql) or $success = false;			
 				if(!$success) break;
 			}
 
-			jecho($success);
+//			jecho($success);
+			jecho($command);
 			break;
 					
 		/**

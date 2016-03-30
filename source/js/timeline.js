@@ -643,6 +643,7 @@
 				frames: frames
 			},
 			success: function(response){
+				console.log(response)
 				if(response){	
 					for (var i = 0; i < len; i++){
 						timelineFrames[end + i].people.push({id: person, color: color});

@@ -18,7 +18,7 @@ def calibrate(cam):
     
     print "Translation vector:"
     VectTrans = cv2.cv.Load(extrinsicPath, cv.CreateMemStorage(), name="Translation")  
-    VectTrans = np.matrix(VectTrans)/100.0
+    VectTrans = np.matrix(VectTrans)
     print VectTrans
     
     print "Camera matrix:"
@@ -35,7 +35,6 @@ def calibrate(cam):
     HT=(Hw.T).I
     HI2W=Hw.I
     HW2I=(HI2W.I).T
-
 
     rwx = 12;
     rwy = 10;
