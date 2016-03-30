@@ -79,9 +79,9 @@ function createAvatar($id){
 	
 	if ($done == true){
 		while ($row = mysql_fetch_array($result) ){
-			if (strcmp($row["image"], $config->realPeopleDefaultImg) != 0){
+			if (strcmp($row["image"], $config->realPeopleDefaultImg) != 0 && file_exists($row["image"])){
 				$dim = getimagesize($row["image"]);
-			}else{
+			} else{
 				$dim[0] = 0.1;
 				$dim[1] = 0.1;
 				$defaultAvatar = true;
