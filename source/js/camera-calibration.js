@@ -20,11 +20,9 @@ function loadCameraCalibration(){
 				cameraCalibration['HI2W'] = math.inv(cameraCalibration.Hw);
 				cameraCalibration['HW2I'] = math.transpose(math.inv(cameraCalibration.HI2W));
 				
-				
 				cameraCalibration['l'] = computeInfiniteLine();
 				cameraCalibration['v'] = computeV();
-				
-				computeW();
+				cameraCalibration['W'] = computeW();
 				
 				console.log(cameraCalibration)
 			} else {
@@ -47,7 +45,7 @@ function computeV(){
 function computeW(){
 	var num = math.multiply(cameraCalibration.v, math.transpose(cameraCalibration.l));
 	var den = math.multiply(math.transpose(cameraCalibration.v), cameraCalibration.l);
-	console.log(den)
-	console.log(math.eval('num ./ den'))
-	console.log( (cameraCalibration.param - 1)* num/den);
+	den = math.subset(den, math.index(0, 0));
+	var I = math.eye(3);	
+	return math.add(I, math.multiply((cameraCalibration.param - 1), math.dotDivide(num, den)))
 }
