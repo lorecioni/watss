@@ -24,7 +24,17 @@ function loadCameraCalibration(){
 				cameraCalibration['v'] = computeV();
 				cameraCalibration['W'] = computeW();
 				
+				/**
+				 * z = image point
+				 * z' = W * z
+				 * 
+				 * z = z' * W^-1
+				 */
+				
 				console.log(cameraCalibration)
+				
+				
+				
 			} else {
 				console.log('Camera calibration not set');
 			}
@@ -47,5 +57,5 @@ function computeW(){
 	var den = math.multiply(math.transpose(cameraCalibration.v), cameraCalibration.l);
 	den = math.subset(den, math.index(0, 0));
 	var I = math.eye(3);	
-	return math.add(I, math.multiply((cameraCalibration.param - 1), math.dotDivide(num, den)))
+	return math.add(I, math.multiply((1/(1-cameraCalibration.param) - 1), math.dotDivide(num, den)))
 }
