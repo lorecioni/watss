@@ -483,20 +483,24 @@ function addBoundingBox(people){
 	var videoBoxHeight = $('#video-box').height();
 	var videoWidth = $("#video-box").data("width");
 	var videoHeight = $("#video-box").data("height");
+	var factorWidth = videoBoxWidth/videoWidth;
+	var defactorWidth = 1;
+	var factorHeight = videoBoxHeight/videoHeight;
+	var defactorHeight = 1;
 			
 	for(var i in people){
 		
 		//Updates bounding box coordinates
-		people[i]["bb"][0] = people[i]["bb"][0]*videoBoxWidth/videoWidth;
-		people[i]["bb"][1] = people[i]["bb"][1]*videoBoxHeight/videoHeight;
-		people[i]["bb"][2] = people[i]["bb"][2]*videoBoxWidth/videoWidth;
-		people[i]["bb"][3] = people[i]["bb"][3]*videoBoxHeight/videoHeight;
+		people[i]["bb"][0] = people[i]["bb"][0]*factorWidth;
+		people[i]["bb"][1] = people[i]["bb"][1]*factorHeight;
+		people[i]["bb"][2] = people[i]["bb"][2]*factorWidth;
+		people[i]["bb"][3] = people[i]["bb"][3]*factorHeight;
 
 		//Updates bounding box visible coordinates
-		people[i]["bbV"][0] = people[i]["bbV"][0]*videoBoxWidth/videoWidth;
-		people[i]["bbV"][1] = people[i]["bbV"][1]*videoBoxHeight/videoHeight;
-		people[i]["bbV"][2] = people[i]["bbV"][2]*videoBoxWidth/videoWidth;
-		people[i]["bbV"][3] = people[i]["bbV"][3]*videoBoxHeight/videoHeight;
+		people[i]["bbV"][0] = people[i]["bbV"][0]*factorWidth;
+		people[i]["bbV"][1] = people[i]["bbV"][1]*factorHeight;
+		people[i]["bbV"][2] = people[i]["bbV"][2]*factorWidth;
+		people[i]["bbV"][3] = people[i]["bbV"][3]*factorHeight;
 
 		//Bounding box
 		var boundingBox = $('<div></div>')
@@ -510,7 +514,11 @@ function addBoundingBox(people){
 				'position' : 'absolute'})
 			.attr('id', 'box-' + people[i]["id"])
 			.attr('data-id',  people[i]["id"])
-			.attr('data-mode', 'bb');
+			.attr('data-mode', 'bb')
+			.attr('data-top', people[i]["bb"][1]*defactorHeight)
+			.attr('data-left', people[i]["bb"][0]*defactorWidth)
+			.attr('data-width', people[i]["bb"][2]*defactorWidth)
+			.attr('data-height', people[i]["bb"][3]*defactorHeight);
 		
 		var boundingBoxVisible = $('<div></div>')
 			.addClass('not-update bbV')
@@ -523,7 +531,11 @@ function addBoundingBox(people){
 				'visibility' : 'hidden',
 				'position' : 'absolute'})
 			.attr('id', 'box-' + people[i]["id"] + '-bbV')
-			.attr('data-id',  people[i]["id"]);
+			.attr('data-id',  people[i]["id"])
+			.attr('data-top', people[i]["bbV"][1]*defactorHeight)
+			.attr('data-left', people[i]["bbV"][0]*defactorWidth)
+			.attr('data-width', people[i]["bbV"][2]*defactorWidth)
+			.attr('data-height', people[i]["bbV"][3]*defactorHeight);
 		
 		//Bounding box face
 		var boundingBoxFace = $('<div></div>')
@@ -541,7 +553,11 @@ function addBoundingBox(people){
 			.attr('data-face', people[i]["angle_face"])
 			.attr('data-facez', people[i]["angle_face_z"])
 			.attr('data-body', people[i]["angle_body"])
-			.attr('data-bodyz', people[i]["angle_body_z"]);
+			.attr('data-bodyz', people[i]["angle_body_z"])
+			.attr('data-top', people[i]["bb"][1]*defactorHeight)
+			.attr('data-left', people[i]["bb"][0]*defactorWidth)
+			.attr('data-width', people[i]["bb"][2]*defactorWidth)
+			.attr('data-height', people[i]["bb"][3]*defactorHeight);
 		
 		//Detecting new bounding box, append it to mouse
 		if(people[i]["bb"][0] < 0 || people[i]["bb"][1] < 0 ){
@@ -553,15 +569,16 @@ function addBoundingBox(people){
 				.css('cursor', 'crosshair');
 		}
 		
-		$("#video-box #box-container").append(boundingBox);
-		$("#video-box #box-container").append(boundingBoxVisible);
-		$("#video-box #box-container").append(boundingBoxFace);
+		$("#video-wrapper").append(boundingBox);
+		$("#video-wrapper").append(boundingBoxVisible);
+		$("#video-wrapper").append(boundingBoxFace);
 		setDragResize(boundingBox, boundingBoxVisible, boundingBoxFace)
 		
 	}
 	
 	if(people.length == 1){
 		$(".bb:last, .bbV:last, .face:last").click(function(){
+			//var transformMatrix = $('#video-box').panzoom("getMatrix");
 			$("#video-box").panzoom("option", "disablePan", true);
 			if(!$("#tr-"+$(this).data("id")).hasClass('info')){
 				deselectAllBox("#people-table");
@@ -576,13 +593,13 @@ function addBoundingBox(people){
 		});
 	} else {
 		$('.bb').click(function(){
-			if($(this).hasClass('selected')){
+			if(!$(this).hasClass('selected')){
 				$(this).addClass('selected');
 			}
 		})
 		
 		$(".bb, .bbV, .face").click(function(){
-			$("#video-box").panzoom("option", "disablePan", true);
+			var transformMatrix = $('#video-box').panzoom("getMatrix");
 			if(!$("#tr-"+$(this).data("id")).hasClass('info')){
 				deselectAllBox("#people-table");
 				changeSelectBox("#people-table",$(this));
@@ -597,9 +614,12 @@ function addBoundingBox(people){
 	}
 }
 
+
 function destroyBoundingBox(){
 	$("#video-box").panzoom("destroy");
-	$("#video-box #box-container").html("");
+	$("#video-wrapper .bb").remove();
+	$("#video-wrapper .bbV").remove();
+	$("#video-wrapper .face").remove();
 }
 
 /* -- BOX OPTIONS -- */
@@ -630,20 +650,9 @@ function selectBox(el){
 	updateBoxGraphics(el);
 	changeBoxMode("#box-"+el.data("id"),"bbV");
 	
-	$('#video-box #box-' + el.data("id")).addClass('bb-selected');
-	$('#video-box #box-' + el.data("id") + '-bbV').addClass('bb-selected');
-	$('#video-box #box-' + el.data("id") + '-face').addClass('bb-selected');
-
-	//ZOOM
-	if(panzoom_scale> 1.0){
-		var table = $("#people-table").DataTable();
-		var $box = $("#box-"+table.$('tr.info').data("id"));
-		console.log("#box-"+table.$('tr.info').data("id"));
-		$("#video-box").panzoom("option", "disablePan", false);
-		$("#video-box").panzoom("resetPan");
-		$("#video-box").panzoom("pan", $("#video-box").width()*panzoom_scale/2 - $box.position().left, $("#video-box").height()*panzoom_scale/2 - $box.position().top, {relative: true});
-		$("#video-box").panzoom("option", "disablePan", true);
-	}
+	$('#video-wrapper #box-' + el.data("id")).addClass('bb-selected');
+	$('#video-wrapper #box-' + el.data("id") + '-bbV').addClass('bb-selected');
+	$('#video-wrapper #box-' + el.data("id") + '-face').addClass('bb-selected');
 }
 
 /* DESELECT BOX */
@@ -652,9 +661,9 @@ function deselectBox(el){
 	el.removeClass('info');
 	updateBoxGraphics(el);
 	changeBoxMode("#box-"+row_el.data("id"),"bb")
-	$('#video-box .bb').removeClass('bb-selected');
-	$('#video-box .bbV').removeClass('bb-selected');
-	$('#video-box .face').removeClass('bb-selected');
+	$('#video-wrapper .bb').removeClass('bb-selected');
+	$('#video-wrapper .bbV').removeClass('bb-selected');
+	$('#video-wrapper .face').removeClass('bb-selected');
 }
 
 /**
@@ -662,25 +671,33 @@ function deselectBox(el){
  * @param table_id
  */
 function deselectAllBox(table_id){
+	var videoBoxWidth = $('#video-box').width();
+	var videoBoxHeight = $('#video-box').height();
+	var videoWidth = $("#video-box").data("width");
+	var videoHeight = $("#video-box").data("height");
+	var defactorWidth = videoWidth/videoBoxWidth;
+	var defactorHeight = videoHeight/videoBoxHeight;
+	
 	var table = $(table_id).DataTable();
 	if(table.$('tr.info').length){
-	console.log("LOG: ", $("#box-"+table.$('tr.info').data("id")).offset().left, $("#video-box").offset().left, $("#video-box").data("width"), (panzoom_scale));
-		var bb = [parseInt(($("#box-"+table.$('tr.info').data("id")).offset().left - $("#video-box").offset().left)*parseFloat($("#video-box").data("width"))/(680.0*panzoom_scale)),
-				parseInt(($("#box-"+table.$('tr.info').data("id")).offset().top - $("#video-box").offset().top)*parseFloat($("#video-box").data("height"))/(425.0*panzoom_scale)),
-				parseInt($("#box-"+table.$('tr.info').data("id")).outerWidth()*parseFloat($("#video-box").data("width"))/680.0),
-				parseInt($("#box-"+table.$('tr.info').data("id")).outerHeight()*parseFloat($("#video-box").data("height"))/425.0)]; 
-		var bbV = [parseInt(($("#box-"+table.$('tr.info').data("id")+"-bbV").offset().left - $("#video-box").offset().left)*parseFloat($("#video-box").data("width"))/(680.0*panzoom_scale)),
-				parseInt(($("#box-"+table.$('tr.info').data("id")+"-bbV").offset().top - $("#video-box").offset().top)*parseFloat($("#video-box").data("height"))/(425.0*panzoom_scale)),
-				parseInt($("#box-"+table.$('tr.info').data("id")+"-bbV").outerWidth()*parseFloat($("#video-box").data("width"))/680.0),
-				parseInt($("#box-"+table.$('tr.info').data("id")+"-bbV").outerHeight()*parseFloat($("#video-box").data("height"))/425.0)]; 
 		
-		console.log("[update-person-attribute]");
+	var boxId = table.$('tr.info').data("id");
+	var bb = [parseInt(parseInt($("#box-"+boxId).data('left')) * defactorWidth),
+				parseInt(parseInt($("#box-"+boxId).data('top')) * defactorHeight),
+				parseInt(parseInt($("#box-"+boxId).data('width')) * defactorWidth),
+				parseInt(parseInt($("#box-"+boxId).data('height')) * defactorHeight)]; 
+	var bbV = [parseInt(parseInt($("#box-"+boxId+"-bbV").data('left')) * defactorWidth),
+				parseInt(parseInt($("#box-"+boxId+"-bbV").data('top')) * defactorHeight),
+				parseInt(parseInt($("#box-"+boxId+"-bbV").data('width')) * defactorWidth),
+				parseInt(parseInt($("#box-"+boxId+"-bbV").data('height')) * defactorHeight)]; 
 
+		console.log("[update-person-attribute]");
+		
 		$.ajax({
 			type: "POST",
 			url: "../php/api.php",
 			data: {action:"update-person-attribute",
-					id: table.$('tr.info').data("id"),
+					id: boxId,
 					bb: bb,
 					bbV: bbV,
 					angle_face: $("#box-"+table.$('tr.info').data("id")+"-face").data("face"),
@@ -710,9 +727,9 @@ function deselectAllBox(table_id){
 	resetPeopleMode(table_id);
 	updateBoxGraphics(table.$('tr.info'));
 	table.$('tr.info').removeClass('info');
-	$('#video-box .bb').removeClass('bb-selected');
-	$('#video-box .bbV').removeClass('bb-selected');
-	$('#video-box .face').removeClass('bb-selected');
+	$('#video-wrapper .bb').removeClass('bb-selected');
+	$('#video-wrapper .bbV').removeClass('bb-selected');
+	$('#video-wrapper .face').removeClass('bb-selected');
 }
 
 /* CHANGE AND SELECT BOX */
@@ -837,18 +854,110 @@ function setFrame(frame){
             $zoomOut: $(".zoom-out"),
             minScale: 1,
             contain: 'invert',
-            onChange: function(){
-            	var transformMatrix = $('#video-box').panzoom("getTransform");
-            	if(transformMatrix == 'matrix(1, 0, 0, 1, -15, 0)'){
+            onZoom: function(){
+            	var transformMatrix = $('#video-box').panzoom("getMatrix");
+            	if(transformMatrix.input == 'matrix(1, 0, 0, 1, -15, 0)'){
             		$('#video-box').panzoom("setTransform", 'matrix(1, 0, 0, 1, 0, 0)')
+            		transformMatrix = $('#video-box').panzoom("getMatrix");
             	}
+            	
+            	var scale = parseInt(transformMatrix[0]);
+            	var videoInitialWidth = parseFloat($("#video-box").width());
+            	var videoInitialHeight = parseFloat($("#video-box").height());
+            	var videoWidth = videoInitialWidth * scale;
+            	var videoHeight = videoInitialHeight * scale;
+            	
+            	var left = (videoWidth - videoInitialWidth) / 2;
+            	var top = (videoHeight - videoInitialHeight) / 2;
 
+            	var deltaX = parseFloat(transformMatrix[4]);
+            	var deltaY = parseFloat(transformMatrix[5]);
+            	
+            	left -= deltaX;
+            	top -= deltaY;            	
+     
+            	$('.bb').each(function(){
+            		var self = $(this);
+            		self.addClass('transition-ease-in-out');
+            		self.css({
+            			'left': parseFloat($(this).data('left')) * scale - left,
+            			'top': parseFloat($(this).data('top')) * scale - top,
+            			'width': parseFloat($(this).data('width')) * scale,
+            			'height': parseFloat($(this).data('height')) * scale            			
+            		});
+            		setTimeout(function(){self.removeClass('transition-ease-in-out');}, 200);
+            		
+            	});
+            	$('.bbV').each(function(){
+            		var self = $(this);
+            		self.addClass('transition-ease-in-out');
+            		$(this).css({
+            			'left': parseFloat($(this).data('left')) * scale - left,
+            			'top': parseFloat($(this).data('top')) * scale - top,
+            			'width': parseFloat($(this).data('width')) * scale,
+            			'height': parseFloat($(this).data('height')) * scale            			
+            		});
+            		setTimeout(function(){self.removeClass('transition-ease-in-out');}, 200);
+            	}); 	
+            	$('.face').each(function(){
+            		$(this).css({
+            			'left': parseFloat($(this).data('left')) * scale - left,
+            			'top': parseFloat($(this).data('top')) * scale - top,
+            			'width': parseFloat($(this).data('width')) * scale,
+            			'height': parseFloat($(this).data('height')) * scale            			
+            		});
+            	});
+            },
+            onPan: function(){
+            	var transformMatrix = $('#video-box').panzoom("getMatrix");
+            	if(transformMatrix.input == 'matrix(1, 0, 0, 1, -15, 0)'){
+            		$('#video-box').panzoom("setTransform", 'matrix(1, 0, 0, 1, 0, 0)')
+            		transformMatrix = $('#video-box').panzoom("getMatrix");
+            	}
+            	
+            	var scale = parseInt(transformMatrix[0]);
+            	var videoInitialWidth = parseFloat($("#video-box").width());
+            	var videoInitialHeight = parseFloat($("#video-box").height());
+            	var videoWidth = videoInitialWidth * scale;
+            	var videoHeight = videoInitialHeight * scale;
+            	
+            	var left = (videoWidth - videoInitialWidth) / 2;
+            	var top = (videoHeight - videoInitialHeight) / 2;
+
+            	var deltaX = parseFloat(transformMatrix[4]);
+            	var deltaY = parseFloat(transformMatrix[5]);
+            	
+            	left -= deltaX;
+            	top -= deltaY;            	
+     
+            	$('.bb').each(function(){
+            		var self = $(this);
+            		self.css({
+            			'left': parseFloat($(this).data('left')) * scale - left,
+            			'top': parseFloat($(this).data('top')) * scale - top,
+            			'width': parseFloat($(this).data('width')) * scale,
+            			'height': parseFloat($(this).data('height')) * scale            			
+            		});            		
+            	});
+            	$('.bbV').each(function(){
+            		var self = $(this);
+            		$(this).css({
+            			'left': parseFloat($(this).data('left')) * scale - left,
+            			'top': parseFloat($(this).data('top')) * scale - top,
+            			'width': parseFloat($(this).data('width')) * scale,
+            			'height': parseFloat($(this).data('height')) * scale            			
+            		});
+            	}); 	
+            	$('.face').each(function(){
+            		$(this).css({
+            			'left': parseFloat($(this).data('left')) * scale - left,
+            			'top': parseFloat($(this).data('top')) * scale - top,
+            			'width': parseFloat($(this).data('width')) * scale,
+            			'height': parseFloat($(this).data('height')) * scale            			
+            		});
+            	});
             }
           });
-		
-		panzoom.on('panzoomchange', function(e, panzoom, matrix, changed){
-			
-		});
 		
 
 	    panzoom.on('mousewheel.focal', function( e ) {

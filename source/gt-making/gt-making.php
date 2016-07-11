@@ -71,10 +71,8 @@
 		<div class="container-fluid">
 			<div class="row">
 			  <div class="col-md-7">
-				<div style="width:680px;height:425px;">
-					<div id="video-box">
-						<div id="box-container"></div>
-					</div>
+				<div id="video-wrapper" style="width:680px;height:425px;">
+					<div id="video-box"></div>
 				</div>
 					<!-- Frame navigation and zoom -->
 					<div class="form-inline frame-form row">

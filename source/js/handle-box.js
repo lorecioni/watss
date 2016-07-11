@@ -150,26 +150,31 @@
 })();
 
 function setDragResize(bb, bbV, bbF) {
-	
+
 	//Set bounding box draggable
 	bb.draggable({ 
 		containment: "parent",
 		drag: function( event, ui ) {
 			if(!bb.hasClass('selected')){
 				bb.click();
-			}		
-			bbV.offset({left: ui.offset.left + bbV.position().left - ui.originalPosition.left, 
-							  top: ui.offset.top + bbV.position().top - ui.originalPosition.top });
-			bbF.offset({left: ui.offset.left + bbF.position().left - ui.originalPosition.left, 
-				  top: ui.offset.top + bbF.position().top - ui.originalPosition.top });
+			}
+			var left = ui.offset.left + bbV.position().left - ui.originalPosition.left;
+			if (left < -bbV.width()) left = 0;
+			var top = ui.offset.top + bbV.position().top - ui.originalPosition.top ;
+			if (top < -bbV.height()) top = 0;
+			bbV.offset({
+				left: left, 
+				top: top
+			});
+			var left = ui.offset.left + bbF.position().left - ui.originalPosition.left;
+			if (left < -bbF.width()) left = 0;
+			var top = ui.offset.top + bbF.position().top - ui.originalPosition.top ;
+			if (top < -bbF.height()) top = 0;
+			bbF.offset({left: left, 
+				  top: top});
 			ui.originalPosition.left = ui.position.left;
 			ui.originalPosition.top = ui.position.top;
-			
-			/** updates bounding box dimension wrt zoom and pan **/
-			bb.attr('data-top', bb.css('top'));
-			bb.attr('data-left', bb.css('left'));
-			bb.attr('data-width', bb.css('width'));
-			bb.attr('data-height', bb.css('height'));
+			updateBoundingBoxesData(bb, bbV, bbF);
 		}
   	});
 
@@ -191,6 +196,7 @@ function setDragResize(bb, bbV, bbF) {
 			//Updating face bounding box
 			bbF.width(bb.width());
 			bbF.height(bb.height());
+			updateBoundingBoxesData(bb, bbV, bbF);
 		},
 		alsoResize : bbF
 	});
@@ -204,9 +210,8 @@ function setDragResize(bb, bbV, bbF) {
 			bbF.offset({left: ui.offset.left + bbF.position().left - ui.originalPosition.left, 
 				  top: ui.offset.top + bbF.position().top - ui.originalPosition.top });
 			ui.originalPosition.left = ui.position.left;
-			ui.originalPosition.top = ui.position.top;
-			
-			console.log('bbv');
+			ui.originalPosition.top = ui.position.top;	
+			updateBoundingBoxesData(bb, bbV, bbF);
 		}
   	});
 	
@@ -221,6 +226,53 @@ function setDragResize(bb, bbV, bbF) {
 			if(bb.height() <= bbV.height()){
 				bbV.height(bb.height())
 			}
+			updateBoundingBoxesData(bb, bbV, bbF);
 		},
 	});
+}
+
+function updateBoundingBoxesData(bb, bbV, bbF){
+	/** updates bounding box dimension wrt zoom and pan **/
+	var videoBoxWidth = $('#video-box').width();
+	var videoBoxHeight = $('#video-box').height();
+	var videoWidth = $("#video-box").data("width");
+	var videoHeight = $("#video-box").data("height");
+	var defactorWidth = videoWidth/videoBoxWidth;
+	var defactorHeight = videoHeight/videoBoxHeight;
+	
+	var transformMatrix = $('#video-box').panzoom("getMatrix");
+	if(transformMatrix.input == 'matrix(1, 0, 0, 1, -15, 0)'){
+		$('#video-box').panzoom("setTransform", 'matrix(1, 0, 0, 1, 0, 0)')
+		transformMatrix = $('#video-box').panzoom("getMatrix");
+	}
+	
+	var scale = parseInt(transformMatrix[0]);
+	var videoInitialWidth = parseFloat($("#video-box").width());
+	var videoInitialHeight = parseFloat($("#video-box").height());
+	var videoWidth = videoInitialWidth * scale;
+	var videoHeight = videoInitialHeight * scale;
+	
+	var left = (videoWidth - videoInitialWidth) / 2;
+	var top = (videoHeight - videoInitialHeight) / 2;
+
+	var deltaX = parseFloat(transformMatrix[4]);
+	var deltaY = parseFloat(transformMatrix[5]);
+	
+	left -= deltaX;
+	top -= deltaY;   
+	
+	bb.data('top',  (parseFloat(bb.css('top')) + top) / scale);
+	bb.data('left',  (parseFloat(bb.css('left')) + left) / scale);
+	bb.data('width',  parseFloat(bb.css('width')) / scale);
+	bb.data('height',  parseFloat(bb.css('height')) / scale);
+	
+	bbV.data('top',  (parseFloat(bbV.css('top')) + top) / scale);
+	bbV.data('left',  (parseFloat(bbV.css('left')) + left) / scale);
+	bbV.data('width',  parseFloat(bbV.css('width')) / scale);
+	bbV.data('height',  parseFloat(bbV.css('height')) / scale);
+	
+	bbF.data('top',  (parseFloat(bb.css('top')) + top) / scale);
+	bbF.data('left',  (parseFloat(bb.css('left')) + left) / scale);
+	bbF.data('width',  parseFloat(bb.css('width')) / scale);
+	bbF.data('height',  parseFloat(bb.css('height')) / scale);
 }

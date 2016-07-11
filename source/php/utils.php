@@ -149,7 +149,7 @@ function createAvatar($id){
 		}	
 	}
 
-	return $log;
+	return $done;
 }
 
 /**
