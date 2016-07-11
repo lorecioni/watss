@@ -72,7 +72,9 @@
 			<div class="row">
 			  <div class="col-md-7">
 				<div style="width:680px;height:425px;">
-					<div id="video-box"></div>
+					<div id="video-box">
+						<div id="box-container"></div>
+					</div>
 				</div>
 					<!-- Frame navigation and zoom -->
 					<div class="form-inline frame-form row">
@@ -285,6 +287,6 @@
 		<script src="../js/handle-cone.js"></script>
 		<script src="../js/functions.js"></script>
 		<script src="../js/event-handler.js"></script>
-		<script src="../js/panzoom.js"></script> 
+		<script src="../js/jquery.panzoom.js"></script> 
 	</body>
 </html>

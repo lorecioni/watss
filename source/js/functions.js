@@ -553,9 +553,9 @@ function addBoundingBox(people){
 				.css('cursor', 'crosshair');
 		}
 		
-		$("#video-box").append(boundingBox);
-		$("#video-box").append(boundingBoxVisible);
-		$("#video-box").append(boundingBoxFace);
+		$("#video-box #box-container").append(boundingBox);
+		$("#video-box #box-container").append(boundingBoxVisible);
+		$("#video-box #box-container").append(boundingBoxFace);
 		setDragResize(boundingBox, boundingBoxVisible, boundingBoxFace)
 		
 	}
@@ -599,7 +599,7 @@ function addBoundingBox(people){
 
 function destroyBoundingBox(){
 	$("#video-box").panzoom("destroy");
-	$("#video-box").html("");
+	$("#video-box #box-container").html("");
 }
 
 /* -- BOX OPTIONS -- */
@@ -832,14 +832,23 @@ function setFrame(frame){
 	
 	img.onload = function () {
 	    
-	    var panzoom = $('#video-box').panzoom({
+		var panzoom = $('#video-box').panzoom({
             $zoomIn: $(".zoom-in"),
             $zoomOut: $(".zoom-out"),
-            startTransform: 'scale(1.0)',
-            increment: 1,
             minScale: 1,
-            contain: 'invert'
+            contain: 'invert',
+            onChange: function(){
+            	var transformMatrix = $('#video-box').panzoom("getTransform");
+            	if(transformMatrix == 'matrix(1, 0, 0, 1, -15, 0)'){
+            		$('#video-box').panzoom("setTransform", 'matrix(1, 0, 0, 1, 0, 0)')
+            	}
+
+            }
           });
+		
+		panzoom.on('panzoomchange', function(e, panzoom, matrix, changed){
+			
+		});
 		
 
 	    panzoom.on('mousewheel.focal', function( e ) {

@@ -278,6 +278,7 @@
 				.addClass('timeline-frame')
 				.attr('id', 'timeline-frame-' + i)
 				.attr('data-id', i)
+				.attr('data-frame-id', timelineFrames[i].id)
 				.attr('title', 'Go to frame ' + timelineFrames[i].id)
 				.append('<div class="timeline-frame-indicator"></div>')
 				.append('<span class="timeline-frame-number">' + timelineFrames[i].id + '</span>');
@@ -629,7 +630,7 @@
 	function propagate(person, len, start, end){
 		var frames = []
 		for(var i = start; i <= end; i++){
-			frames.push(i);
+			frames.push($('#timeline-frame-' + i).data('frame-id'));
 		}
 		
 		var color = $('#color-' + person).css('background-color');

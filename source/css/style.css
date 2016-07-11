@@ -168,6 +168,12 @@ div#features-list {
 	overflow: hidden;
 }
 
+div#box-container {
+    width: 100%;
+    height: 100%;
+    position: relative;
+}
+
 .bb{
 	position: absolute;
 	z-index: 3;

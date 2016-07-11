@@ -164,6 +164,12 @@ function setDragResize(bb, bbV, bbF) {
 				  top: ui.offset.top + bbF.position().top - ui.originalPosition.top });
 			ui.originalPosition.left = ui.position.left;
 			ui.originalPosition.top = ui.position.top;
+			
+			/** updates bounding box dimension wrt zoom and pan **/
+			bb.attr('data-top', bb.css('top'));
+			bb.attr('data-left', bb.css('left'));
+			bb.attr('data-width', bb.css('width'));
+			bb.attr('data-height', bb.css('height'));
 		}
   	});
 
@@ -199,6 +205,8 @@ function setDragResize(bb, bbV, bbF) {
 				  top: ui.offset.top + bbF.position().top - ui.originalPosition.top });
 			ui.originalPosition.left = ui.position.left;
 			ui.originalPosition.top = ui.position.top;
+			
+			console.log('bbv');
 		}
   	});
 	
