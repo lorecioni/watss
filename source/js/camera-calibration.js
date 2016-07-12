@@ -1,4 +1,4 @@
-var cameraCalibration = [];
+var cameraCalibration = {};
 
 function loadCameraCalibration(){
 	//Loading camera calibration
@@ -11,29 +11,20 @@ function loadCameraCalibration(){
 			cameraCalibration["active"] = response.calibration;
 			if(cameraCalibration.active){
 				cameraCalibration["intrinsic"] = math.eval(response.intrinsic);
-				cameraCalibration["rotation"] = math.eval(response.rotation);
-				cameraCalibration["translation"] = math.eval(response.translation);
+				cameraCalibration["omography"] = math.eval(response.omography);
 				cameraCalibration["param"] = math.eval(response.param);
-				P = math.concat(math.subset(cameraCalibration.rotation, math.index([0, 1, 2],[0,1])), 
-						cameraCalibration.translation, 1)
-				cameraCalibration['Hw'] = math.multiply(cameraCalibration.intrinsic, P);
-				cameraCalibration['HI2W'] = math.inv(cameraCalibration.Hw);
-				cameraCalibration['HW2I'] = math.transpose(math.inv(cameraCalibration.HI2W));
-				
-				cameraCalibration['l'] = computeInfiniteLine();
-				cameraCalibration['v'] = computeV();
+
+				cameraCalibration['l'] = computeVanishingLine();
+				cameraCalibration['v'] = computeVanishingRect();
 				cameraCalibration['W'] = computeW();
 				
 				/**
-				 * z = image point
-				 * z' = W * z
-				 * 
-				 * z = z' * W^-1
+				 * p = [x, y, 1]  image point
+				 * P = W * p;
+				 * P = P /P(3)
 				 */
 				
-				console.log(cameraCalibration)
-				
-				
+				console.log(cameraCalibration);
 				
 			} else {
 				console.log('Camera calibration not set');
@@ -43,16 +34,30 @@ function loadCameraCalibration(){
 }
 
 
-function computeInfiniteLine(){
-	return math.multiply(cameraCalibration.HW2I, math.eval('[0; 0; 1]'));
+function computeVanishingLine(){
+	/** MATLAB script
+	 * l = HW2I * [0 0 1]';
+	 */
+	return math.multiply(cameraCalibration.omography, math.eval('[0; 0; 1]'));
 }
 
-function computeV(){
-	var t = math.multiply(cameraCalibration.intrinsic, math.transpose(cameraCalibration.intrinsic));
-	return math.multiply(t, cameraCalibration.l);
+function computeVanishingRect(){
+	/** MATLAB script
+	omega = inv(K') * inv(K);
+	v = inv(omega) * l;
+	v = v/v(3);
+	*/
+	var omega = math.multiply(math.inv(math.transpose(cameraCalibration.intrinsic)), math.inv(cameraCalibration.intrinsic));
+	var v = math.multiply(math.inv(omega), cameraCalibration.l);
+	return math.dotDivide(v, math.subset(v, math.index(2, 0)));
+	
 }
 
 function computeW(){
+	/**
+	 * MATLAB Script
+	 * W = eye(3) + (1/(1-mu)-1) .* ((v * l')./(v' * l));
+	 */
 	var num = math.multiply(cameraCalibration.v, math.transpose(cameraCalibration.l));
 	var den = math.multiply(math.transpose(cameraCalibration.v), cameraCalibration.l);
 	den = math.subset(den, math.index(0, 0));

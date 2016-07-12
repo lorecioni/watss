@@ -1095,13 +1095,10 @@
             						$output->intrinsic = $row[0];
             						$output->intrinsic = trim($output->intrinsic);
             						$output->intrinsic = preg_replace('~[[:cntrl:]]~', '', $output->intrinsic);
-            						$output->rotation = $row[1];
-            						$output->rotation = trim($output->rotation);
-            						$output->rotation = preg_replace('~[[:cntrl:]]~', '', $output->rotation);
-            						$output->translation = $row[2];
-            						$output->translation = trim($output->translation);
-            						$output->translation = preg_replace('~[[:cntrl:]]~', '', $output->translation);
-            						$output->param = $row[3];
+            						$output->omography = $row[1];
+            						$output->omography = trim($output->omography);
+            						$output->omography = preg_replace('~[[:cntrl:]]~', '', $output->omography);
+            						$output->param = $row[2];
             					}
             				}	
             			}
@@ -1111,8 +1108,7 @@
             	if(!$calibSet){
             		$output->calibration = false;
             		$output->intrinsic = "";
-            		$output->rotation = "";
-            		$output->translation = "";
+            		$output->omography = "";
             	} else {
             		$output->calibration = true;
             	}
