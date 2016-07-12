@@ -145,7 +145,7 @@
 	});
 	
 	/**
-	 * Confirm bounding box insert whe releasing mouse out of the video frame
+	 * Confirm bounding box when leave outer
 	 */
 	$(document).on("mouseup", 'body', function(e){
 		var geometryEnabled = $('#enable-geometry').is(':checked');

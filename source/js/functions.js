@@ -905,6 +905,14 @@ function setFrame(frame){
             			'height': parseFloat($(this).data('height')) * scale            			
             		});
             	});
+            	
+            	if(scale > 1){
+            		$('.bb').draggable("option", "containment", false);
+            		$('.bbV').draggable("option", "containment", false);
+            	} else {
+            		$('.bb').draggable("option", "containment", "parent");
+            		$('.bbV').draggable("option", "containment", "parent");
+            	}
             },
             onPan: function(){
             	var transformMatrix = $('#video-box').panzoom("getMatrix");
