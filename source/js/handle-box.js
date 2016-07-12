@@ -77,11 +77,7 @@
 					break;
 			
 				case 'mouseleave':
-					if(geometryEnabled){
-						if($('.bb.init').length == 0){
-							$(this).remove();
-						}
-					} else {
+					if($('.bb.init').length == 0){
 						$(this).remove();
 					}
 					break;
@@ -145,6 +141,42 @@
 					}
 					break;
 			}
+		}
+	});
+	
+	/**
+	 * Confirm bounding box insert whe releasing mouse out of the video frame
+	 */
+	$(document).on("mouseup", 'body', function(e){
+		var geometryEnabled = $('#enable-geometry').is(':checked');
+		if(!geometryEnabled && $('.bb.init').length > 0){
+			var bb = $('.bb.init').first();
+			var bbV = $('.bbV.init').first();
+			var face = $('.face.init').first();
+			
+			var x = $('#bb-selection').css('left');
+			var y = $('#bb-selection').css('top');
+			var w = $('#bb-selection').css('width');
+			var h = $('#bb-selection').css('height');
+
+			bb.css({
+				'top': y,
+				'left': x,
+				'width' : w,
+				'height': h
+			});
+			bbV.css({
+				'top': y,
+				'left': x
+			});
+			face.css({
+				'top': y,
+				'left': x
+			});
+			bb.click();
+			$('.init').removeClass('init');
+			updateBoundingBoxesData(bb, bbV, face)
+			$('.video-overlay').remove();
 		}
 	});
 	
