@@ -15,7 +15,9 @@
 	var config = {
 		title: 'Timeline',
 		mouseScrolling: true,
-		loadedFrames: 100
+		loadedFrames: 100,
+		extendFrames: 5
+		
 	}
 	
 	//List of frames
@@ -250,7 +252,7 @@
 				})
 				
 				if(config.loadedFrames != undefined){
-					extendTimelineFrame(direction);
+			    	for(var i = 0; i < config.extendFrames; i++) extendTimelineFrame(direction);
 				}		
 				updateCursor();
 				

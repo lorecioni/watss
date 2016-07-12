@@ -79,7 +79,7 @@ span.timeline-cursor {
 }
 
 .timeline-frame.people .timeline-frame-indicator {
-    background-color: rgba(129, 0, 0, 0.20);
+    background-color: rgba(129, 0, 0, 0.30);
 }
 
 .timeline-frame.people:HOVER .timeline-frame-indicator {
