@@ -564,8 +564,8 @@ function addBoundingBox(people){
 			boundingBox.addClass('init');
 			boundingBoxVisible.addClass('init');
 			boundingBoxFace.addClass('init');
-			$('#video-overlay').remove();
-			$("#video-box").prepend('<div id="video-overlay"></div>')
+			$('.video-overlay').remove();
+			$("#video-wrapper").prepend('<div class="video-overlay"></div>')
 				.css('cursor', 'crosshair');
 		}
 		
@@ -578,7 +578,6 @@ function addBoundingBox(people){
 	
 	if(people.length == 1){
 		$(".bb:last, .bbV:last, .face:last").click(function(){
-			//var transformMatrix = $('#video-box').panzoom("getMatrix");
 			$("#video-box").panzoom("option", "disablePan", true);
 			if(!$("#tr-"+$(this).data("id")).hasClass('info')){
 				deselectAllBox("#people-table");
@@ -599,7 +598,6 @@ function addBoundingBox(people){
 		})
 		
 		$(".bb, .bbV, .face").click(function(){
-			var transformMatrix = $('#video-box').panzoom("getMatrix");
 			if(!$("#tr-"+$(this).data("id")).hasClass('info')){
 				deselectAllBox("#people-table");
 				changeSelectBox("#people-table",$(this));

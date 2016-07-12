@@ -13,7 +13,7 @@
 		var geometryEnabled = $('#enable-geometry').is(':checked');
 		if(geometryEnabled){
 			e.preventDefault();
-			$('#video-overlay').remove();
+			$('.video-overlay').remove();
 			var bb = $('.bb.init').first();
 			$('.init').removeClass('init');
 			bb.click()
@@ -21,24 +21,21 @@
 	});
 	
 	/**
-	 * Enabling bounding box creation, bb is atteched to the pointer
+	 * Enabling bounding box creation, bb is attached to the pointer
 	 * until click on a frame position
 	 */
-	$('#video-box').bind( "mousedown mouseup mousemove mouseleave", function(e) {
+	$(document).on("mousedown mouseup mousemove mouseleave", '.video-overlay', function(e){
 		if($('.bb.init').length > 0){
 			var geometryEnabled = $('#enable-geometry').is(':checked');
 			
 			switch (e.type){
 				case 'mousedown':
 					if(!geometryEnabled){
-						if(!$('#video-overlay').is(':visible')){
-							$(this).append('<div id="video-overlay"></div>');
-						}
-						$('#video-overlay').append('<div id="bb-selection"></div>');
+						$('.video-overlay').append('<div id="bb-selection"></div>');
 						var x = e.offsetX;
 						var y = e.offsetY;
 						var color = $('.bb.init').first().css('border-color');
-						$('#video-overlay #bb-selection').css({
+						$('.video-overlay #bb-selection').css({
 							'left': x, 
 							'top': y,
 							'border': '2px solid ' + color
@@ -48,35 +45,37 @@
 					
 				case 'mouseup':			
 					if(!geometryEnabled){
-						if($('#video-overlay').is(':visible')){
-							var x = $('#bb-selection').css('left');
-							var y = $('#bb-selection').css('top');
-							var w = $('#bb-selection').css('width');
-							var h = $('#bb-selection').css('height');
-							
-							$('.bb.init').first().css({
-								'top': y,
-								'left': x,
-								'width' : w,
-								'height': h
-							});
-							$('.bbV.init').first().css({
-								'top': y,
-								'left': x
-							});
-							$('.face.init').first().css({
-								'top': y,
-								'left': x
-							});
-							$('.bb.init').first().click();
-							$('.init').removeClass('init');
-						}
-						$('#video-overlay').remove();
+						var x = $('#bb-selection').css('left');
+						var y = $('#bb-selection').css('top');
+						var w = $('#bb-selection').css('width');
+						var h = $('#bb-selection').css('height');
+						var bb = $('.bb.init').first();
+						var bbV = $('.bbV.init').first();
+						var face = $('.face.init').first();
+						
+						bb.css({
+							'top': y,
+							'left': x,
+							'width' : w,
+							'height': h
+						});
+						bbV.css({
+							'top': y,
+							'left': x
+						});
+						face.css({
+							'top': y,
+							'left': x
+						});
+						bb.first().click();
+						$('.init').removeClass('init');
+						updateBoundingBoxesData(bb, bbV, face)
+						$(this).remove();
 					}
 					break;
 			
 				case 'mouseleave':
-					$('#video-overlay').remove();
+					$(this).remove();
 					break;
 					
 					
@@ -84,32 +83,30 @@
 					if(geometryEnabled){
 						//Attach bounding box to the pointer
 						var addedId = $('.bb.init').first().data('id');
-						var x = e.pageX - $('#video-box').offset().left;
-						var y = e.pageY - $('#video-box').offset().top;
+						var x = e.pageX - $('#video-wrapper').offset().left;
+						var y = e.pageY - $('#video-wrapper').offset().top;
 						
-						$('#video-box #box-' + addedId).css({
+						$('#video-wrapper #box-' + addedId).css({
 							'left': x,
 							'top': y
 						});
-						$('#video-box #box-' + addedId + '-bbV').css({
+						$('#video-wrapper #box-' + addedId + '-bbV').css({
 							'left': x,
 							'top': y
 						});
-						$('#video-box #box-' + addedId + '-face').css({
+						$('#video-wrapper #box-' + addedId + '-face').css({
 							'left': x,
 							'top': y
 						});
 					} else {
-						if ($('#video-overlay').is(':visible')) {
-				            var startX = parseInt($('#bb-selection').css('left'));
-				            var startY = parseInt($('#bb-selection').css('top'));
+				        var startX = parseInt($('#bb-selection').css('left'));
+				        var startY = parseInt($('#bb-selection').css('top'));
 				  
-				            var width = e.offsetX - startX;
-				            var height = e.offsetY - startY;
+				        var width = e.offsetX - startX;
+				        var height = e.offsetY - startY;
 				            
-				            $('#bb-selection').css('width', width);
-				            $('#bb-selection').css('height', height);
-				        }
+				        $('#bb-selection').css('width', width);
+				        $('#bb-selection').css('height', height);
 					}
 					break;
 			}
@@ -117,27 +114,38 @@
 	});
 	
 	/** Enabling bounding box scaling with mousewheel **/
-	$('#video-box').on('mousewheel', function(e){
-		if($('.bb.bb-selected').length > 0){
-			e.preventDefault();
-			var sel = $(e.toElement);
-			if(sel.hasClass('bb-selected')){
-				var delta = 2;
-				if(Math.abs(e.deltaY) != 0){
-					if(e.deltaY > 0){
-						$('.bb-selected').css('left', parseFloat(sel.css('left')) - delta);
-						$('.bb-selected').css('width', parseFloat(sel.css('width')) + 2 * delta);
-						$('.bb-selected').css('top', parseFloat(sel.css('top')) - delta);
-						$('.bb-selected').css('height', parseFloat(sel.css('height')) + 2 * delta);
-					} else {
-						$('.bb-selected').css('left', parseFloat(sel.css('left')) + delta);
-						$('.bb-selected').css('width', parseFloat(sel.css('width')) - 2 * delta);
-						$('.bb-selected').css('top', parseFloat(sel.css('top')) + delta);
-						$('.bb-selected').css('height', parseFloat(sel.css('height')) - 2 * delta);
-					}
+	$(document).on('mousewheel', '.bb-selected', function(e){
+		e.preventDefault();
+		var videoBoxWidth = $('#video-box').width();
+		var videoBoxHeight = $('#video-box').height();
+		
+		var bb = $('.bb.bb-selected').first();
+		var bbV = $('.bbV.bb-selected').first();
+		var face = $('.face.bb-selected').first();
+		
+		var delta = 2;
+		if(Math.abs(e.deltaY) != 0){
+			if(e.deltaY > 0){		
+				//Check if box is going out box
+				if(parseFloat(bb.css('left')) + parseFloat(bb.css('width')) < videoBoxWidth
+					&& parseFloat(bb.css('top')) + parseFloat(bb.css('height')) < videoBoxHeight){
+					
+					bb.css('left', parseFloat(bb.css('left')) - delta);
+					bb.css('width', parseFloat(bb.css('width')) + 2 * delta);
+					bb.css('top', parseFloat(bb.css('top')) - delta);
+					bb.css('height', parseFloat(bb.css('height')) + 2 * delta);
 				}
+			} else {
+				bb.css('left', parseFloat(bb.css('left')) + delta);
+				bb.css('width', parseFloat(bb.css('width')) - 2 * delta);
+				bb.css('top', parseFloat(bb.css('top')) + delta);
+				bb.css('height', parseFloat(bb.css('height')) - 2 * delta);
 			}
+			
+			bbV.css({'top': bb.css('top'), 'left': bb.css('left'), 'width': bb.css('width'), 'height': bb.css('height')});
+			face.css({'top': bb.css('top'), 'left': bb.css('left'), 'width': bb.css('width'), 'height': bb.css('height')});
 		}
+		updateBoundingBoxesData(bb, bbV, face);
 	});
 	
 
@@ -155,25 +163,17 @@ function setDragResize(bb, bbV, bbF) {
 	bb.draggable({ 
 		containment: "parent",
 		drag: function( event, ui ) {
-			if(!bb.hasClass('selected')){
+			if(!bb.hasClass('bb-selected')){
 				bb.click();
 			}
-			var left = ui.offset.left + bbV.position().left - ui.originalPosition.left;
-			if (left < -bbV.width()) left = 0;
-			var top = ui.offset.top + bbV.position().top - ui.originalPosition.top ;
-			if (top < -bbV.height()) top = 0;
-			bbV.offset({
-				left: left, 
-				top: top
+			bbV.css({
+				'left': ui.position.left,
+				'top': ui.position.top
 			});
-			var left = ui.offset.left + bbF.position().left - ui.originalPosition.left;
-			if (left < -bbF.width()) left = 0;
-			var top = ui.offset.top + bbF.position().top - ui.originalPosition.top ;
-			if (top < -bbF.height()) top = 0;
-			bbF.offset({left: left, 
-				  top: top});
-			ui.originalPosition.left = ui.position.left;
-			ui.originalPosition.top = ui.position.top;
+			bbF.css({
+				'left': ui.position.left,
+				'top': ui.position.top
+			});
 			updateBoundingBoxesData(bb, bbV, bbF);
 		}
   	});
@@ -182,9 +182,13 @@ function setDragResize(bb, bbV, bbF) {
 	bb.resizable({ 
 		containment: "parent",
 		resize: function(event, ui){
-			if(!bb.hasClass('selected')){
+			if(!bb.hasClass('bb-selected')){
 				bb.click();
-			}	
+			}
+			bbV.css({
+				'top': bb.position().top,
+				'left': bb.position().left
+			})
 			var border = bb.outerWidth() - bb.width();
 			//Updating visible bounding box
 			if(bb.width() < bbV.width()){
@@ -205,12 +209,14 @@ function setDragResize(bb, bbV, bbF) {
 	bbV.draggable({ 
 		containment: "parent",
 		drag: function( event, ui ) {
-			bb.offset({left: ui.offset.left + bb.position().left - ui.originalPosition.left, 
-							  top: ui.offset.top + bb.position().top - ui.originalPosition.top });
-			bbF.offset({left: ui.offset.left + bbF.position().left - ui.originalPosition.left, 
-				  top: ui.offset.top + bbF.position().top - ui.originalPosition.top });
-			ui.originalPosition.left = ui.position.left;
-			ui.originalPosition.top = ui.position.top;	
+			bb.css({
+				'left': ui.position.left,
+				'top': ui.position.top
+			});
+			bbF.css({
+				'left': ui.position.left,
+				'top': ui.position.top
+			});
 			updateBoundingBoxesData(bb, bbV, bbF);
 		}
   	});
@@ -219,6 +225,10 @@ function setDragResize(bb, bbV, bbF) {
 	bbV.resizable({
 		containment: "parent", 
 		resize: function(event, ui){
+			bbV.css({
+				'top': bb.position().top,
+				'left': bb.position().left
+			})
 			//Contaning resize
 			if(bb.width() <= bbV.width()){
 				bbV.width(bb.width());
@@ -232,7 +242,7 @@ function setDragResize(bb, bbV, bbF) {
 }
 
 function updateBoundingBoxesData(bb, bbV, bbF){
-	/** updates bounding box dimension wrt zoom and pan **/
+	/** updates bounding box dimension wrt zoom and pan **/	
 	var videoBoxWidth = $('#video-box').width();
 	var videoBoxHeight = $('#video-box').height();
 	var videoWidth = $("#video-box").data("width");
