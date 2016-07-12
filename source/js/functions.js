@@ -969,7 +969,8 @@ function setFrame(frame){
             }
           });
 		
-
+		$('#video-box').panzoom("setTransform", 'matrix(1, 0, 0, 1, 0, 0)');
+		
 	    panzoom.on('mousewheel.focal', function( e ) {
 	    	e.preventDefault();	
 	    	var sel = $(e.toElement);
