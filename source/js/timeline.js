@@ -393,7 +393,7 @@
 				
 				person.click(function(){
 					//Callback on person selected (for updating interface)
-					$('#video-box #box-' + $(this).data('id')).click();
+					$('#box-' + $(this).data('id')).click();
 				});
 				
 				list.append(person);
