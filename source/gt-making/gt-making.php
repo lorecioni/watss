@@ -165,7 +165,7 @@
 							<tr>
 								<th>ID</th>
 								<th>Name</th>
-								<th>NPeople</th>
+								<th>People</th>
 								<th></th>
 							</tr>
 						</thead>

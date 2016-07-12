@@ -256,12 +256,12 @@ function setDragResize(bb, bbV, bbF) {
 				bb.click();
 			}
 			bbV.css({
-				'left': ui.position.left,
-				'top': ui.position.top
+				'left': bb.position().left,
+				'top':  bb.position().top
 			});
 			bbF.css({
-				'left': ui.position.left,
-				'top': ui.position.top
+				'left': bb.position().left,
+				'top': bb.position().top
 			});
 			updateBoundingBoxesData(bb, bbV, bbF);
 		}
@@ -299,12 +299,12 @@ function setDragResize(bb, bbV, bbF) {
 		containment: "parent",
 		drag: function( event, ui ) {
 			bb.css({
-				'left': ui.position.left,
-				'top': ui.position.top
+				'left': bbV.position().left,
+				'top': bbV.position().top
 			});
 			bbF.css({
-				'left': ui.position.left,
-				'top': ui.position.top
+				'left': bbV.position().left,
+				'top': bbV.position().top
 			});
 			updateBoundingBoxesData(bb, bbV, bbF);
 		}
