@@ -41,18 +41,22 @@ function addKeyboardEvents(){
 		}
 		var table = $("#people-table").DataTable(); 
 		if(table.$('tr.info').length!=0){
-			if($("#box-"+table.$('tr.info').data("id")).position().left>0){
-				$("#box-"+table.$('tr.info').data("id")).offset({
-							left: Math.max($("#box-"+table.$('tr.info').data("id")).offset().left-move, 
-									$("#video-box").offset().left),
-							top: $("#box-"+table.$('tr.info').data("id")).offset().top
+			var boxId = table.$('tr.info').data("id");
+			var bb = $("#box-"+ boxId);
+			var bbV = $("#box-"+ boxId + "-bbV");
+			var face = $("#box-"+ boxId + "-face");
+
+			if(bb.position().left > 0){
+				bb.offset({
+					left: Math.max(bb.offset().left - move, 0),
+					top: bb.offset().top
 				});
-				$("#box-"+table.$('tr.info').data("id")+"-bbV").offset({
-							left: Math.max($("#box-"+table.$('tr.info').data("id")+"-bbV").offset().left-move, 
-										$("#video-box").offset().left),
-							top: $("#box-"+table.$('tr.info').data("id")+"-bbV").offset().top
+				bbV.offset({
+					left: Math.max(bbV.offset().left - move, 0),
+					top: bbV.offset().top
 				});
 			} 
+			updateBoundingBoxesData(bb, bbV, face);
 		}
 		return false;
 	});
@@ -67,20 +71,26 @@ function addKeyboardEvents(){
 		}
 		var table = $("#people-table").DataTable(); 
 		if(table.$('tr.info').length!=0){ 
-			if($("#box-"+table.$('tr.info').data("id")).position().left+$("#box-"+table.$('tr.info').data("id")).outerWidth()*panzoom_scale<(680*panzoom_scale)){	
-				$("#box-"+table.$('tr.info').data("id")).offset({
-							left: Math.min($("#box-"+table.$('tr.info').data("id")).offset().left+move, 
-									$("#video-box").offset().left + $("#video-box").width()*panzoom_scale - 
-									$("#box-"+table.$('tr.info').data("id")).outerWidth()*panzoom_scale),
-							top: $("#box-"+table.$('tr.info').data("id")).offset().top
+			var boxId = table.$('tr.info').data("id");
+			var bb = $("#box-"+ boxId);
+			var bbV = $("#box-"+ boxId + "-bbV");
+			var face = $("#box-"+ boxId + "-face");
+			
+			if(bb.position().left + bb.outerWidth() < $("#video-box").width()){	
+				bb.offset({
+							left: Math.min(bb.offset().left + move, 
+									$("#video-box").offset().left + $("#video-box").width() - 
+									bb.outerWidth()),
+							top: bb.offset().top
 				});
-				$("#box-"+table.$('tr.info').data("id")+"-bbV").offset({
-							left: Math.min($("#box-"+table.$('tr.info').data("id")+"-bbV").offset().left+move, 
-									$("#video-box").offset().left + $("#video-box").width()*panzoom_scale - 
-									$("#box-"+table.$('tr.info').data("id")+"-bbV").outerWidth()*panzoom_scale),
-							top: $("#box-"+table.$('tr.info').data("id")+"-bbV").offset().top
+				bbV.offset({
+							left: Math.min(bbV.offset().left+move, 
+									$("#video-box").offset().left + $("#video-box").width() - 
+									bbV.outerWidth()),
+							top: bbV.offset().top
 				});
-			} 
+			}
+			updateBoundingBoxesData(bb, bbV, face);
 		}
 		return false;
 	});
@@ -95,20 +105,26 @@ function addKeyboardEvents(){
 		}
 		var table = $("#people-table").DataTable(); 
 		if(table.$('tr.info').length!=0){ 
-			if($("#box-"+table.$('tr.info').data("id")).position().top+$("#box-"+table.$('tr.info').data("id")).outerHeight()*panzoom_scale<425*panzoom_scale){
-				$("#box-"+table.$('tr.info').data("id")).offset({
-							left: $("#box-"+table.$('tr.info').data("id")).offset().left,
-							top: Math.min($("#box-"+table.$('tr.info').data("id")).offset().top+move, 
-									$("#video-box").offset().top + $("#video-box").height()*panzoom_scale - 
-									$("#box-"+table.$('tr.info').data("id")).outerHeight()*panzoom_scale)
+			var boxId = table.$('tr.info').data("id");
+			var bb = $("#box-"+ boxId);
+			var bbV = $("#box-"+ boxId + "-bbV");
+			var face = $("#box-"+ boxId + "-face");
+			
+			if(bb.position().top+bb.outerHeight() < $("#video-box").height()){
+				bb.offset({
+							left: bb.offset().left,
+							top: Math.min(bb.offset().top+move, 
+									$("#video-box").offset().top + $("#video-box").height() - 
+									bb.outerHeight())
 				});
-				$("#box-"+table.$('tr.info').data("id")+"-bbV").offset({
-							left: $("#box-"+table.$('tr.info').data("id")+"-bbV").offset().left,
-							top: Math.min($("#box-"+table.$('tr.info').data("id")+"-bbV").offset().top+move, 
-									$("#video-box").offset().top + 	$("#video-box").height()*panzoom_scale - 
-									$("#box-"+table.$('tr.info').data("id")+"-bbV").outerHeight()*panzoom_scale)
+				bbV.offset({
+							left: bbV.offset().left,
+							top: Math.min(bbV.offset().top+move, 
+									$("#video-box").offset().top + 	$("#video-box").height() - 
+									bbV.outerHeight())
 				});
-			} 
+			}
+			updateBoundingBoxesData(bb, bbV, face);
 		}
 		return false;
 	});
@@ -123,16 +139,22 @@ function addKeyboardEvents(){
 		}
 		var table = $("#people-table").DataTable(); 
 		if(table.$('tr.info').length!=0){ 
-			if($("#box-"+table.$('tr.info').data("id")).position().top>0){
-				$("#box-"+table.$('tr.info').data("id")).offset({
-							left: $("#box-"+table.$('tr.info').data("id")).offset().left,
-							top: Math.max($("#box-"+table.$('tr.info').data("id")).offset().top-move, $("#video-box").offset().top)
+			var boxId = table.$('tr.info').data("id");
+			var bb = $("#box-"+ boxId);
+			var bbV = $("#box-"+ boxId + "-bbV");
+			var face = $("#box-"+ boxId + "-face");
+			
+			if(bb.position().top>0){
+				bb.offset({
+							left: bb.offset().left,
+							top: Math.max(bb.offset().top-move, 0)
 				});
-				$("#box-"+table.$('tr.info').data("id")+"-bbV").offset({
-							left: $("#box-"+table.$('tr.info').data("id")+"-bbV").offset().left,
-							top: Math.max($("#box-"+table.$('tr.info').data("id")+"-bbV").offset().top-move, $("#video-box").offset().top)
+				bbV.offset({
+							left: bbV.offset().left,
+							top: Math.max(bbV.offset().top-move, 0)
 				});
 			} 
+			updateBoundingBoxesData(bb, bbV, face);
 		}
 		return false;
 	});
