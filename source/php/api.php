@@ -40,9 +40,9 @@
 		 * 
 		 * @return boolean : true if user can proceed
 		 */
-		case "check-gt-login":
+		case "check-gt-login":			
 			$to_return = true;	
-			if (!isset($_SESSION["user"])){			
+			if (!isset($_SESSION["user"])){	
 				if($_REQUEST["user"]!="" &&  $_REQUEST["camera_id"]!="" && 
 					($_REQUEST["frame_id"]!="number" || $_REQUEST["frame_number"]!="")){
 						$sql = $QUERIES->getUserIdFromName($_REQUEST['user']);
@@ -53,7 +53,7 @@
 							while ($row=mysql_fetch_array($result) ){
 								$_SESSION["user"] = $row["userid"];
 								$_SESSION["camera_id"] = $_REQUEST["camera_id"];
-								$sql = $QUERIES->countNoGroupsByUserName($_REQUEST['user']);
+								$sql = $QUERIES->countNoGroupsByUserName($_REQUEST['user']);								
 								$result_zero = mysql_query($sql) or $to_return = false;
 								
 								if (mysql_num_rows($result_zero) == 0) {
@@ -65,20 +65,22 @@
 									}
 								}
 							}
-						}						
+						}		
 						
+ 						
 						if ($_REQUEST["frame_id"] == 'first'){
 								$sql= $QUERIES->getFirstFrameId($_SESSION['camera_id']);
-								$result_2 = mysql_query($sql) or $to_return = false;						
+								$result_2 = mysql_query($sql) or $to_return = false;
+								if(!$to_return) $log .= "ERROR";
 								while ($final_res=mysql_fetch_array($result_2) ){
 									$_SESSION["frame_id"] = intval($final_res["id"]);
 								}
-						}else{
+						} else {
 							if ($_REQUEST["frame_id"] == 'FUF'){
 								$sql= $QUERIES->getFirstUntaggedFrameId($_SESSION['user'], $_SESSION['camera_id']);
 								$result_2 = mysql_query($sql) or $to_return = false;
 								while ($final_res=mysql_fetch_array($result_2) ){
-									$_SESSION["frame_id"] = intval($final_res["id"]);									
+									$_SESSION["frame_id"] = intval($final_res["id"]);
 								}		
 							} else {
 								if ($_REQUEST["frame_id"] == 'number'){
@@ -90,7 +92,6 @@
 					$to_return = false;
 				}
 			}
-			
 			jecho($to_return);
 			break;
 
@@ -524,16 +525,16 @@
 			$dimension = array();
 			$frame = array();	
 			$done = true;
-
-			if( !isset($_REQUEST["frame_id"])){
+			
+			if( !isset($_REQUEST["frame_id"])){	
 				$myframe = $_SESSION["frame_id"];
-
 			} else {
 				$myframe = $_REQUEST["frame_id"];
 				$_SESSION["frame_id"] = $_REQUEST["frame_id"];
 			}
 			
 			$sql = $QUERIES->getFrameById($myframe, $_SESSION['camera_id']);
+						
 			$result = mysql_query($sql) or $done = false;
 			if ($done == true){
 				while ($row = mysql_fetch_array($result) ){

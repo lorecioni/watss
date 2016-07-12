@@ -311,7 +311,7 @@ function checkLogin(){
 					url: "../php/api.php",
 					data: {action:"get-frame"},
 					success: function(response){
-						console.log("[get-frame] returned");
+						console.log("[get-frame] returned" + response);
 						setFrame(response);
 					},
 					async: false
