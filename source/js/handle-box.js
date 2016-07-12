@@ -77,7 +77,13 @@
 					break;
 			
 				case 'mouseleave':
-					$(this).remove();
+					if(geometryEnabled){
+						if($('.bb.init').length == 0){
+							$(this).remove();
+						}
+					} else {
+						$(this).remove();
+					}
 					break;
 	
 				case 'mousemove':
@@ -86,7 +92,7 @@
 						var addedId = $('.bb.init').first().data('id');
 						var x = e.pageX - $('#video-wrapper').offset().left;
 						var y = e.pageY - $('#video-wrapper').offset().top;
-						
+
 						$('#video-wrapper #box-' + addedId).css({
 							'left': x,
 							'top': y
@@ -99,6 +105,34 @@
 							'left': x,
 							'top': y
 						});
+						
+						if(isCameraCalibrationActive()){
+							//Evaluate current position approximate height with geometry
+							var videoBoxWidth = $('#video-box').width();
+							var videoBoxHeight = $('#video-box').height();
+							var videoWidth = $("#video-box").data("width");
+							var videoHeight = $("#video-box").data("height");
+							var defactorWidth = videoWidth/videoBoxWidth;
+							var defactorHeight = videoHeight/videoBoxHeight;
+							var factorHeight = videoBoxHeight/videoHeight;
+							
+							var h = evaluateApproximateHeight(x * defactorWidth, y * defactorHeight);
+							h = h * factorHeight; //Back to video box size
+							var w = h/2;
+							$('#video-wrapper #box-' + addedId).css({
+								'width': w,
+								'height': h
+							});
+							$('#video-wrapper #box-' + addedId + '-bbV').css({
+								'width': w,
+								'height': h
+							});
+							$('#video-wrapper #box-' + addedId + '-face').css({
+								'width': w,
+								'height': h
+							});
+						}
+
 					} else {
 				        var startX = parseInt($('#bb-selection').css('left'));
 				        var startY = parseInt($('#bb-selection').css('top'));

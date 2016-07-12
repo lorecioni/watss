@@ -1,5 +1,8 @@
 var cameraCalibration = {};
 
+/**
+ * Loads camera calibration for the selected camera in session
+ */
 function loadCameraCalibration(){
 	//Loading camera calibration
 	$.ajax({
@@ -13,19 +16,10 @@ function loadCameraCalibration(){
 				cameraCalibration["intrinsic"] = math.eval(response.intrinsic);
 				cameraCalibration["omography"] = math.eval(response.omography);
 				cameraCalibration["param"] = math.eval(response.param);
-
 				cameraCalibration['l'] = computeVanishingLine();
 				cameraCalibration['v'] = computeVanishingRect();
 				cameraCalibration['W'] = computeW();
-				
-				/**
-				 * p = [x, y, 1]  image point
-				 * P = W * p;
-				 * P = P /P(3)
-				 */
-				
-				console.log(cameraCalibration);
-				
+				console.log('Camera calibration loaded')				
 			} else {
 				console.log('Camera calibration not set');
 			}
@@ -33,7 +27,39 @@ function loadCameraCalibration(){
 	});
 }
 
+/**
+ * Check if camera calibration is active
+ */
+function isCameraCalibrationActive(){
+	return cameraCalibration.active;
+}
 
+/**
+ * Evaluate approximate height of a person given head position
+ * @param x
+ * @param y
+ * @returns
+ */
+function evaluateApproximateHeight(x, y){
+	/** MATLAB script
+	 * Feet = [x, y, 1]
+	 * Head = inv(W) * Feet'
+	 * Head = Head ./ Head(3)
+	 */
+	if(isCameraCalibrationActive()){
+		var feet = math.eval('[' + x + '; ' + y + '; 1]');
+		var head = math.multiply(math.inv(cameraCalibration.W), feet);
+		head = math.dotDivide(head, math.subset(head, math.index(2, 0)));
+		var height = Math.abs(math.subset(head, math.index(1, 0)) - y);
+		return height;	
+	} else {
+		return null;
+	}
+}
+
+/**
+ * Evaluating vanishing lines and W matrix
+ */
 function computeVanishingLine(){
 	/** MATLAB script
 	 * l = HW2I * [0 0 1]';
