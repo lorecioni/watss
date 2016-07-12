@@ -22,23 +22,6 @@ plot(p2(1),p2(2),'r.','MarkerSize',30);
 plot(p3(1),p3(2),'r.','MarkerSize',30);
 plot(p4(1),p4(2),'r.','MarkerSize',30);
 
-mu = -1.45;
-W=eye(3)+(1/(1-mu)-1).*((imgVinfty*imgVanline')./(imgVinfty'*imgVanline));
- 
-p1 = [400 400  1];
- P1 = W*[p1(1) p1(2) 1]';P1=P1./P1(3)
- 
- P1 = [400 400 1]
-p=  inv(W) * P1'
-P = p./p(3)
-
-
-
-z = [525 172 1];
-
-Z = inv(W) * z'
-Z = Z./Z(3)
-
 for mu=0:-0.01:-2.0
     W=eye(3)+(1/(1-mu)-1).*((imgVinfty*imgVanline')./(imgVinfty'*imgVanline));
     hold on;
