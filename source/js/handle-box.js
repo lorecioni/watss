@@ -148,7 +148,16 @@
 		updateBoundingBoxesData(bb, bbV, face);
 	});
 	
-
+	$(document).bind('keydown', 'delete backspace', function (e){
+		if($('.bb-selected').length > 0){
+			e.preventDefault();
+			var sel = $('.bb-selected').first().data('id');
+			$('#people-table tr[data-id=' + sel + '] .remove-person').click();
+			$('.timeline').timeline('removePerson', sel);
+		}
+	});
+	
+	
 	$(document).bind('keydown', 'esc', function (e){
 		if($('.bb.init').length > 0){
 			var addedId = $('.bb.init').first().data('id');
