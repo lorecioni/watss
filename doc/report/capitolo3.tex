@@ -45,5 +45,36 @@ Selezionando una bounding box è infine possibile ridimensionarla semplicemente 
 
 \subsection{La timeline}
 
+La timeline è stata aggiunta all'interfaccia immediatamente sotto il frame. La timeline è così composta:
+\begin{itemize}
+\item Elenco dei frames: vengono visualizzati in ordine crescente in orizzontale. Viene visualizzato un sottoinsieme di frame adiacenti a quello corrente, evidenziato con un cursore a forma di freccia. Per ciascun frame viene indicata la presenza o meno di annotazioni (colore rosso) ed il numero.
+\item Elenco delle annotazioni: nel pannello laterale sinistro viene mostrato l'elenco delle annotazioni presenti nel frame corrente.
+\end{itemize}
 
+\begin{figure}[h]
+\centering
+\includegraphics[width=1\linewidth]{images/timeline.jpg}
+  \caption{La \emph{timeline}}
+  \label{fig:timeline}
+\end{figure}
 
+E' possibile navigare tra i frame selezionandone uno dall'elenco e scorrerli mediante il trackpad o la rotellina del mouse.
+
+Selezionando una persona nell'elenco viene mostrata la sua presenza nei frame della timeline mediante una barra orizzontale apposta sopra i frame in cui è presente la stessa persona. 
+
+A partire dalla barra visualizzata è possibile iniziare il processo di generazione dei \emph{proposals} per i frame successivi. Per fare questo è sufficiente trascinare l'estremo destro  della barra fino al frame entro il quale si vuole generare la predizione. Un esempio di generazione di proposals è mostrato in Figura \ref{fig:proposals}.
+
+\begin{figure}[h]
+\centering
+\includegraphics[width=.12\textwidth]{images/proposals/1.jpg}\quad
+\includegraphics[width=.12\textwidth]{images/proposals/2.jpg}\quad
+\includegraphics[width=.12\textwidth]{images/proposals/3.jpg}
+\medskip
+\includegraphics[width=.12\textwidth]{images/proposals/4.jpg}\quad
+\includegraphics[width=.12\textwidth]{images/proposals/5.jpg}\quad
+\includegraphics[width=.12\textwidth]{images/proposals/6.jpg}
+\caption{Generazione di \emph{proposal} a partire da un'annotazione iniziale}
+\label{fig:proposals}
+\end{figure}
+
+\end{document}
