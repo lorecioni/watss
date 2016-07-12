@@ -8,33 +8,38 @@
 
 
 (function() {
-
-	$('#video-box').click(function(e){
-		var geometryEnabled = $('#enable-geometry').is(':checked');
-		if(geometryEnabled){
-			e.preventDefault();
-			$('.video-overlay').remove();
-			var bb = $('.bb.init').first();
-			$('.init').removeClass('init');
-			bb.click()
-		}	
-	});
 	
 	/**
-	 * Enabling bounding box creation, bb is attached to the pointer
-	 * until click on a frame position
+	 * Enabling bounding box creation
+	 * Case geometry enabled: bounding box is attached to the pointer and its dimensions change wrt 
+	 * scene geometry. Clicking on a point in the image to release it
+	 * If geometry is not enabled define manually the bounding box by click and hold.
 	 */
-	$(document).on("mousedown mouseup mousemove mouseleave", '.video-overlay', function(e){
+	$(document).on("mousedown mouseup mousemove mouseleave click", '.video-overlay', function(e){
 		if($('.bb.init').length > 0){
 			var geometryEnabled = $('#enable-geometry').is(':checked');
 			
+			var bb = $('.bb.init').first();
+			var bbV = $('.bbV.init').first();
+			var face = $('.face.init').first();
+			
 			switch (e.type){
+				case 'click':
+					if(geometryEnabled){
+						e.preventDefault();
+						$('.video-overlay').remove();
+						$('.init').removeClass('init');
+						bb.click()
+						updateBoundingBoxesData(bb, bbV, face)
+					}
+					break;
+			
 				case 'mousedown':
 					if(!geometryEnabled){
 						$('.video-overlay').append('<div id="bb-selection"></div>');
 						var x = e.offsetX;
 						var y = e.offsetY;
-						var color = $('.bb.init').first().css('border-color');
+						var color = bb.css('border-color');
 						$('.video-overlay #bb-selection').css({
 							'left': x, 
 							'top': y,
@@ -49,10 +54,7 @@
 						var y = $('#bb-selection').css('top');
 						var w = $('#bb-selection').css('width');
 						var h = $('#bb-selection').css('height');
-						var bb = $('.bb.init').first();
-						var bbV = $('.bbV.init').first();
-						var face = $('.face.init').first();
-						
+
 						bb.css({
 							'top': y,
 							'left': x,
@@ -67,7 +69,7 @@
 							'top': y,
 							'left': x
 						});
-						bb.first().click();
+						bb.click();
 						$('.init').removeClass('init');
 						updateBoundingBoxesData(bb, bbV, face)
 						$(this).remove();
@@ -77,8 +79,7 @@
 				case 'mouseleave':
 					$(this).remove();
 					break;
-					
-					
+	
 				case 'mousemove':
 					if(geometryEnabled){
 						//Attach bounding box to the pointer
@@ -148,6 +149,9 @@
 		updateBoundingBoxesData(bb, bbV, face);
 	});
 	
+	/**
+	 * Delete selected bounding box on delete or backspace button pressed
+	 */
 	$(document).bind('keydown', 'delete backspace', function (e){
 		if($('.bb-selected').length > 0){
 			e.preventDefault();
@@ -157,7 +161,9 @@
 		}
 	});
 	
-	
+	/**
+	 * Interrupt bounding box creation pressing esc button
+	 */
 	$(document).bind('keydown', 'esc', function (e){
 		if($('.bb.init').length > 0){
 			var addedId = $('.bb.init').first().data('id');
@@ -165,6 +171,14 @@
 		}
 	});
 })();
+
+/**
+ * Initialize draggable and resizable for every bounding boxes
+ * @param bb
+ * @param bbV
+ * @param bbF
+ * @returns
+ */
 
 function setDragResize(bb, bbV, bbF) {
 
@@ -250,6 +264,13 @@ function setDragResize(bb, bbV, bbF) {
 	});
 }
 
+/**
+ * Update bounding box real positions wrt zoom and pan of the window
+ * @param bb
+ * @param bbV
+ * @param bbF
+ * @returns
+ */
 function updateBoundingBoxesData(bb, bbV, bbF){
 	/** updates bounding box dimension wrt zoom and pan **/	
 	var videoBoxWidth = $('#video-box').width();
