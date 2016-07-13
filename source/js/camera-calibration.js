@@ -42,15 +42,15 @@ function isCameraCalibrationActive(){
  */
 function evaluateApproximateHeight(x, y){
 	/** MATLAB script
-	 * Feet = [x, y, 1]
-	 * Head = inv(W) * Feet'
-	 * Head = Head ./ Head(3)
+	 * Head = [x, y, 1]
+	 * Feet = inv(W) * Head'
+	 * Feet = Feet ./ Feet(3)
 	 */
 	if(isCameraCalibrationActive()){
-		var feet = math.eval('[' + x + '; ' + y + '; 1]');
-		var head = math.multiply(math.inv(cameraCalibration.W), feet);
-		head = math.dotDivide(head, math.subset(head, math.index(2, 0)));
-		var height = Math.abs(math.subset(head, math.index(1, 0)) - y);
+		var head = math.eval('[' + x + '; ' + y + '; 1]');
+		var feet = math.multiply(math.inv(cameraCalibration.W), head);
+		feet = math.dotDivide(feet, math.subset(feet, math.index(2, 0)));
+		var height = Math.abs(math.subset(feet, math.index(1, 0)) - y);
 		return height;	
 	} else {
 		return null;
