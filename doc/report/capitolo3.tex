@@ -114,7 +114,7 @@ Per accedere alla pagina di configurazione è necessario aver preventivamente ef
 
 Per agevolare le operazioni di installazione è stata infine creata una pagina dedicata a questo scopo che guida nella procedura tramite interfaccia grafica. 
 
-La procedura di installazione viene descritta in seguito nella Sezione.
+La procedura di installazione viene descritta in seguito nell'Appendice A.
 
 \subsection{Tecniche utilizzate}
 
@@ -208,3 +208,38 @@ Se non viene rilevata alcuna predizione da motion o pedestrian detection viene c
 
 
 \subsubsection{Geometria della scena}
+
+Nella fase di inserimento di una nuova annotazione viene utilizzata la geometria della scena per proporre una dimensione della bounding box che rispetti la prospettiva, rendendo molto veloce il suo piazzamento nel frame.
+Questo è possibile poichè le camere sono statiche ed è dunque possibile calcolarne la calibrazione. 
+
+Sia $K$ la matrice di \emph{parametri intrinseci} di camera, $R$ la matrice di \emph{rotazione} e $t$ il vettore di traslazione. Sia poi $x = (x, y, 1)$ un punto nel \emph{piano immagine} e $P = (X, Y, Z, 1)$ un punto nel \emph{reale} (in 3D). 
+
+La relazione che lega i due punti è data da:
+\begin{equation}
+x = K*[R|t]* X = P * X
+\end{equation}
+con $P$ indicata la \emph{matrice di proiezione di camera}. 
+
+Data la matrice $P$, si calcolano la \emph{vanishing line} del piano di riferimento come:
+\begin{equation}
+l = P * [0, 0, 1]'
+\end{equation}
+ed il \emph{vanishing point} della direzione verticale normalizzato:
+\begin{equation}
+v = ((K')^{-1} * K^{-1}) * l
+\end{equation}
+
+A questo punto è possibile calcolare $W$, matrice omologia:
+\begin{equation}
+W = I + (\frac{1}{(1 - \mu)} - 1) * \frac{v * l'}{v' * l}
+\end{equation}
+con $\mu$ parametro che dipende dal dispositivo e dalla scala, da trovare sperimentalmente per ciascuna camera.
+
+Calcolata la matrice $W$ è possibile, dato il punto della testa nell'immagine, $head = (x, y, 1)$, risalire al punto dei piedi nella scena tramite:
+\begin{equation}
+feet = W^{-1} * head
+\end{equation}
+normalizzando poi rispetto alla terza dimensione. Dato dunque il punto dei piedi è possibile ricavare l'altezza con
+\begin{equation}
+height = |head_y - feet_y|
+\end{equation}
