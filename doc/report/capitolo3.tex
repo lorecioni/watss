@@ -1,4 +1,6 @@
-\section{L'interfaccia}
+\section{Implementazione}
+
+\subsection{L'interfaccia}
 
 L'interfaccia utente del sistema è stata rivisitata ed adattata alle nuove esigenze. 
 
@@ -14,7 +16,7 @@ L'interfaccia utente del sistema è stata rivisitata ed adattata alle nuove esig
 La parte principale è costituita dal frame video su cui andremo ad aggiungere annotazioni e visualizzare quelle già esistenti.
 I due pannelli laterali per le persone e gruppi presenti nella scena sono stati organizzati in modo tale da consentirne una rapida navigazione ed uso. Come nella precedente versione dell'interfaccia, il pannello \emph{People} mostra la lista delle annotazioni presenti nel frame visualizzato, ordinate in base all'identificativo delle persone. Per ciascuna persona viene mostrato il \emph{gaze }del corpo e della faccia, il \emph{gruppo di appartenenza} ed il \emph{punto di interesse} presso cui si trovano. 
 
-\subsection{Inserimento di una annotazione}
+\subsubsection{Inserimento di una annotazione}
 
 Tramite il pulsante \emph{Add person} presente nel pannello delle annotazioni è possibile aggiungere una nuova annotazione al frame. 
 
@@ -35,7 +37,7 @@ Se invece è attiva la geometria, questa verrà sfruttata per stimare l'altezza 
 
 In entrambi i casi, la procedura di inserimento può essere interrotta premendo il tasto \emph{ESC}.
 
-\subsection{Modifica di una annotazione}
+\subsubsection{Modifica di una annotazione}
 
 E' stata inoltre migliorata la fase di modifica delle annotazioni presenti. Le bounding box sono ora trascinabili e ridimensionabili mediante il mouse. 
 
@@ -43,7 +45,7 @@ Sia in fase di creazione che di modifica è ora possibile effettuare uno zoom de
 
 Selezionando una bounding box è infine possibile ridimensionarla semplicemente mediante la rotellina del mouse, consentendo una rapida scalatura del rettangolo definito.
 
-\subsection{La timeline}
+\subsubsection{La timeline}
 
 La timeline è stata aggiunta all'interfaccia immediatamente sotto il frame. La timeline è così composta:
 \begin{itemize}
@@ -77,4 +79,38 @@ A partire dalla barra visualizzata è possibile iniziare il processo di generazi
 \label{fig:proposals}
 \end{figure}
 
+
+\subsection{Esportazione dei dati}
+
+La pagina di esportazione dei dati è stata ridisegnata al fine di consentire maggiori funzionalità. Nella precedente versione era possibile esportare un'unica tabella contenente le annotazioni presenti nei frames. 
+
+Le funzioni di esportazione si suddividono ora in annotazioni e database: tramite il pannello \emph{Annotations} è possibile selezionare i campi delle annotazioni desiderati e quali frame si vogliono estrarre, mentre tramite il pannello \emph{Database} è possibile esportare la base dati (o solamente lo schema o la combinazione di schema e dati).
+
+\subsection{Configurazioni}
+
+Rispetto alla precedente versione, è stata creata una pagina di configurazione del sistema, al fine di rendere lo possibile l'interazione con gli elementi del database direttamente dall'interfaccia.
+
+Nella pagina di configurazione è possibile:
+\begin{itemize}
+\item Configurare la \emph{connessione al database}
+\item Inserire e rimuovere gli \emph{utenti} che hanno accesso al sistema
+\item Aggiungere, rimuovere e impostare la \emph{calibrazione} delle \emph{camere}
+\item Aggiungere e rimuovere i \emph{punti di interesse}
+\item Selezionare le tecniche usate nella generazione dei \emph{proposals}
+\end{itemize} 
+
+Per accedere alla pagina di configurazione è necessario aver preventivamente effettuato l'accesso al sistema.
 \end{document}
+
+\subsection{Pagina di installazione}
+
+Per agevolare le operazioni di installazione è stata infine creata una pagina dedicata a questo scopo che guida nella procedura tramite interfaccia grafica. 
+
+La procedura di installazione viene descritta in seguito nella Sezione.
+
+\subsection{Tecniche utilizzate}
+
+
+\subsubsection{Generazione dei proposals}
+
+\subsubsection{Geometria della scena}
