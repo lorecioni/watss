@@ -198,8 +198,7 @@ class PedestrianTracking:
                     (x, y, w, h) = person
                     
                     #Adjusting detection
-                    pad_w, pad_h = int(0.15 * w), int(0.05 * h)
-                    pad_w, pad_h = 0, 0 
+                    pad_w, pad_h = int(0.1 * w), int(0.08 * h)
                     p = (wx + x + pad_w, wy + y + pad_h, w - 2*pad_w, h-2*pad_h)
                     intersect, score, ratio = self.boundingBoxIntersect(frame, self.track_window, p)
                     if intersect:
