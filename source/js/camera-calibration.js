@@ -17,7 +17,7 @@ function loadCameraCalibration(){
 				cameraCalibration["omography"] = math.eval(response.omography);
 				cameraCalibration["param"] = math.eval(response.param);
 				cameraCalibration['l'] = computeVanishingLine();
-				cameraCalibration['v'] = computeVanishingRect();
+				cameraCalibration['v'] = computeVanishingPoint();
 				cameraCalibration['W'] = computeW();
 				console.log('Camera calibration loaded')				
 			} else {
@@ -67,7 +67,7 @@ function computeVanishingLine(){
 	return math.multiply(cameraCalibration.omography, math.eval('[0; 0; 1]'));
 }
 
-function computeVanishingRect(){
+function computeVanishingPoint(){
 	/** MATLAB script
 	omega = inv(K') * inv(K);
 	v = inv(omega) * l;
