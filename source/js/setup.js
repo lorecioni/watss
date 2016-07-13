@@ -82,9 +82,9 @@ $(document).ready(function(){
 	});
 	
 	$('#install-button').click(function(){
-		if(!$(this).hasClass('disabled')){
+		//if(!$(this).hasClass('disabled')){
 			install();
-		}
+		//}
 	});
 	
 	$('#start-button').click(function(){
@@ -201,7 +201,10 @@ function getCameras(folderName){
 					settings += '<div class="form-group camera-entry" data-id="' + id + '">';
 					settings += '<label for="camera-calibration-' + id + '" class="col-sm-3 control-label">Camera ' + id + '</label>';
 					settings += '<div class="col-sm-8">';
-					settings += '<input type="text" class="form-control" id="camera-calibration-' + id + '" value="0" placeholder="Calibration">';
+					settings += '<span class="sublabel">Enable geometry</span><input type="checkbox" class="form-control" id="camera-calibration-active-' + id + '">';
+					settings += '<input type="text" class="form-control" id="camera-calibration-intrinsic-' + id + '" placeholder="Intrinsic matrix">';
+					settings += '<input type="text" class="form-control" id="camera-calibration-omography-' + id + '" placeholder="Omography matrix">';
+					settings += '<input type="number" class="form-control" id="camera-calibration-param-' + id + '" placeholder="Parameter">';
 					settings += '</div></div>';
 				}
 				$('#camera-settings-container').html(settings);
@@ -297,8 +300,17 @@ function install(){
 		var cameras = [];
 		for(var i = 0; i < $('.camera-entry').length; i++){
 			var id = $($('.camera-entry')[i]).data('id');
-			var calibration = $('#camera-calibration-' + id).val();
-			cameras.push({id: id, calibration: calibration});
+			var calibration = $('#camera-calibration-' + id).is(':checked');
+			var intrinsic = $('#camera-calibration-intrinsic-' + id).val();
+			var omography = $('#camera-calibration-omography-' + id).val();
+			var param = $('#camera-calibration-param-' + id).val();
+			cameras.push({
+				id: id, 
+				active: calibration,
+				intrinsic: intrinsic,
+				omography: omography,
+				param: param
+			});
 		}
 		
 		var data = [];
@@ -308,15 +320,16 @@ function install(){
 				var dbName = $('#db-name').val();
 				//Users
 				var users = $('#user-list-input').tagsinput('items');
-				
+				var dbConnection = {user: dbUser, password: dbPassword, host: dbHost, name: dbName};
 				data = {
-					connection: {user: dbUser, password: dbPassword, host: dbHost, name: dbName},
+					connection: JSON.stringify(dbConnection),
 					framesFolder: framesFolder,
 					cameras: JSON.stringify(cameras),
 					users: JSON.stringify(users)
 				};
 				
 				createDatabaseConnection(progress, data);
+				break;
 				
 			case 'import':
 				
@@ -348,7 +361,7 @@ function createDatabaseConnection(progress, data){
 		url: "php/setup.php",
 		data: {
 			action: "create-connection",
-			data: data.connection
+			data: data
 		},
 		success: function(response){
 			if(response){
@@ -380,7 +393,7 @@ function createDatabaseConnectionImport(progress, data){
 		url: "php/setup.php",
 		data: {
 			action: "create-connection",
-			data: data.connection
+			data: data
 		},
 		success: function(response){
 			if(response){
@@ -413,7 +426,7 @@ function generateDatabaseSchema(progress, data){
 		url: "php/setup.php",
 		data: {
 			action: "create-schema",
-			data: data.connection
+			data: data
 		},
 		success: function(response){
 			if(response){

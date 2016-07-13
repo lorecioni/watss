@@ -25,6 +25,7 @@ if(isset($_REQUEST['action'])){
 			$password = $_REQUEST['password'];
 			$host = $_REQUEST['host'];
 			$dbConnection = mysqli_connect($host, $user, $password) or $checkDatabaseConnection = false;
+			mysqli_close($dbConnection);
 			jecho($checkDatabaseConnection);
 			break;
 			
@@ -52,11 +53,11 @@ if(isset($_REQUEST['action'])){
 			
 		/** Create connection ini function **/
 		case 'create-connection':
-			$data = $_REQUEST['data'];
-			$dbUser = $data['user'];
-			$dbPass = $data['password'];
-			$dbHost = $data['host'];
-			$dbName = $data['name'];
+			$data = json_decode($_REQUEST['data']['connection']);
+			$dbUser = $data->user;
+			$dbPass = $data->password;
+			$dbHost = $data->host;
+			$dbName = $data->name;
 			
 			$success = createConnectionIniFile($connectionIniPath, $dbUser, $dbPass, $dbHost, $dbName);				
 			
@@ -71,12 +72,11 @@ if(isset($_REQUEST['action'])){
 		case 'create-schema':
 			$success = true;
 			$log = '';
-						
-			$data = $_REQUEST['data'];
-			$dbUser = $data['user'];
-			$dbPass = $data['password'];
-			$dbHost = $data['host'];
-			$dbName = $data['name'];
+			$data = json_decode($_REQUEST['data']['connection']);
+			$dbUser = $data->user;
+			$dbPass = $data->password;
+			$dbHost = $data->host;
+			$dbName = $data->name;
 			$dbConnection = mysqli_connect($dbHost, $dbUser, $dbPass) or $success = false;
 			
 			if($success){
@@ -85,7 +85,7 @@ if(isset($_REQUEST['action'])){
 				if($success){
 					mysqli_select_db($dbConnection, $dbName) or $success = false;
 					if($success){
-						$success = generateSchema($dbConnection, $createSchemaScript);
+						$success = generateSchema($dbConnection, $createSchemaScript);						
 					}
 				} else {
 					$log .= mysqli_error($dbConnection);
@@ -94,10 +94,11 @@ if(isset($_REQUEST['action'])){
 			
 			if($success){
 				jecho($success);
+				mysqli_close($dbConnection);
 			} else {
 				error_500($log);
 			}
-			mysqli_close($dbConnection);
+			
 			break;
 			
 		/**
@@ -106,30 +107,31 @@ if(isset($_REQUEST['action'])){
 		case 'insert-cameras':
 			$success = true;
 			
-			$dbInfo = $_REQUEST['data']['connection'];
-			$dbUser = $dbInfo['user'];
-			$dbPass = $dbInfo['password'];
-			$dbHost = $dbInfo['host'];
-			$dbName = $dbInfo['name'];
+			$dbInfo = json_decode($_REQUEST['data']['connection']);
+			$dbUser = $dbInfo->user;
+			$dbPass = $dbInfo->password;
+			$dbHost = $dbInfo->host;
+			$dbName = $dbInfo->name;
 			$dbConnection = mysqli_connect($dbHost, $dbUser, $dbPass, $dbName) or $success = false;	
 			
-			$sql = 'INSERT INTO `camera` (`cameraid`, `calibration`) VALUES ';
+			$sql = 'INSERT INTO `cameras` (`cameraid`, `calibration`, `intrinsic`, `omography`, `param`) VALUES ';
 			
 			$cameras = json_decode($_REQUEST['data']['cameras']);
 			for($i = 0; $i < count($cameras); $i++){
-				$sql .= '('.$cameras[$i]->id.', '.$cameras[$i]->calibration.')';
+				$calibActive = $cameras[$i]->active ? 1 : 0;
+				$param =  strlen($cameras[$i]->param) > 0 ? $cameras[$i]->param : 0.5;
+				$sql .= "(".$cameras[$i]->id.", ".$calibActive.", '".$cameras[$i]->intrinsic."', '".$cameras[$i]->omography."', ".$param.")";
 				if($i < count($cameras) - 1){
 					$sql .= ',';
 				}
 			}
-			
+									
 			mysqli_query($dbConnection, $sql) or $success = false;
 			
 			if($success){
 				jecho($success);
-			} else {
-				$log = mysqli_error($dbConnection);
-				error_500($log);
+			} else {				
+				error_500('Error importing cameras on database.');
 			}
 			mysqli_close($dbConnection);			
 			break;
@@ -140,16 +142,16 @@ if(isset($_REQUEST['action'])){
 			case 'insert-frames':
 				$success = true;
 					
-				$dbInfo = $_REQUEST['data']['connection'];
-				$dbUser = $dbInfo['user'];
-				$dbPass = $dbInfo['password'];
-				$dbHost = $dbInfo['host'];
-				$dbName = $dbInfo['name'];
+				$dbInfo = json_decode($_REQUEST['data']['connection']);
+				$dbUser = $dbInfo->user;
+				$dbPass = $dbInfo->password;
+				$dbHost = $dbInfo->host;
+				$dbName = $dbInfo->name;
 				$dbConnection = mysqli_connect($dbHost, $dbUser, $dbPass, $dbName) or $success = false;
 				
 				$framesFolder = '../'.$_REQUEST['data']['framesFolder'];
 
-				$sql = 'INSERT INTO `video` (`frameid`, `cameraid`, `path`, `date`) VALUES ';
+				$sql = 'INSERT INTO `frames` (`frameid`, `cameraid`, `path`, `date`) VALUES ';
 					
 				$cameras = json_decode($_REQUEST['data']['cameras']);
 
@@ -198,14 +200,14 @@ if(isset($_REQUEST['action'])){
 				case 'insert-users':
 					$success = true;
 						
-					$dbInfo = $_REQUEST['data']['connection'];
-					$dbUser = $dbInfo['user'];
-					$dbPass = $dbInfo['password'];
-					$dbHost = $dbInfo['host'];
-					$dbName = $dbInfo['name'];
+					$dbInfo = json_decode($_REQUEST['data']['connection']);
+					$dbUser = $dbInfo->user;
+					$dbPass = $dbInfo->password;
+					$dbHost = $dbInfo->host;
+					$dbName = $dbInfo->name;
 					$dbConnection = mysqli_connect($dbHost, $dbUser, $dbPass, $dbName) or $success = false;
 						
-					$sql = 'INSERT INTO `user` (`name`) VALUES ';
+					$sql = 'INSERT INTO `users` (`name`) VALUES ';
 						
 					$users = json_decode($_REQUEST['data']['users']);
 					for($i = 0; $i < count($users); $i++){
@@ -232,11 +234,11 @@ if(isset($_REQUEST['action'])){
 					case 'insert-poi':
 						$success = true;
 					
-						$dbInfo = $_REQUEST['data']['connection'];
-						$dbUser = $dbInfo['user'];
-						$dbPass = $dbInfo['password'];
-						$dbHost = $dbInfo['host'];
-						$dbName = $dbInfo['name'];
+						$dbInfo = json_decode($_REQUEST['data']['connection']);
+						$dbUser = $dbInfo->user;
+						$dbPass = $dbInfo->password;
+						$dbHost = $dbInfo->host;
+						$dbName = $dbInfo->name;
 						$dbConnection = mysqli_connect($dbHost, $dbUser, $dbPass, $dbName) or $success = false;
 					
 						$sql = 'INSERT INTO `poi` (`poiid`, `cameraid`, `location_x`, `location_y`, `width`, `height`, `name`) VALUES ';
@@ -292,11 +294,11 @@ if(isset($_REQUEST['action'])){
 						
 				case 'import-data':
 					$success = true;
-					$dbInfo = $_REQUEST['data']['connection'];
-					$dbUser = $dbInfo['user'];
-					$dbPass = $dbInfo['password'];
-					$dbHost = $dbInfo['host'];
-					$dbName = $dbInfo['name'];
+					$dbInfo = json_decode($_REQUEST['data']['connection']);
+					$dbUser = $dbInfo->user;
+					$dbPass = $dbInfo->password;
+					$dbHost = $dbInfo->host;
+					$dbName = $dbInfo->name;
 					
 					if($dbName != ''){
 						$dbConnection = mysqli_connect($dbHost, $dbUser, $dbPass, $dbName) or $success = false;

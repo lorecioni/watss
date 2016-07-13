@@ -65,7 +65,6 @@
 					<li>Create a frame folder in the root directory.</li>
 					<li>Create a folder inside it the for each camera to use with WATSS (<i>e.g. 1,2,...N  in the frames folder, using only numeric notation</i>).
 					<li>Copy image files inside the correct camera folder.</li>
-				
 				</ul>
 				<p>Images have to be ordered considering the name and the extension of the images.<br>
 				Provide the main frames folder name below.</p>

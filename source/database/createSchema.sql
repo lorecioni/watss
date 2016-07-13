@@ -1,12 +1,11 @@
----
-
 CREATE TABLE IF NOT EXISTS `cameras` (
   `cameraid` int(11) NOT NULL AUTO_INCREMENT,
   `calibration` int(11) NOT NULL,
+  `intrinsic` text,
+  `omography` text,
+  `param` double DEFAULT '0.5',
   PRIMARY KEY (`cameraid`)
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
-
----
 
 CREATE TABLE IF NOT EXISTS `groups` (
   `groupid` int(11) NOT NULL AUTO_INCREMENT,
@@ -16,8 +15,6 @@ CREATE TABLE IF NOT EXISTS `groups` (
   PRIMARY KEY (`groupid`,`userid`),
   KEY `userid` (`userid`)
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
-
----
 
 CREATE TABLE IF NOT EXISTS `people` (
   `peopleid` int(11) NOT NULL,
@@ -48,8 +45,6 @@ CREATE TABLE IF NOT EXISTS `people` (
   KEY `frameid` (`frameid`)
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
----
-
 CREATE TABLE IF NOT EXISTS `poi` (
   `poiid` int(11) NOT NULL,
   `cameraid` int(11) NOT NULL,
@@ -63,8 +58,6 @@ CREATE TABLE IF NOT EXISTS `poi` (
   KEY `poi_fk_cameraid_idx` (`cameraid`)
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
----
-
 CREATE TABLE IF NOT EXISTS `avatars` (
   `peopleid` int(11) NOT NULL AUTO_INCREMENT,
   `face` int(11) NOT NULL,
@@ -73,13 +66,11 @@ CREATE TABLE IF NOT EXISTS `avatars` (
   PRIMARY KEY (`peopleid`)
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
-
 CREATE TABLE IF NOT EXISTS `users` (
   `userid` int(11) NOT NULL AUTO_INCREMENT,
   `name` varchar(30) NOT NULL,
   PRIMARY KEY (`userid`)
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
-
 
 CREATE TABLE IF NOT EXISTS `frames` (
   `frameid` int(11) NOT NULL,
@@ -91,8 +82,6 @@ CREATE TABLE IF NOT EXISTS `frames` (
   KEY `frameid_2` (`frameid`),
   KEY `cameraid` (`cameraid`)
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
-
-
 
 ALTER TABLE `groups`
   ADD CONSTRAINT `group_fk_userid` FOREIGN KEY (`userid`) REFERENCES `users` (`userid`) ON DELETE NO ACTION ON UPDATE NO ACTION;
@@ -110,4 +99,3 @@ ALTER TABLE `poi`
 
 ALTER TABLE `frames`
   ADD CONSTRAINT `frames_fk_cameraid` FOREIGN KEY (`cameraid`) REFERENCES `cameras` (`cameraid`) ON DELETE NO ACTION ON UPDATE NO ACTION;
-
