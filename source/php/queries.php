@@ -173,8 +173,20 @@ class Queries {
 		return "DELETE FROM `".$this->tables->cameras."` WHERE `cameraid` = ".$id."";
 	}
 	
-	function updateCamera($id, $calibration){
+	function updateCameraCalibrationActive($id, $calibration){
 		return "UPDATE `".$this->tables->cameras."` SET `calibration` = ".$calibration." WHERE `cameraid` = ".$id."";
+	}
+	
+	function updateCameraCalibrationIntrinsic($id, $intrinsic){
+		return "UPDATE `".$this->tables->cameras."` SET `intrinsic` = '".$intrinsic."' WHERE `cameraid` = ".$id."";
+	}
+	
+	function updateCameraCalibrationOmography($id, $omo){
+		return "UPDATE `".$this->tables->cameras."` SET `omography` = '".$omo."' WHERE `cameraid` = ".$id."";
+	}
+	
+	function updateCameraCalibrationParam($id, $param){
+		return "UPDATE `".$this->tables->cameras."` SET `param` = ".$param." WHERE `cameraid` = ".$id."";
 	}
 	
 	function insertCamera($calibration){

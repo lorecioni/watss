@@ -183,6 +183,9 @@ if(isset($_REQUEST['action'])){
 								$cam = new stdClass();
 								$cam->id = $row["cameraid"];
 								$cam->calibration = $row["calibration"];
+								$cam->intrinsic = $row['intrinsic'];
+								$cam->omography = $row['omography'];
+								$cam->param = $row['param'];
 								array_push($cameras, $cam);
 							}
 						}
@@ -247,7 +250,34 @@ if(isset($_REQUEST['action'])){
 						$id = $_REQUEST['cameraid'];
 						$calibration = $_REQUEST['calibration'];
 						if($checkDatabaseConnection){
-							$sql = $QUERIES->updateCamera($id, $calibration);
+							$sql = $QUERIES->updateCameraCalibrationActive($id, $calibration);
+							$result = mysql_query($sql) or $success = false;
+						} else {
+							$success = false;
+						}
+					} else if (isset($_REQUEST['cameraid']) && isset($_REQUEST['intrinsic'])){
+						$id = $_REQUEST['cameraid'];
+						$intrinsic = $_REQUEST['intrinsic'];
+						if($checkDatabaseConnection){
+							$sql = $QUERIES->updateCameraCalibrationIntrinsic($id, $intrinsic);
+							$result = mysql_query($sql) or $success = false;
+						} else {
+							$success = false;
+						}
+					} else if (isset($_REQUEST['cameraid']) && isset($_REQUEST['omography'])){
+						$id = $_REQUEST['cameraid'];
+						$omography = $_REQUEST['omography'];
+						if($checkDatabaseConnection){
+							$sql = $QUERIES->updateCameraCalibrationOmography($id, $omography);
+							$result = mysql_query($sql) or $success = false;
+						} else {
+							$success = false;
+						}
+					} else if (isset($_REQUEST['cameraid']) && isset($_REQUEST['param'])){
+						$id = $_REQUEST['cameraid'];
+						$param = $_REQUEST['param'];
+						if($checkDatabaseConnection){
+							$sql = $QUERIES->updateCameraCalibrationParam($id, $param);
 							$result = mysql_query($sql) or $success = false;
 						} else {
 							$success = false;

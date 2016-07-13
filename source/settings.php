@@ -116,28 +116,7 @@
 				  </div>
 				  <!-- end users settings -->
 				  
-				  <!-- Cameras settings -->
-				  <div class="col-xs-6 col-sm-4">
-				  	<div id="camera-settings" class="settings-panel panel panel-default">
-						  <div class="panel-heading">
-						    <h3 class="panel-title">Cameras</h3>
-						  </div>
-						  <div class="panel-body">
-						  	<form id="add-camera-form" class="form-inline">
-							  <div class="form-group">
-							    <input type="number" class="form-control" id="add-camera-calibration" placeholder="Calibration">
-							  </div>
-							  <button type="submit" class="btn btn-primary">Add camera</button>
-							</form>
-							<div class="scrollable-container">
-								<div class="scrollable"></div>
-							</div>
-						  </div>
-						</div>
-				  </div>		    	
-		    	 <!-- end of camera setting -->
-		    	 
-		    	 <!-- Propagation settings -->
+				  		    	 <!-- Propagation settings -->
 				  <div class="col-xs-6 col-sm-4">
 				  	<div id="propagation-settings" class="settings-panel panel panel-default">
 						  <div class="panel-heading">
@@ -177,9 +156,36 @@
 						  </div>
 						</div>
 				  </div>
+				  
+				  </div>
+				  <div class="settings row">
+				  
+				  
+				  <!-- Cameras settings -->
+				  <div class="col-xs-6 col-sm-6">
+				  	<div id="camera-settings" class="settings-panel panel panel-default">
+						  <div class="panel-heading">
+						    <h3 class="panel-title">Cameras</h3>
+						  </div>
+						  <div class="panel-body">
+						  	<form id="add-camera-form" class="form-inline">
+							  <div class="form-group">
+							    <input type="number" class="form-control" id="add-camera-calibration" placeholder="Calibration">
+							  </div>
+							  <button type="submit" class="btn btn-primary">Add camera</button>
+							</form>
+							<div class="scrollable-container">
+								<div class="scrollable"></div>
+							</div>
+						  </div>
+						</div>
+				  </div>		    	
+		    	 <!-- end of camera setting -->
+		    	 
+
 		    	 
 		    	 <!-- POI settings -->
-				  <div class="col-xs-8 col-sm-8">
+				  <div class="col-xs-6 col-sm-6">
 				  	<div id="poi-settings" class="settings-panel panel panel-default">
 						  <div class="panel-heading">
 						    <h3 class="panel-title">Points of Interest</h3>

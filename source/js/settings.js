@@ -385,15 +385,53 @@ function getCameras(){
 					.attr('id', 'camera-' + cameras[i].id)
 					.attr('data-id', cameras[i].id);
 				
+				var calibWrapper = $('<p>Calibration: </p>').addClass('camera-setting-wrapper');
 				var calib = $('<a></a>')
 					.attr('href', '#')
 					.attr('id', 'calibration-' + cameras[i].id)
 					.addClass('editable editable-click')
-					.append('Calibration: ' + cameras[i].calibration)
+					.append(cameras[i].calibration)
 					.attr('data-type', 'text')
-					.attr('data-title', 'Set calibration')
+					.attr('data-title', 'Set active')
 					.attr('data-value', 0)
 					.attr('data-pk', cameras[i].id);
+				calibWrapper.append(calib);
+				
+				var calibIntrinsicWrapper = $('<p>Intrinsic: </p>').addClass('camera-setting-wrapper');
+				var calibIntrinsic = $('<a></a>')
+					.attr('href', '#')
+					.attr('id', 'calibration-intr-' + cameras[i].id)
+					.addClass('editable editable-click')
+					.append(cameras[i].intrinsic)
+					.attr('data-type', 'text')
+					.attr('data-title', 'Set intrinsic matrix')
+					.attr('data-value', "")
+					.attr('data-pk', cameras[i].id);
+				calibIntrinsicWrapper.append(calibIntrinsic);
+				
+				var calibOmographyWrapper = $('<p>Omography: </p>').addClass('camera-setting-wrapper');
+				var calibOmography = $('<a></a>')
+					.attr('href', '#')
+					.attr('id', 'calibration-omo-' + cameras[i].id)
+					.addClass('editable editable-click')
+					.append(cameras[i].omography)
+					.attr('data-type', 'text')
+					.attr('data-title', 'Set omography matrix')
+					.attr('data-value', "")
+					.attr('data-pk', cameras[i].id);
+				calibOmographyWrapper.append(calibOmography);
+				
+				var calibParamWrapper = $('<p>Set parameter: </p>').addClass('camera-setting-wrapper');
+				var calibParam = $('<a></a>')
+					.attr('href', '#')
+					.attr('id', 'calibration-intr-' + cameras[i].id)
+					.addClass('editable editable-click')
+					.append(cameras[i].param)
+					.attr('data-type', 'text')
+					.attr('data-title', 'Set parameter')
+					.attr('data-value', "")
+					.attr('data-pk', cameras[i].id);
+				calibParamWrapper.append(calibParam);
 				
 				calib.editable({
 					type: 'text',
@@ -409,9 +447,57 @@ function getCameras(){
 							console.log(response);
 					}
 				});
+				
+				calibIntrinsic.editable({
+					type: 'text',
+				    url: 'php/settings.php',
+				    mode: 'inline',
+					params: function(params) {
+						params.action = "set-camera-calibration";
+						params.cameraid = params.pk;
+						params.intrinsic = params.value;
+						return params;
+					},
+					success: function(response, newValue) {		
+							console.log(response);
+					}
+				});
+				
+				calibOmography.editable({
+					type: 'text',
+				    url: 'php/settings.php',
+				    mode: 'inline',
+					params: function(params) {
+						params.action = "set-camera-calibration";
+						params.cameraid = params.pk;
+						params.omography = params.value;
+						return params;
+					},
+					success: function(response, newValue) {		
+							console.log(response);
+					}
+				});
+				
+				calibParam.editable({
+					type: 'text',
+				    url: 'php/settings.php',
+				    mode: 'inline',
+					params: function(params) {
+						params.action = "set-camera-calibration";
+						params.cameraid = params.pk;
+						params.param = params.value;
+						return params;
+					},
+					success: function(response, newValue) {		
+							console.log(response);
+					}
+				});
 
-				item.append(calib);
-				item.append(cameras[i].id);
+				item.append('<p><b>Camera ' + cameras[i].id + '</b></p>');
+				item.append(calibWrapper);
+				item.append(calibIntrinsicWrapper);
+				item.append(calibOmographyWrapper);
+				item.append(calibParamWrapper);
 				list.append(item);
 			}
 			$('#camera-settings .panel-body .scrollable').append(list);

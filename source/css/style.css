@@ -301,18 +301,13 @@ img.panel-heading-loading {
     right: 50px;
 }
 
-#camera-settings a.editable {
-    float: right;
-}
-
 #camera-settings span.editable-container.editable-inline {
-    float: right;
-    margin-top: -5px;
+    display: inline-flex;
 }
 
 #camera-settings input.form-control.input-sm {
-    width: 60px;
-}
+    width: 24em;
+
 
 #add-poi-form input.number {
     width: 90px;
