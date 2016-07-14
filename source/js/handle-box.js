@@ -151,7 +151,7 @@
 		if($('.bb.init').length > 0){
 			var geometryEnabled = $('#enable-geometry').is(':checked');	
 			if(!geometryEnabled){
-				if($(e.target).hasClass('.video-overlay')){
+				if($(e.target).hasClass('video-overlay')){
 					var bb = $('.bb.init').first();
 					var bbV = $('.bbV.init').first();
 					var face = $('.face.init').first();
@@ -185,7 +185,7 @@
 					$('.video-overlay').remove();
 				}	
 			} else {
-				if(!$(e.target).hasClass('.video-overlay')){
+				if(!$(e.target).hasClass('video-overlay')){
 					var addedId = $('.bb.init').first().data('id');
 					$('#people-table tr[data-id=' + addedId + '] .remove-person').click();
 					$('.video-overlay').remove();
