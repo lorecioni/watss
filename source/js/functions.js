@@ -852,6 +852,7 @@ function setFrame(frame){
             $zoomOut: $(".zoom-out"),
             minScale: 1,
             contain: 'invert',
+            increment: 1,
             onZoom: function(){
             	var transformMatrix = $('#video-box').panzoom("getMatrix");
             	if(transformMatrix.input == 'matrix(1, 0, 0, 1, -15, 0)'){

@@ -180,7 +180,18 @@
 		}
 	});
 	
-	/** Enabling bounding box scaling with mousewheel **/
+	/** Enabling frame zoom on mousewheel in bounding box not selected **/
+	$(document).on('mousewheel', '.bb', function(e){
+		e.preventDefault();
+		if(e.deltaY > 0){
+			$('#video-box').panzoom("zoom", {focal: e});
+		} else {
+			$('#video-box').panzoom("zoom", true);
+		}
+
+	});
+	
+	/** Enabling bounding box selected scaling with mousewheel **/
 	$(document).on('mousewheel', '.bb-selected', function(e){
 		e.preventDefault();
 		var videoBoxWidth = $('#video-box').width();
