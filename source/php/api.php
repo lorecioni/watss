@@ -312,12 +312,12 @@
 				}
 				
 				$sql = $QUERIES->insertPerson($_REQUEST['people_id'], $_SESSION['frame_id'], $_SESSION['camera_id'], $bb->x, $bb->y, $bb->width, $bb->height, 
-							$bbV->x, $bbV->y, $bbV->width, $bbV->height, 0, 0, 0, 0, $hex, 0, $_SESSION['user'], 0);	
+							$bbV->x, $bbV->y, $bbV->width, $bbV->height, 'null', 'null', 'null', 'null', $hex, 0, $_SESSION['user'], 0);	
 						
 				$result = mysql_query($sql) or $done = false;
 				if ($done){
 					$person = array("id" => $_REQUEST["people_id"], "color" => $hex,
-							"angle_face"=>0,"angle_face_z"=>0,"angle_body"=>0,"angle_body_z"=>0,
+							"angle_face"=>null,"angle_face_z"=>null,"angle_body"=>null,"angle_body_z"=>null,
 							"group" => 0,"artwork" => 0, "prev_frame" => true, 
 							"bb" => array($bb->x, $bb->y, $bb->width, $bb->height),
 							"bbV" => array($bbV->x, $bbV->y, $bbV->width, $bbV->height));
@@ -334,11 +334,11 @@
 				if($done){
 					$my_id = mysql_insert_id();
 					$sql = $QUERIES->insertPerson($my_id, $_SESSION['frame_id'], $_SESSION['camera_id'], $bb->x, $bb->y, $bb->width, $bb->height,
-							$bbV->x, $bbV->y, $bbV->width, $bbV->height, 0, 0, 0, 0, $hex, 0, $_SESSION['user'], 0);
+							$bbV->x, $bbV->y, $bbV->width, $bbV->height, 'null', 'null', 'null', 'null', $hex, 0, $_SESSION['user'], 0);
 					$result = mysql_query($sql) or $done = false;
 					if ($done){
-						$person = array("id" => $my_id, "color" => $hex, "angle_face" => 0,
-								"angle_face_z" => 0, "angle_body" => 0, "angle_body_z" => 0,
+						$person = array("id" => $my_id, "color" => $hex, "angle_face" => null,
+								"angle_face_z" => null, "angle_body" => null, "angle_body_z" => null,
 								"group" => 0,"artwork" => 0, "prev_frame" => true, 
 								"bb" => array($bb->x, $bb->y, $bb->width, $bb->height),
 								"bbV" => array($bbV->x, $bbV->y, $bbV->width, $bbV->height));
@@ -371,7 +371,7 @@
 					$bbV = $config->bbV;
 					//If person is a proposal and it has been approved, insert it into frame people list
 					$sql = $QUERIES->insertPerson(intval($_REQUEST["id"]), $_SESSION['frame_id'], $_SESSION['camera_id'], $bb->x, $bb->y, $bb->width, $bb->height, 
-							$bbV->x, $bbV->y, $bbV->width, $bbV->height, 0, 0, 0, 0, $_REQUEST['color'], 0, $_SESSION['user'], 0);	
+							$bbV->x, $bbV->y, $bbV->width, $bbV->height, 'null', 'null', 'null', 'null', $_REQUEST['color'], 0, $_SESSION['user'], 0);	
 					$result=mysql_query($sql) or $success = false;
 				}
 			}
@@ -385,7 +385,7 @@
 					$bbV = $config->bbV;
 					//If person is a proposal and it has been approved, insert it into frame people list
 					$sql = $QUERIES->insertPerson(intval($_REQUEST["id"]), $_SESSION['frame_id'], $_SESSION['camera_id'], $bb->x, $bb->y, $bb->width, $bb->height,
-							$bbV->x, $bbV->y, $bbV->width, $bbV->height, 0, 0, 0, 0, '#000000', 0, $_SESSION['user'], $_REQUEST['group_id']);
+							$bbV->x, $bbV->y, $bbV->width, $bbV->height, 'null', 'null', 'null', 'null', '#000000', 0, $_SESSION['user'], $_REQUEST['group_id']);
 					$result = mysql_query($sql) or $success = false;
 				}
 			}	
@@ -402,7 +402,7 @@
 					$bbV = $config->bbV;
 					//If person is a proposal and it has been approved, insert it into frame people list
 					$sql = $QUERIES->insertPerson(intval($_REQUEST["id"]), $_SESSION['frame_id'], $_SESSION['camera_id'], $bb[0], $bb[1], $bb[2], $bb[3],
-							$bbV->x, $bbV->y, $bbV->width, $bbV->height, 0, 0, 0, 0, '#000000', 0, $_SESSION['user'], 0);
+							$bbV->x, $bbV->y, $bbV->width, $bbV->height, 'null', 'null', 'null', 'null', '#000000', 0, $_SESSION['user'], 0);
 					$result = mysql_query($sql) or $success = false;
 					}
 		    }
@@ -419,7 +419,7 @@
 					$bbV = $_REQUEST['bbV'];
 					//If person is a proposal and it has been approved, insert it into frame people list
 					$sql = $QUERIES->insertPerson(intval($_REQUEST["id"]), $_SESSION['frame_id'], $_SESSION['camera_id'],$bb->x, $bb->y, $bb->width, $bb->height,
-							$bbV[0], $bbV[1], $bbV[2], $bbV[3], 0, 0, 0, 0, '#000000', 0, $_SESSION['user'], 0);
+							$bbV[0], $bbV[1], $bbV[2], $bbV[3], 'null', 'null', 'null', 'null', '#000000', 0, $_SESSION['user'], 0);
 					$result=mysql_query($sql) or $success = false;
 				}
 			}	
@@ -433,7 +433,7 @@
 					$bbV = $config->bbV;
 					//If person is a proposal and it has been approved, insert it into frame people list
 					$sql = $QUERIES->insertPerson(intval($_REQUEST["id"]), $_SESSION['frame_id'], $_SESSION['camera_id'], $bb->x, $bb->y, $bb->width, $bb->height,
-							$bbV->x, $bbV->y, $bbV->width, $bbV->height, $_REQUEST['angle_face'], $_REQUEST['angle_face_z'], 0, 0, '#000000', 0, $_SESSION['user'], 0);
+							$bbV->x, $bbV->y, $bbV->width, $bbV->height, $_REQUEST['angle_face'], $_REQUEST['angle_face_z'], 'null', 'null', '#000000', 0, $_SESSION['user'], 0);
 					$result = mysql_query($sql) or $success = false;
 				}
 			}
@@ -448,7 +448,7 @@
 					$bbV = $config->bbV;
 					//If person is a proposal and it has been approved, insert it into frame people list
 					$sql = $QUERIES->insertPerson(intval($_REQUEST["id"]), $_SESSION['frame_id'], $_SESSION['camera_id'], $bb->x, $bb->y, $bb->width, $bb->height,
-							$bbV->x, $bbV->y, $bbV->width, $bbV->height, 0, 0, $_REQUEST['angle_body'], $_REQUEST['angle_body_z'], '#000000', 0, $_SESSION['user'], 0);
+							$bbV->x, $bbV->y, $bbV->width, $bbV->height, 'null', 'null', $_REQUEST['angle_body'], $_REQUEST['angle_body_z'], '#000000', 0, $_SESSION['user'], 0);
 					$result = mysql_query($sql) or $success = false;
 				}
 			}
@@ -462,7 +462,7 @@
 					$bbV = $config->bbV;
 					//If person is a proposal and it has been approved, insert it into frame people list
 					$sql = $QUERIES->insertPerson(intval($_REQUEST["id"]), $_SESSION['frame_id'], $_SESSION['camera_id'], $bb->x, $bb->y, $bb->width, $bb->height,
-							$bbV->x, $bbV->y, $bbV->width, $bbV->height, 0, 0, 0, 0, '#000000', $_REQUEST['opera_id'], $_SESSION['user'], 0);
+							$bbV->x, $bbV->y, $bbV->width, $bbV->height, 'null', 'null', 'null', 'null', '#000000', $_REQUEST['opera_id'], $_SESSION['user'], 0);
 					$result = mysql_query($sql) or $success = false;
 				}
 			}
@@ -731,7 +731,7 @@
 				}
 				
 				$sql = $QUERIES->insertPerson($personid, ($lastFrame + $i + 1), $camera, $predictions[$i]->x, $predictions[$i]->y, $predictions[$i]->width, $predictions[$i]->height,
-						$predictions[$i]->x, $predictions[$i]->y, $predictions[$i]->width, $predictions[$i]->height, 0, 0, 0, 0, $hex, 0, $_SESSION['user'], 0);				
+						$predictions[$i]->x, $predictions[$i]->y, $predictions[$i]->width, $predictions[$i]->height, 'null', 'null', 'null', 'null', $hex, 0, $_SESSION['user'], 0);				
 				$result = mysql_query($sql) or $success = false;			
 				if(!$success) break;
 			}

@@ -4,6 +4,8 @@ var camera;
 var renderer;
 
 function addCone(box, id, angle_y, angle_z){
+	var angleY = angle_y != null ? angle_y : 0;
+	var angleZ = angle_z != null ? angle_z : 0;
 	scene = new THREE.Scene();
 	camera = new THREE.PerspectiveCamera(75, $(box).width()/$(box).height(), 0.1, 1000);
 
@@ -24,8 +26,8 @@ function addCone(box, id, angle_y, angle_z){
 	cone.scale.y = 1; // SCALE
 	cone.scale.z = 1; // SCALE
 
-	cone.rotation.z = parseFloat(angle_z+90)*3.14/180;
-	cone.rotation.y = parseFloat(angle_y+90)*3.14/180;
+	cone.rotation.z = parseFloat(angleZ+90)*3.14/180;
+	cone.rotation.y = parseFloat(angleY+90)*3.14/180;
 
 	camera.position.z = 5;
 

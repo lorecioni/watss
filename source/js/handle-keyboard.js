@@ -436,13 +436,20 @@ function addKeyboardEvents(){
 		if(table.$('tr.info').length!=0){
 			rotateConeY(table.$('tr.info').data("id"));
 			if($("#box-"+table.$('tr.info').data("id")).data("mode")=='face'){
-				$("#box-"+table.$('tr.info').data("id")+"-face").data("face", (parseInt($("#box-"+table.$('tr.info').data("id")+"-face").data("face"))+5)%360);
-				var z_val = $("#tr-"+table.$('tr.info').data("id")+" td:nth-child(3)").html().split(",")[1].slice(0,-1);
-				$("#tr-"+table.$('tr.info').data("id")+" td:nth-child(3)").html("("+$("#box-"+table.$('tr.info').data("id")+"-face").data("face")+","+z_val+")");
+				var face = $("#box-"+table.$('tr.info').data("id")+"-face");
+				var y = isNaN(face.data("face")) ? 0 : parseInt(face.data("face"));
+				var y_val = (y + 5) % 360;
+				face.data("face", y_val);
+				$("#tr-"+table.$('tr.info').data("id")+" .angle-face .angle-y").text(y_val);
+				if(face.data('facez') == undefined) $("#tr-"+table.$('tr.info').data("id")+" .angle-face .angle-z").text('0');
+				$("#tr-"+table.$('tr.info').data("id")+" .angle-face .angle-y").text(y_val);
 			}else{
-				$("#box-"+table.$('tr.info').data("id")+"-face").data("body", (parseInt($("#box-"+table.$('tr.info').data("id")+"-face").data("body"))+5)%360);
-				var z_val = $("#tr-"+table.$('tr.info').data("id")+" td:nth-child(4)").html().split(",")[1].slice(0,-1);
-				$("#tr-"+table.$('tr.info').data("id")+" td:nth-child(4)").html("("+$("#box-"+table.$('tr.info').data("id")+"-face").data("body")+","+z_val+")");
+				var body = $("#box-"+table.$('tr.info').data("id")+"-face");
+				var y = isNaN(body.data("body")) ? 0 : parseInt(body.data("body"));
+				var y_val = (y + 5) % 360
+				body.data("body", y_val);
+				if(body.data('bodyz') == undefined) $("#tr-"+table.$('tr.info').data("id")+" .angle-body .angle-z").text('0');
+				$("#tr-"+table.$('tr.info').data("id")+" .angle-body .angle-y").text(y_val);
 			}
 		}
 		return false;
@@ -454,13 +461,20 @@ function addKeyboardEvents(){
 		if(table.$('tr.info').length!=0){
 			rotateConeY_less(table.$('tr.info').data("id"));
 			if($("#box-"+table.$('tr.info').data("id")).data("mode")=='face'){
-				$("#box-"+table.$('tr.info').data("id")+"-face").data("face", (parseInt($("#box-"+table.$('tr.info').data("id")+"-face").data("face"))-5)%360);
-				var z_val = $("#tr-"+table.$('tr.info').data("id")+" td:nth-child(3)").html().split(",")[1].slice(0,-1);
-				$("#tr-"+table.$('tr.info').data("id")+" td:nth-child(3)").html("("+$("#box-"+table.$('tr.info').data("id")+"-face").data("face")+","+z_val+")");
+				var face = $("#box-"+table.$('tr.info').data("id")+"-face");
+				var y = isNaN(face.data("face")) ? 0 : parseInt(face.data("face"));
+				var y_val = (y - 5) % 360;
+				face.data("face", y_val);
+				$("#tr-"+table.$('tr.info').data("id")+" .angle-face .angle-y").text(y_val);
+				if(face.data('facez') == undefined) $("#tr-"+table.$('tr.info').data("id")+" .angle-face .angle-z").text('0');
+				$("#tr-"+table.$('tr.info').data("id")+" .angle-face .angle-y").text(y_val);
 			}else{
-				$("#box-"+table.$('tr.info').data("id")+"-face").data("body", (parseInt($("#box-"+table.$('tr.info').data("id")+"-face").data("body"))-5)%360);
-				var z_val = $("#tr-"+table.$('tr.info').data("id")+" td:nth-child(4)").html().split(",")[1].slice(0,-1);
-				$("#tr-"+table.$('tr.info').data("id")+" td:nth-child(4)").html("("+$("#box-"+table.$('tr.info').data("id")+"-face").data("body")+","+z_val+")");
+				var body = $("#box-"+table.$('tr.info').data("id")+"-face");
+				var y = isNaN(body.data("body")) ? 0 : parseInt(body.data("body"));
+				var y_val = (y - 5) % 360
+				body.data("body", y_val);
+				if(body.data('bodyz') == undefined) $("#tr-"+table.$('tr.info').data("id")+" .angle-body .angle-z").text('0');
+				$("#tr-"+table.$('tr.info').data("id")+" .angle-body. angle-y").text(y_val);
 			}
 		}
 		return false;
@@ -472,13 +486,21 @@ function addKeyboardEvents(){
 		if(table.$('tr.info').length!=0){
 			rotateConeZ(table.$('tr.info').data("id"));
 			if($("#box-"+table.$('tr.info').data("id")).data("mode")=='face'){
-				$("#box-"+table.$('tr.info').data("id")+"-face").data("facez", (parseInt($("#box-"+table.$('tr.info').data("id")+"-face").data("facez"))+5)%360);
-				var y_val = $("#tr-"+table.$('tr.info').data("id")+" td:nth-child(3)").html().split(",")[0].substring(1);
-				$("#tr-"+table.$('tr.info').data("id")+" td:nth-child(3)").html("("+y_val+","+$("#box-"+table.$('tr.info').data("id")+"-face").data("facez")+")");
+				var face = $("#box-"+table.$('tr.info').data("id")+"-face");
+				var z = isNaN(face.data("facez")) ? 0 : parseInt(face.data("facez"));
+				var z_val = (z + 5) % 360;
+				face.data("facez", z_val);
+				$("#tr-"+table.$('tr.info').data("id")+" .angle-face .angle-z").text(z_val);
+				if(face.data('face') == undefined) $("#tr-"+table.$('tr.info').data("id")+" .angle-face .angle-y").text('0');
+				$("#tr-"+table.$('tr.info').data("id")+" .angle-face .angle-z").text(z_val);
 			}else{
-				$("#box-"+table.$('tr.info').data("id")+"-face").data("bodyz", (parseInt($("#box-"+table.$('tr.info').data("id")+"-face").data("bodyz"))+5)%360);
-				var y_val = $("#tr-"+table.$('tr.info').data("id")+" td:nth-child(4)").html().split(",")[0].substring(1);
-				$("#tr-"+table.$('tr.info').data("id")+" td:nth-child(4)").html("("+y_val+","+$("#box-"+table.$('tr.info').data("id")+"-face").data("bodyz")+")");
+				var body = $("#box-"+table.$('tr.info').data("id")+"-face");
+				var z = isNaN(body.data("bodyz")) ? 0 : parseInt(body.data("bodyz"));
+				var z_val = (z + 5) % 360;
+				body.data("bodyz", z_val);
+				$("#tr-"+table.$('tr.info').data("id")+" .angle-body .angle-z").text(z_val);
+				if(body.data('body') == undefined) $("#tr-"+table.$('tr.info').data("id")+" .angle-body .angle-y").text('0');
+				$("#tr-"+table.$('tr.info').data("id")+" .angle-body .angle-z").text(z_val);
 			}
 		}
 		return false;
@@ -489,13 +511,21 @@ function addKeyboardEvents(){
 		if(table.$('tr.info').length!=0){
 			rotateConeZ_less(table.$('tr.info').data("id"));
 			if($("#box-"+table.$('tr.info').data("id")).data("mode")=='face'){
-				$("#box-"+table.$('tr.info').data("id")+"-face").data("facez", (parseInt($("#box-"+table.$('tr.info').data("id")+"-face").data("facez"))-5)%360);
-				var y_val = $("#tr-"+table.$('tr.info').data("id")+" td:nth-child(3)").html().split(",")[0].substring(1);
-				$("#tr-"+table.$('tr.info').data("id")+" td:nth-child(3)").html("("+y_val+","+$("#box-"+table.$('tr.info').data("id")+"-face").data("facez")+")");
+				var face = $("#box-"+table.$('tr.info').data("id")+"-face");
+				var z = isNaN(face.data("facez")) ? 0 : parseInt(face.data("facez"));
+				var z_val = (z - 5) % 360;
+				face.data("facez", z_val);
+				$("#tr-"+table.$('tr.info').data("id")+" .angle-face .angle-z").text(z_val);
+				if(face.data('face') == undefined) $("#tr-"+table.$('tr.info').data("id")+" .angle-face .angle-y").text('0');
+				$("#tr-"+table.$('tr.info').data("id")+" .angle-face .angle-z").text(z_val);
 			}else{
-				$("#box-"+table.$('tr.info').data("id")+"-face").data("bodyz", (parseInt($("#box-"+table.$('tr.info').data("id")+"-face").data("bodyz"))-5)%360);
-				var y_val = $("#tr-"+table.$('tr.info').data("id")+" td:nth-child(4)").html().split(",")[0].substring(1);
-				$("#tr-"+table.$('tr.info').data("id")+" td:nth-child(4)").html("("+y_val+","+$("#box-"+table.$('tr.info').data("id")+"-face").data("bodyz")+")");
+				var body = $("#box-"+table.$('tr.info').data("id")+"-face");
+				var z = isNaN(body.data("bodyz")) ? 0 : parseInt(body.data("bodyz"));
+				var z_val = (z - 5) % 360;
+				body.data("bodyz", z_val);
+				$("#tr-"+table.$('tr.info').data("id")+" .angle-body .angle-z").text(z_val);
+				if(body.data('body') == undefined) $("#tr-"+table.$('tr.info').data("id")+" .angle-body .angle-y").text('0');
+				$("#tr-"+table.$('tr.info').data("id")+" .angle-body .angle-z").text(z_val);
 			}
 		}
 		return false;
@@ -510,7 +540,11 @@ function addKeyboardEvents(){
 	jQuery(document).bind('keydown', keymap["add_person"],function (evt){ $("#open-modal-add-person").click(); return false;});
 	
     // Show cone
-	jQuery(document).bind('keydown', keymap["change_mode"],function (evt){ changePeopleMode("#people-table"); return false;});
+	jQuery(document).bind('keydown', keymap["change_mode"], function (evt){ 
+		changePeopleMode("#people-table"); 
+		evt.preventDefault();
+		return false;
+	});
 
 	jQuery(document).bind('keydown', keymap["next_frame"],function (evt){ 
 		deselectAllBox("#people-table");

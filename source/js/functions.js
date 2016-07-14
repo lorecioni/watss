@@ -54,14 +54,14 @@ function initPeopleTable(people, groups, artworks, table_id, people_per_page, at
 						var angle_face, angle_face_z;
 						angle_face =  people[i]["angle_face"] != null ? people[i]["angle_face"] : 'None';
 						angle_face_z =  people[i]["angle_face_z"] != null ? people[i]["angle_face_z"] : 'None';
-						to_append += "<td>("+angle_face+","+angle_face_z+")</td>";
+						to_append += "<td class='angle-face'>(<span class='angle-y'>"+angle_face+"</span>,<span class='angle-z'>"+angle_face_z+"</span>)</td>";
 						break;		
 
 					case "angle_body":
 						var angle_body, angle_body_z;
 						angle_body =  people[i]["angle_body"] != null ? people[i]["angle_body"] : 'None';
 						angle_body_z =  people[i]["angle_body_z"] != null ? people[i]["angle_body_z"] : 'None';
-						to_append += "<td>("+angle_body+","+angle_body_z+")</td>";
+						to_append += "<td class='angle-body'>(<span class='angle-y'>"+angle_body+"</span>,<span class='angle-z'>"+angle_body_z+"</span>)</td>";
 						break;		
 
 					default:
@@ -129,14 +129,14 @@ function addPeople(person, groups, artworks, table_id, people_per_page, att_list
 					var angle_face, angle_face_z;
 					angle_face =  person["angle_face"] != null ? person["angle_face"] : 'None';
 					angle_face_z =  person["angle_face_z"] != null ? person["angle_face_z"] : 'None';
-					to_append += "<td>("+angle_face+","+angle_face_z+")</td>";
+					to_append += "<td class='angle-face'>(<span class='angle-y'>"+angle_face+"</span>,<span class='angle-z'>"+angle_face_z+"</span>)</td>";
 					break;		
 
 				case "angle_body":
 					var angle_body, angle_body_z;
 					angle_body =  person["angle_body"] != null ? person["angle_body"] : 'None';
 					angle_body_z =  person["angle_body"] != null ? person["angle_body"] : 'None';
-					to_append += "<td>("+angle_body+","+angle_body_z+")</td>";
+					to_append += "<td class='angle-body'>(<span class='angle-y'>"+angle_body+"</span>,<span class='angle-z'>"+angle_body_z+"</span>)</td>";
 					break;					
 
 				default:
@@ -703,6 +703,12 @@ function deselectAllBox(table_id){
 
 		console.log("[update-person-attribute]");
 		
+		var face = $("#box-"+table.$('tr.info').data("id")+"-face");
+		var angle_face = face.data("face") != undefined ? face.data('face') : 'null';
+		var angle_face_z = face.data("facez") != undefined ? face.data('facez') : 'null';
+		var angle_body = face.data("body") != undefined ? face.data('body') : 'null';
+		var angle_body_z = face.data("bodyz") != undefined ? face.data('bodyz') : 'null';
+		
 		$.ajax({
 			type: "POST",
 			url: "../php/api.php",
@@ -710,10 +716,10 @@ function deselectAllBox(table_id){
 					id: boxId,
 					bb: bb,
 					bbV: bbV,
-					angle_face: $("#box-"+table.$('tr.info').data("id")+"-face").data("face"),
-					angle_face_z: $("#box-"+table.$('tr.info').data("id")+"-face").data("facez"),
-					angle_body: $("#box-"+table.$('tr.info').data("id")+"-face").data("body"),
-					angle_body_z: $("#box-"+table.$('tr.info').data("id")+"-face").data("bodyz"), 
+					angle_face: angle_face,
+					angle_face_z: angle_face_z,
+					angle_body: angle_body,
+					angle_body_z: angle_body_z, 
 					color: table.$('#color-'+table.$('tr.info').data('id')).colorpicker().data('colorpicker').color.toHex(),
 					group_id: table.$('#group-'+table.$('tr.info').data('id')).editable('getValue')['group-'+table.$('tr.info').data('id')], 
 					opera_id: table.$('#art-'+table.$('tr.info').data('id')).editable('getValue')['art-'+table.$('tr.info').data('id')]
