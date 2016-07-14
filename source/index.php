@@ -59,12 +59,15 @@
 		  				<li>Head gaze<div class="arrow arrow-hgaze"></div></li>
 		  				<li>Body gaze<div class="arrow arrow-bgaze"></div></li>
 		  				<li>Points of interest<div class="arrow arrow-poi"></div></li>
+		  				<li>Video timeline with annotations</li>
+		  				<li>Annotations proposals</li>
 		  			</ul>
 		  		</div>
 		  </div>
 		  <div class="preview col-xs-6 col-md-6">
 		  	<h3>Preview</h3>
-		  	<img src="img/frame.jpg" alt="Frame" id="frame-preview">		  
+		  	<img src="img/frame.jpg" alt="Frame" id="frame-preview">
+		  	<img src="img/timeline.jpg" alt="Timeline" id="frame-preview-timeline">		  
 		  </div>
 		</div>
 		</div>

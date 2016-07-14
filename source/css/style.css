@@ -131,6 +131,13 @@ div#features-list {
     display: block;
 }
 
+img#frame-preview-timeline {
+    width: 80%;
+    margin: 2em auto 1em;
+    display: block;
+    border-radius: 3px;
+}
+
 /** Panels **/
 
 .panel-heading {
