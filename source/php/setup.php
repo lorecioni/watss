@@ -207,11 +207,11 @@ if(isset($_REQUEST['action'])){
 					$dbName = $dbInfo->name;
 					$dbConnection = mysqli_connect($dbHost, $dbUser, $dbPass, $dbName) or $success = false;
 						
-					$sql = 'INSERT INTO `users` (`name`) VALUES ';
+					$sql = 'INSERT INTO `users` (`name`, `password`) VALUES ';
 						
 					$users = json_decode($_REQUEST['data']['users']);
 					for($i = 0; $i < count($users); $i++){
-						$sql .= "('".$users[$i]."')";
+						$sql .= "('".$users[$i]."', '')";
 						if($i < count($users) - 1){
 							$sql .= ',';
 						}

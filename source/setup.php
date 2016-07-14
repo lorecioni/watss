@@ -117,6 +117,7 @@
 				  <div class="clearfix"></div>
 				  	<h5>Users</h5>
 					<p>Set the user list. Type username and press enter or comma to add user.</p>
+					<p><i>User password are initialized to blank, you can set them in the future</i></p>
 					<input type="text" id="user-list-input" placeholder="Users" data-role="tagsinput" />
 					<div class="clearfix"></div>
 				</div>
