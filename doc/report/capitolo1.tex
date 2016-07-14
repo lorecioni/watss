@@ -1,7 +1,7 @@
 \section{Stato dell'arte}
 \label{ch:panoramica}
 
-In questa sezione viene presentata un'analisi comparativa di alcuni dei più famosi sistemi di annotazione esistenti. Lo scopo di questa ricerca è quello di individuare i le caratteristiche comuni ai vari strumenti e le loro limitazioni. Da questa analisi poi è stata stilata una lista di requisiti che portano WATSS ad essere in accordo con gli altri sistemi introducendo allo stesso tempo nuove caratteristiche.
+In questa sezione viene presentata un'analisi comparativa di alcuni dei più famosi sistemi di annotazione esistenti. Lo scopo di questa ricerca è quello di individuare i le caratteristiche comuni ai vari strumenti e le loro limitazioni. Da questa analisi è stata stilata una lista di requisiti che portano WATSS ad essere in accordo con gli altri sistemi introducendo allo stesso tempo nuove caratteristiche.
 
 L'analisi dei sistemi si è incentrata principalmente su 3 strumenti open source esistenti: \emph{LabelMe}, \emph{ViPER-GT} e \emph{VATIC}. Per ciascuno dei sistemi è stata stilata una lista di caratteristiche offerte ed evidenziate le eventuali limitazioni. Infine è presentata un'analisi anche con il sistema WATSS.
 
@@ -26,7 +26,7 @@ Il sistema non prevede la possibilità di generare \emph{proposals} per le annot
 
 \subsection{ViPER-GT}
 
-\emph{ViPER-GT}\cite{Vondrick:2013:ESU:2436010.2436013}, acronimo di \emph{Video Performance Evaluation resource}, è un sistema di annotazione per video e la generazione di un \emph{groundtruth}. 
+\emph{ViPER-GT}, acronimo di \emph{Video Performance Evaluation resource}, è un sistema di annotazione per video e la generazione di un \emph{groundtruth}. 
 
 Il sistema consente di annotare un video indicando cosa è contenuto nella scena, definendo un insieme di \emph{classi} per ciascuna tipologia di contenuto. L'annotazione avviene manualmente da parte dell'utente che definisce delle \emph{bounding boxes}, regioni di interesse dell'immagine, andando ad associare a ciascuna di esse una classe di appartenenza ed alcune metadati aggiuntivi, come ad esempio titolo, dimensione, etc. Le regioni possono essere di forme diverse: cerchi, ellissi, rettangoli e generici poligoni (definiti dai loro vertici).
 
@@ -41,11 +41,11 @@ Il sistema consente di annotare un video indicando cosa è contenuto nella scena
 
 Le annotazioni effettuate vengono visualizzate in una \emph{timeline}: allo scorrere dei frame le annotazioni presenti nella scena corrente vengono evidenziate.
 
-Il tool mette a disposizione anche un sistema di predizione delle annotazioni inserite basato sull'interpolazione lineare di più frame consecutivi. Questo metodo risulta molto efficace se si fornisce un numero di annotazioni, chiamate \emph{ancore}, adeguato; con poche ancore definite la predizione risulta essere molto approssimativa.
+Il tool mette a disposizione anche un sistema di predizione delle annotazioni inserite basato sull'interpolazione lineare delle bounding boxes di più frame consecutivi. Questo metodo risulta molto efficace se si fornisce un numero di annotazioni, \emph{ancore}, adeguato; con poche ancore definite la predizione risulta essere molto approssimativa.
 
 \subsection{VATIC}
 
-VATIC è un software di annotazione di video distribuito ai fini della ricerca nell'ambito della Computer Vision che consente la creazione di grandi dataset video. Il tool utilizza il sistema di crowdsourcing \emph{Mechanical Turk} di Amazon.
+VATIC\cite{Vondrick:2013:ESU:2436010.2436013} è un software di annotazione di video distribuito ai fini della ricerca nell'ambito della Computer Vision che consente la creazione di grandi dataset video. Il tool utilizza il sistema di crowdsourcing \emph{Mechanical Turk} di Amazon.
 
 Il sistema consente l'inserimento manuale di annotazioni per ciascun frame del video, definite mediante delle bounding box rettangolari. 
 
@@ -60,17 +60,17 @@ Il tool dispone di una serie di plugin aggiuntivi che ne aumentano le potenziali
 \begin{figure}[h]
 \centering
 \includegraphics[width=0.6\linewidth]{images/vatic.jpg}
-  \label{fig:vipergt}
+  \label{fig:vatic}
   \caption{Interfaccia utente del tool VATIC}
 \end{figure}
 
-Il tool è pensato principalmente per l'object detection nelle scene.
+Il tool è pensato principalmente per l'\emph{object detection} nelle scene.
 
 \subsection{WATSS}
 
 WATSS\cite{Bartoli:2015:WWA:2733373.2807411}, \emph{Web Annotation Tool for Surveillance Scenarios}, è un sistema web per l'annotazione di dataset. Il tool è stato sviluppato per consentire l'annotazione del dataset \emph{MuseumVisitors}\cite{bartoli2015museumvisitors} come parte del progetto MNEMOSYNE e rilasciato successivamente open source.
 
-Il tool permette l'annotazione di persone e oggetti nella scena mediante la definizione di bounding boxes. In caso di occlusione è possibile poi indicare poi, mediante la definizione di una seconda bounding box, la parte visibile della persona o oggetto annotati.
+Il tool permette l'annotazione di persone e oggetti nella scena mediante la definizione di bounding boxes. In caso di occlusione è possibile poi indicare, mediante la definizione di una seconda bounding box, la parte visibile della persona o oggetto annotati.
 
 \begin{figure}[h]
 \centering

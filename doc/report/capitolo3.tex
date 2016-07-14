@@ -16,6 +16,7 @@ L'interfaccia utente del sistema è stata rivisitata ed adattata alle nuove esig
 \end{figure*}
 
 La parte principale è costituita dal frame video su cui andremo ad aggiungere annotazioni e visualizzare quelle già esistenti.
+
 I due pannelli laterali per le persone e gruppi presenti nella scena sono stati organizzati in modo tale da consentirne una rapida navigazione ed uso. Come nella precedente versione dell'interfaccia, il pannello \emph{People} mostra la lista delle annotazioni presenti nel frame visualizzato, ordinate in base all'identificativo delle persone. Per ciascuna persona viene mostrato il \emph{gaze }del corpo e della faccia, il \emph{gruppo di appartenenza} ed il \emph{punto di interesse} presso cui si trovano. 
 
 \paragraph{Inserimento di una annotazione}
@@ -35,7 +36,7 @@ Una volta selezionata l'opzione desiderata, la fase di creazione è diversa in b
 
 In caso di geometria della scena \emph{disattivata} la nuova annotazione verrà creata con la tecnica \emph{click and drag}: l'utente clicca nel frame nel punto in cui vuole iniziare la sua selezione e tiene premuto spostando il mouse finchè la bounding box visualizzata non è della dimensione desiderata. A quel punto, rilasciando il click, la bounding box verrà inserita nella scena.
 
-Se invece è attiva la geometria, questa verrà sfruttata per stimare l'altezza di una persona presente nella scena in base alla sua posizione nella stessa. La bounding box verrà automaticamente attaccata al puntatore del mouse e, muovendosi nella scena, sarà ridimensionata in base alla sua posizione. Una volta scelta la posizione, per effettuare l'inserimento sarà sufficiente effettuare un click nel punto desiderato. 
+Se invece è \emph{attiva} la geometria, questa verrà sfruttata per stimare l'altezza di una persona presente nella scena in base alla sua posizione nella stessa. La bounding box verrà automaticamente attaccata al puntatore del mouse e, muovendosi nella scena, sarà ridimensionata in base alla sua posizione. Una volta scelta la posizione, per effettuare l'inserimento sarà sufficiente effettuare un click nel punto desiderato. 
 
 In entrambi i casi, la procedura di inserimento può essere interrotta premendo il tasto \emph{ESC}.
 
@@ -210,7 +211,7 @@ Se non viene rilevata alcuna predizione da motion o pedestrian detection viene c
 \subsubsection{Geometria della scena}
 
 Nella fase di inserimento di una nuova annotazione viene utilizzata la geometria della scena per proporre una dimensione della bounding box che rispetti la prospettiva, rendendo molto veloce il suo piazzamento nel frame.
-Questo è possibile poichè le camere sono statiche ed è dunque possibile calcolarne la calibrazione. 
+Questo è possibile poichè le camere sono statiche ed è dunque possibile calcolarne la calibrazione\cite{Bimbo:2010:EDV:1801040.1801847}. 
 
 Sia $K$ la matrice di \emph{parametri intrinseci} di camera, $R$ la matrice di \emph{rotazione} e $t$ il vettore di traslazione. Sia poi $x = (x, y, 1)$ un punto nel \emph{piano immagine} e $P = (X, Y, Z, 1)$ un punto nel \emph{reale} (in 3D). 
 
@@ -239,7 +240,22 @@ Calcolata la matrice $W$ è possibile, dato il punto della testa nell'immagine, 
 \begin{equation}
 feet = W^{-1} * head
 \end{equation}
-normalizzando poi rispetto alla terza dimensione. Dato dunque il punto dei piedi è possibile ricavare l'altezza con
+normalizzando poi rispetto alla terza dimensione\cite{del2009scale}. Dato dunque il punto dei piedi è possibile ricavare l'altezza con
 \begin{equation}
 height = |head_y - feet_y|
 \end{equation}
+
+\subsection{Aggiornamento della base dati}
+
+Nella precedente versione dell'applicazione, la base dati presentava alcune problematiche legate alle chiavi primarie delle varie tabelle. In tutte le tabelle, infatti, era definita una chiave primaria alfanumerica, rendendo complicata la gestione delle operazioni con il database.
+
+Inoltre i nomi delle tabelle sono stati resi consistenti con i loro contenuti.
+
+Lo schema della base dati è proposto in Figura \ref{fig:er}.
+
+\begin{figure}[h]
+\centering
+\includegraphics[width=.9\linewidth]{images/erdiagram.jpg}
+  \caption{Schema relazionale della base dati}
+  \label{fig:er}
+\end{figure}
