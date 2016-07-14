@@ -46,6 +46,10 @@ class Queries {
 		return "DELETE FROM `".$this->tables->users."` WHERE `userid` = ".$userid."";
 	}
 	
+	function updateUserPassword($userid, $password){
+		return "UPDATE `".$this->tables->users."` SET `password` = '".$password."'  WHERE `userid` = ".$userid."";
+	}
+	
 	/**
 	 * ****************************
 	 *  	  Groups queries 

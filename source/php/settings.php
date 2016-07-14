@@ -117,6 +117,7 @@ if(isset($_REQUEST['action'])){
 						$user = new stdClass();
 						$user->id = $row["userid"];
 						$user->name = $row["name"];
+						$user->password = $row["password"];
 						array_push($users, $user);
 					}
 				}
@@ -168,6 +169,26 @@ if(isset($_REQUEST['action'])){
 				
 				jecho($success);
 				break;
+				
+				/**
+				 * Update user password
+				 */
+				case "update-user-password":
+					$success = true;
+					if (isset($_REQUEST['userid']) && isset($_REQUEST['password'])){
+						$id = $_REQUEST['userid'];
+						$password = mysql_escape_string($_REQUEST['password']);
+						if($checkDatabaseConnection){
+							$sql = $QUERIES->updateUserPassword($id, $password);
+							$result = mysql_query($sql) or $success = false;
+						} else {
+							$success = false;
+						}
+					} else {
+						$success = false;
+					}
+					jecho($success);
+					break;
 
 				/**
 				 * Retrieving cameras from db

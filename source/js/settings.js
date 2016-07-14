@@ -272,6 +272,32 @@ function getUsers(){
 					.addClass('list-group-item')
 					.attr('id', 'user-' + users[i].id)
 					.attr('data-id', users[i].id);
+				
+				var password = $('<a></a>')
+					.attr('href', '#')
+					.attr('id', 'user-password-' + users[i].id)
+					.addClass('change-password editable editable-click')
+					.append('Change password')
+					.attr('data-type', 'password')
+					.attr('data-title', 'Change password')
+					.attr('data-value', '')
+					.attr('data-pk', users[i].id);
+			
+				password.editable({
+					type: 'password',
+				    url: 'php/settings.php',
+				    mode: 'inline',
+					params: function(params) {
+						params.action = "update-user-password";
+						params.userid = params.pk;
+						params.password = params.value;
+						return params;
+					},
+					success: function(response, newValue) {	
+						password.data('title', 'Change password');
+					}
+				});
+			
 				var badge = $('<span></span>')
 					.addClass('badge')
 					.append('<span class="glyphicon glyphicon-remove" ' +
@@ -282,6 +308,7 @@ function getUsers(){
 				});
 				item.append(badge);
 				item.append(users[i].name);
+				item.append(password);
 				list.append(item);
 			}
 			$('#user-settings .panel-body .scrollable').append(list);
@@ -313,6 +340,33 @@ function addUser(name){
 					.addClass('list-group-item')
 					.attr('data-id', response.id)
 					.attr('id', 'user-' + response.id);
+				
+				
+				var password = $('<a></a>')
+					.attr('href', '#')
+					.attr('id', 'user-password-' + response.id)
+					.addClass('editable editable-click')
+					.append('Change password')
+					.attr('data-type', 'text')
+					.attr('data-title', 'Change password')
+					.attr('data-value', '')
+					.attr('data-pk', response.id);
+				
+				password.editable({
+					type: 'password',
+				    url: 'php/settings.php',
+				    mode: 'inline',
+					params: function(params) {
+						params.action = "update-user-password";
+						params.userid = params.pk;
+						params.password = params.value;
+						return params;
+					},
+					success: function(response, newValue) {		
+						password.text('Change password');
+					}
+				});
+				
 				var badge = $('<span></span>')
 					.addClass('badge')
 					.append('<span class="glyphicon glyphicon-remove" ' +
@@ -323,6 +377,7 @@ function addUser(name){
 				});
 				item.append(badge);
 				item.append(name);
+				item.append(password);
 				
 				$('#user-settings .panel-body .scrollable').prepend(item);
 			} else {
