@@ -29,6 +29,7 @@ var counter = 0;
 var move = 1;
 
 function addKeyboardEvents(){
+	console.log('Adding keyboard events');
 	//key-event handler
     jQuery('#platform-details').html('<code>' + navigator.userAgent + '</code>');
 
@@ -549,4 +550,11 @@ function addKeyboardEvents(){
 	});
 	
 
+}
+
+
+function removeKeyboardEvents(){
+	console.log('Removing keyboard events');
+	jQuery(document).unbind('keydown');
+	jQuery(document).unbind('keyup');
 }

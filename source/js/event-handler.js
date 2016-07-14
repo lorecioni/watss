@@ -183,6 +183,7 @@ $(document).ready(function(){
 			data: {action:"logout"},
 			success: function(response){
 				console.log("[logout] returned");
+				removeKeyboardEvents();
 				$("#checkInfoModal").modal("show");
 			}
 		});
@@ -281,6 +282,7 @@ function checkLogin(){
 		url: "../php/api.php",
 		data: {action:"check-gt-login",
 				user: $("#username").val(),
+				password: $("#password").val(),
 				camera_id: $("#cameras").select2("data")==null?"":$("#cameras").select2("data").id,
 				frame_id: $("input[name=frameRadios]:checked").val(),
 				frame_number: $("#frame-number").select2("data")==null?"":$("#frame-number").select2("data").id},

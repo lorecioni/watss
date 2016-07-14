@@ -160,10 +160,6 @@ img#frame-preview-timeline {
 	padding: 0px;
 }
 
-#username {
-	height: 28px;
-}
-
 .frame-number{
 	width: 120px;
 	min-width: 120px;
@@ -314,13 +310,13 @@ img.panel-heading-loading {
 
 #camera-settings input.form-control.input-sm {
     width: 24em;
-
+}
 
 #add-poi-form input.number {
     width: 90px;
 }
 
-div.video-overlay {
+.video-overlay {
     width: 100%;
     height: 100%;
     position: absolute;

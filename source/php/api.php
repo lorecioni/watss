@@ -41,11 +41,11 @@
 		 * @return boolean : true if user can proceed
 		 */
 		case "check-gt-login":			
-			$to_return = true;	
+			$to_return = true;				
 			if (!isset($_SESSION["user"])){	
-				if($_REQUEST["user"]!="" &&  $_REQUEST["camera_id"]!="" && 
+				if($_REQUEST["user"]!="" &&  $_REQUEST["camera_id"]!="" && $_REQUEST["password"] != "" &&
 					($_REQUEST["frame_id"]!="number" || $_REQUEST["frame_number"]!="")){
-						$sql = $QUERIES->getUserIdFromName($_REQUEST['user']);
+						$sql = $QUERIES->getUserIdFromName($_REQUEST['user'], $_REQUEST["password"]);
 						$result=mysql_query($sql) or $to_return = false;						
 						if ( mysql_num_rows($result) == 0 ) {					
 							$to_return = false;
@@ -66,12 +66,10 @@
 								}
 							}
 						}		
-						
- 						
+	
 						if ($_REQUEST["frame_id"] == 'first'){
 								$sql= $QUERIES->getFirstFrameId($_SESSION['camera_id']);
 								$result_2 = mysql_query($sql) or $to_return = false;
-								if(!$to_return) $log .= "ERROR";
 								while ($final_res=mysql_fetch_array($result_2) ){
 									$_SESSION["frame_id"] = intval($final_res["id"]);
 								}
@@ -79,9 +77,20 @@
 							if ($_REQUEST["frame_id"] == 'FUF'){
 								$sql= $QUERIES->getFirstUntaggedFrameId($_SESSION['user'], $_SESSION['camera_id']);
 								$result_2 = mysql_query($sql) or $to_return = false;
+								$frame_set = false;
 								while ($final_res=mysql_fetch_array($result_2) ){
-									$_SESSION["frame_id"] = intval($final_res["id"]);
+									if($final_res["id"] != null){
+										$_SESSION["frame_id"] = intval($final_res["id"]);
+										$frame_set = true;
+									}
 								}		
+								if(!$frame_set){									
+									$sql= $QUERIES->getFirstFrameId($_SESSION['camera_id']);
+									$result_2 = mysql_query($sql) or $to_return = false;
+									while ($final_res=mysql_fetch_array($result_2) ){
+										$_SESSION["frame_id"] = intval($final_res["id"]);
+									}
+								}
 							} else {
 								if ($_REQUEST["frame_id"] == 'number'){
 									$_SESSION["frame_id"] = intval($_REQUEST["frame_number"]);

@@ -219,8 +219,9 @@
 			  	<div class="modal-body">
 					<div class="row">
 						<div class="col-xs-6">
-							<label for="username">Name</label>
-							<input type="text" class="form-control" id="username">
+							<label for="username">Login</label>
+							<input type="text" class="form-control" id="username" placeholder="Username"><br/>
+							<input type="password" class="form-control" id="password" placeholder="Password">
 						</div>	
 						<div class="col-xs-4">
 							<label for="cameras">Camera id</label>

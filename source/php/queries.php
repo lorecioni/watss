@@ -30,8 +30,8 @@ class Queries {
 		return "SELECT * FROM ".$this->tables->users."";
 	}
 	
-	function getUserIdFromName($name){
-		return "SELECT userid FROM `".$this->tables->users."` WHERE `name`='".mysql_real_escape_string($name)."'";
+	function getUserIdFromName($name, $password){
+		return "SELECT userid FROM `".$this->tables->users."` WHERE `name`='".mysql_real_escape_string($name)."' AND `password` = '".mysql_real_escape_string($password)."'";
 	}
 	
 	function getUserNameById($userid){
