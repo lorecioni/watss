@@ -51,11 +51,17 @@ function initPeopleTable(people, groups, artworks, table_id, people_per_page, at
 						break;	
 
 					case "angle_face":
-						to_append += "<td>("+people[i]["angle_face"]+","+people[i]["angle_face_z"]+")</td>";
+						var angle_face, angle_face_z;
+						angle_face =  people[i]["angle_face"] != null ? people[i]["angle_face"] : 'None';
+						angle_face_z =  people[i]["angle_face_z"] != null ? people[i]["angle_face_z"] : 'None';
+						to_append += "<td>("+angle_face+","+angle_face_z+")</td>";
 						break;		
 
 					case "angle_body":
-						to_append += "<td>("+people[i]["angle_body"]+","+people[i]["angle_body_z"]+")</td>";
+						var angle_body, angle_body_z;
+						angle_body =  people[i]["angle_body"] != null ? people[i]["angle_body"] : 'None';
+						angle_body_z =  people[i]["angle_body_z"] != null ? people[i]["angle_body_z"] : 'None';
+						to_append += "<td>("+angle_body+","+angle_body_z+")</td>";
 						break;		
 
 					default:
@@ -120,11 +126,17 @@ function addPeople(person, groups, artworks, table_id, people_per_page, att_list
 					break;	
 
 				case "angle_face":
-					to_append += "<td>("+person["angle_face"]+","+person["angle_face_z"]+")</td>";
+					var angle_face, angle_face_z;
+					angle_face =  person["angle_face"] != null ? person["angle_face"] : 'None';
+					angle_face_z =  person["angle_face_z"] != null ? person["angle_face_z"] : 'None';
+					to_append += "<td>("+angle_face+","+angle_face_z+")</td>";
 					break;		
 
 				case "angle_body":
-					to_append += "<td>("+person["angle_body"]+","+person["angle_body_z"]+")</td>";
+					var angle_body, angle_body_z;
+					angle_body =  person["angle_body"] != null ? person["angle_body"] : 'None';
+					angle_body_z =  person["angle_body"] != null ? person["angle_body"] : 'None';
+					to_append += "<td>("+angle_body+","+angle_body_z+")</td>";
 					break;					
 
 				default:
