@@ -493,68 +493,80 @@
 			var annotationContainer = $('<div></div>')
 				.addClass('timeline-annotation-container')
 				.addClass('timeline-annotation-' + person.id);
-				
+			
+			var selectedFrame = undefined;
+			if($('.timeline-frame.current').length > 0){
+				selectedFrame = parseInt($('.timeline-frame.current').first().data('id'));
+			}
+			
 			for (var i = 0; i < intervals.length; i++) {
 				var width = 0;
 				var left = -100;
 				var offset = 0;
-								
-				if($('#timeline-frame-' + intervals[i].start).length > 0 ){
-					width = $('#timeline-frame-' + intervals[i].start).width();
-					left = $('#timeline-frame-' + intervals[i].start).position().left;
-					offset = width * (intervals[i].end - intervals[i].start) + width;
-				} else {
-					if($('#timeline-frame-' + intervals[i].end).length > 0 ){
-						width = $('#timeline-frame-' + intervals[i].end).width();
-						offset = width * (intervals[i].end - intervals[i].start) + width;
-						left = $('#timeline-frame-' + intervals[i].end).position().left - offset;
+				
+				if(intervals[i].start <= selectedFrame && intervals[i].end >= selectedFrame ){
+					
+					if($('#timeline-frame-' + intervals[i].start).length > 0 ){
+						width = $('#timeline-frame-' + intervals[i].start).width();
+						left = $('#timeline-frame-' + intervals[i].start).position().left;
+						offset = width * (intervals[i].end - intervals[i].start);
 					} else {
-						console.log('color everything')
-					}
-				}
-				
-				var over = $('<div></div>')
-					.addClass('timeline-annotation')
-					.css({
-						'position': 'absolute',
-						'background-color': person.color,
-						'width' :  offset,
-						'height': '18px',
-						'left' : left,
-						'top' :  '40px'
-					})
-					.attr('data-start', intervals[i].start)
-					.attr('data-end', intervals[i].end)
-					.attr('data-person', person.id);
-				
-				var maxWidth = null;
-				if(intervals[i + 1] != undefined){
-					maxWidth = over.width() + (intervals[i + 1].start - intervals[i].end - 1) * 20;
-				}
-				
-				over.resizable({
-					handles: 'e',
-					minWidth: over.width(),
-					maxWidth: maxWidth,
-					grid: 20,
-					start: function(e, ui){
-						console.log('Start propagation selection');
-					},
-					stop: function(e, ui){
-						console.log('End propagation selection');
-						var start = $(this).data('start');
-						var end = $(this).data('end');
-						var offset = ($(this).width() - (end - start + 1) * 20)/20;
-						if(offset > 0){
-							var person = $(this).data('person');
-							$('.timeline-frames').append('<div class="timeline-loading-container"></div>');
-							$('.timeline-loading-container').append(loading);
-							propagate(person, offset, start, end);
+						if($('#timeline-frame-' + intervals[i].end).length > 0 ){
+							width = $('#timeline-frame-' + intervals[i].end).width();
+							offset = width * ((intervals[i].end - intervals[i].start) + 1) + width;
+							left = $('#timeline-frame-' + intervals[i].end).position().left + width - offset;
+						} else {
+							left = $('.timeline-frames-container').position().left;
+							offset = $('.timeline-frames-container').width();
 						}
 					}
-				});
+					
+					var over = $('<div></div>')
+						.addClass('timeline-annotation')
+						.css({
+							'position': 'absolute',
+							'background-color': person.color,
+							'width' :  offset,
+							'height': '18px',
+							'left' : left,
+							'top' :  '40px'
+						})
+						.attr('data-start', intervals[i].start)
+						.attr('data-end', intervals[i].end)
+						.attr('data-person', person.id);
+					
+					var maxWidth = null;
+					if(intervals[i + 1] != undefined){
+						maxWidth = over.width() + (intervals[i + 1].start - intervals[i].end - 1) * 20;
+					}
+					
+					over.resizable({
+						handles: 'e',
+						minWidth: over.width(),
+						maxWidth: maxWidth,
+						grid: 20,
+						start: function(e, ui){
+							console.log('Start propagation selection');
+						},
+						stop: function(e, ui){
+							console.log('End propagation selection');
+							var start = $(this).data('start');
+							var end = $(this).data('end');
+							var offset = (($(this).width() - (end - start + 1) * 20)/20) - 1;
+							if(offset > 0){
+								var person = $(this).data('person');
+								$('.timeline-frames').append('<div class="timeline-loading-container"></div>');
+								$('.timeline-loading-container').append(loading);
+								if((end - start) > 10) start = end - 10;
+								propagate(person, offset, start, end);
+							}
+						}
+					});
 
-				annotationContainer.append(over);
+					annotationContainer.append(over);
+				}
+								
+				
 			}
 			$('.timeline-frames-container').prepend(annotationContainer);
 			
@@ -649,11 +661,11 @@
 				console.log(response)
 				if(response){	
 					for (var i = 0; i < len; i++){
-						timelineFrames[end + i].people.push({id: person, color: color});
+						timelineFrames[end + 1 + i].people.push({id: person, color: color});
 						$('#timeline-frame-' + (end + 1 + i)).addClass('people');
-						$('.timeline-loading-container').remove();
-						currentIntervals = getPersonIntervals(person)
 					}
+					$('.timeline-loading-container').remove();
+					selectPerson(currentPerson);
 				}	
 			},
 			error: function(error){
