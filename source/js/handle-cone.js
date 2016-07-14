@@ -77,8 +77,10 @@ function destroyCone(box){
 }
 
 function setConeVal(val_y, val_z){
+	var angleY = val_y != null ? val_y : 0;
+	var angleZ = val_z != null ? val_z : 0;
 	if(typeof cone != "undefined"){
-		cone.rotation.z = parseFloat(val_z+90)*3.14/180;
-		cone.rotation.y = parseFloat(val_y+90)*3.14/180;
+		cone.rotation.z = parseFloat(angleZ+90)*3.14/180;
+		cone.rotation.y = parseFloat(angleY+90)*3.14/180;
 	}
 }
