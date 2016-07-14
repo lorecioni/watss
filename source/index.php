@@ -54,11 +54,11 @@
 		  		<div id="features-list">
 		  			<h4>Features</h4>
 		  			<ul>
-		  				<li>Bounding Box<div class="arrow arrow-bb"></div></li>
-		  				<li>Visible area<div class="arrow arrow-bbv"></div></li>
-		  				<li>Head gaze<div class="arrow arrow-hgaze"></div></li>
-		  				<li>Body gaze<div class="arrow arrow-bgaze"></div></li>
-		  				<li>Points of interest<div class="arrow arrow-poi"></div></li>
+		  				<li>Bounding Box<!--<div class="arrow arrow-bb"></div>--></li>
+		  				<li>Visible area<!--<div class="arrow arrow-bbv"></div>--></li>
+		  				<li>Head gaze<!--<div class="arrow arrow-hgaze"></div>--></li>
+		  				<li>Body gaze<!--<div class="arrow arrow-bgaze"></div>--></li>
+		  				<li>Points of interest<!--<div class="arrow arrow-poi"></div>--></li>
 		  				<li>Video timeline with annotations</li>
 		  				<li>Annotations proposals</li>
 		  			</ul>
