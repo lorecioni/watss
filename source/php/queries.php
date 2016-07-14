@@ -303,6 +303,10 @@ class Queries {
 		return "UPDATE `".$this->tables->avatars."` SET `image`='../img/avatars/".$id.".jpg' WHERE peopleid=".$id;
 	}
 	
+	function removeAvatar($id){
+		return "DELETE FROM `".$this->tables->avatars."` WHERE peopleid=".$id;
+	}
+	
 	/**
 	 * ****************************
 	 *  	  POI queries 

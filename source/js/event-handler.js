@@ -160,13 +160,24 @@ $(document).ready(function(){
 				console.log("[get-realpeople] returned");
 				to_append = "";
 				for(var i in response){
-					to_append += '<option data-img-src="'+response[i]["image"]+'" value="'+response[i]["id"]+'"><span class="label label-warning" style="margin: 2px auto;">ID: '+response[i]["id"]+'</span></option>';
+					to_append += '<option data-img-src="'+response[i]["image"]+'" value="'+response[i]["id"]+'">';
+					to_append += '<span class="label label-warning" style="margin: 2px auto;">ID: '+response[i]["id"]+'</span>';
+					to_append += '</option>';
 				}
 				$("#prev-person-picker").html(to_append);
 				$("#prev-person-picker").imagepicker({
 					hide_select : true,
 					show_label  : true,
-					clicked: function(){
+					initialized: function(){
+						for(var i = 0; i < $('.thumbnail').length; i++){
+							var thumb = $('.thumbnail')[i];
+							var option = $('select.image-picker option')[i];
+							var id = $(option).attr('value');
+							$(thumb).attr('data-id', id).attr('id', 'avatar-thumbnail-' + id);
+							$(option).attr('id', 'avatar-' + id);
+						}
+					},
+					clicked: function(){							
 						$("#personRadios2").prop('checked', true);
 					}
 				});
@@ -189,6 +200,32 @@ $(document).ready(function(){
 		});
 	});
 }); // end of ready method
+
+/** Remove avatar from list using backspace or cancel button **/
+$(document).bind('keydown', 'delete backspace', function (e){
+	if($('#insertPersonModal').is(':visible')){
+		e.preventDefault();
+		if($('.thumbnails .thumbnail.selected').length > 0){
+			var id = $('.thumbnails .thumbnail.selected').first().data('id');
+			$.ajax({
+				type: "POST",
+				url: "../php/api.php",
+				data: {
+					action: "remove-avatar",
+					avatarid: id
+				},
+				success: function(response){
+					if(response){
+						console.log('Removing avatar id ' + id);
+						$('#prev-person-picker #avatar-' + id).remove()
+						$('#prev-person-picker').data('picker').sync_picker_with_select();
+						$('.thumbnails #avatar-thumbnail-' + id).remove()
+					}
+				}
+			});
+		}
+	}
+});
 
 $("#checkInfoModal").on("hidden.bs.modal", function(){
 	checkLogin();

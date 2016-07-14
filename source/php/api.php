@@ -602,6 +602,19 @@
 		break;
 		
 		/**
+		 * Removes a single avatar by id
+		 */
+		case "remove-avatar":
+			$done = true;
+			if(isset($_REQUEST['avatarid'])){
+				$sql = $QUERIES->removeAvatar($_REQUEST['avatarid']);
+				
+			}
+			mysql_query($sql) or $done = false;
+			jecho($done);
+			break;
+		
+		/**
 		 * Returns the frames list for the timeline. Each frame has associated the list of person ID
 		 * present in that frame; based on a frame ID (current).
 		 * Timeline starts from k previous frames and end after k frames from the selected one.
