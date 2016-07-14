@@ -246,6 +246,10 @@ div.dataTables_info {
     padding: 2px;
 }
 
+div#timeline-container {
+    max-width: 680px;
+}
+
 /* Settings */
 
 .settings.row {
