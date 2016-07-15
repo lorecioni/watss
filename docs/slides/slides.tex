@@ -185,9 +185,11 @@ Selecting a person in the list, the timeline displays its \textbf{history} highl
 
 \begin{tframe}{Proposals generation}
 It is possible to generate \textbf{proposals} for a person in some selected frames based on previous  annotation of a it using timeline: just click and drag highlighted annotation.
+
 \vspace{0.3cm}
+
 Proposals generation is based on the combination of three different techniques:
-\vspace{0.2cm}
+\vspace{0.4cm}
 \begin{itemize}
 \item \textbf{Motion detection} using a \emph{background substractor}
 \vspace{0.2cm}
@@ -197,6 +199,58 @@ Proposals generation is based on the combination of three different techniques:
 \end{itemize}
 \end{tframe}
 
+
+\begin{tframe}{Motion detection}
+Motion detection is based on a \textbf{background substraction} method: moving objects are detected performing a subtraction between the current frame and a background model of the current scene, obtaining a \textbf{foreground mask}.
+
+\vspace{0.3cm}
+Each pixel of a frame is modeled as a \textbf{Mixture of Gaussians} and those which correspond to background colors are selected according to variance and persistence.
+
+Pixel values that do not fit the background distributions are considered part of the foreground.
+
+\vspace{0.2cm}
+Background modeling consists of two main steps:
+\begin{itemize}
+\item \textbf{Background initialization}: background model evaluation.
+\item \textbf{Background update}: background model is adapted to possible changes in the scene.
+\end{itemize}
+\end{tframe}
+
+
+\begin{tframe}{Motion detection}
+Using the foreground mask, a set of \textbf{detections} are extracted based on contours.
+\begin{figure}[h]
+\centering
+\includegraphics[width=1\textwidth]{images/frame_mog.jpg}
+\end{figure}
+
+Given the previous frame person bounding box, those that do not \emph{overlap} or are \emph{inconsistent} with its dimensions are discarded.
+\end{tframe}
+
+\begin{tframe}{Pedestrian detector}
+The used \emph{pedestrian detection} technique is based on \textbf{Histogram of Oriented Gradients} and SVM classifier.
+
+\begin{figure}[h]
+\centering
+\includegraphics[width=1\textwidth]{images/hog_detector.jpg}
+\end{figure}
+
+As in the previous case, detections are filtered according to person history in scene.
+
+\vspace{0.2cm}
+\hfill {\tiny Figure from Suleiman, A.,Sze, V. J Sign Process Syst (2016)}
+\end{tframe}
+
+
+\begin{tframe}{Kalman filter}
+
+A \textbf{Kalman filter} is an optimal estimator used for following state estimation based on a set of previous observations.
+\begin{figure}[h]
+\centering
+\includegraphics[width=0.6\textwidth]{images/kalmaneq.jpg}
+\end{figure}
+As system state is considered the coordinates $(x, y)$ of the person in the current scene, using motion and pedestrian detection for updating the measure.
+\end{tframe}
 
 
 \end{document}
