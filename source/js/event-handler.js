@@ -169,8 +169,8 @@ $(document).ready(function(){
 					hide_select : true,
 					show_label  : true,
 					initialized: function(){
-						for(var i = 0; i < $('.thumbnail').length; i++){
-							var thumb = $('.thumbnail')[i];
+						for(var i = 0; i < $('.thumbnails .thumbnail').length; i++){
+							var thumb = $('.thumbnails .thumbnail')[i];
 							var option = $('select.image-picker option')[i];
 							var id = $(option).attr('value');
 							$(thumb).attr('data-id', id).attr('id', 'avatar-thumbnail-' + id);
