@@ -24,11 +24,11 @@
 
 \begin{tframe}{Introduction}
 
-WATSS, \textbf{Web Annotation Tool for Surveillance Scenarios}, is a web-based annotation tool developed to annotate dataset in surveillance systems.
+WATSS, \textbf{Web Annotation Tool for Surveillance Scenarios}, is a web-based annotation tool developed to annotate dataset in surveillance systems [1].
 
 \vspace{0.3cm}
 
-\textbf{Main goal}: improve WATSS with some \textbf{Computer Vision approaches}, in order to make easy for users to use this tool and make the annotation process more \emph{automatic}
+\textbf{Main goal}: improve WATSS with some \textbf{Computer Vision approaches}, in order to make easy for users to use this tool and make the annotation process more \emph{automatic}.
 
 \begin{figure}[h]
 \begin{center}
@@ -40,15 +40,15 @@ WATSS, \textbf{Web Annotation Tool for Surveillance Scenarios}, is a web-based a
 \end{tframe}
 
 \begin{tframe}{Comparative analysis of annotation tools}
-\textbf{LabelMe} 
+\textbf{LabelMe }[4]
 \begin{columns}[t] % align columns
 \begin{column}{.5\textwidth}
 \begin{itemize}
-\item \textbf{Web-based} tool, also for mobile applications
+\item \textbf{Web-based} tool, also released as mobile application
 \vspace{0.2cm}
 \item Annotate scenes with \textbf{polygonal areas}
 \vspace{0.2cm}
-\item \textbf{Nested} objects and \textbf{occlusion} annotation
+\item \textbf{Nested} objects and \textbf{occlusion} annotations
 \vspace{0.2cm}
 \item \emph{Zoom in} and \emph{out} of the scene
 \end{itemize}
@@ -89,7 +89,7 @@ WATSS, \textbf{Web Annotation Tool for Surveillance Scenarios}, is a web-based a
 \end{tframe}
 
 \begin{tframe}{Comparative analysis of annotation tools}
-\textbf{VATIC} 
+\textbf{VATIC} [3] 
 \begin{columns}[t] % align columns
 \begin{column}{.45\textwidth}
 \begin{itemize}
@@ -124,7 +124,7 @@ WATSS, \textbf{Web Annotation Tool for Surveillance Scenarios}, is a web-based a
 \vspace{0.1cm}
 \item Coarse \textbf{gaze} estimation
 \vspace{0.1cm}
-\item \textbf{Groups} and POI under observation
+\item \textbf{Groups} and \textbf{POI} under observation
 \vspace{0.1cm}
 \item \textbf{Multiple cameras} manager
 \end{itemize}
@@ -148,7 +148,7 @@ WATSS, \textbf{Web Annotation Tool for Surveillance Scenarios}, is a web-based a
 \vspace{0.2cm}
 \item Video \textbf{timeline} for annotations
 \vspace{0.2cm}
-\item Annotation automatic \textbf{proposals} generation
+\item Automatic \textbf{proposals} generation
 \vspace{0.2cm}
 \item \textbf{Scene geometry}-based enhancement
 \vspace{0.2cm}
@@ -238,7 +238,7 @@ The used \emph{pedestrian detection} technique is based on \textbf{Histogram of 
 As in the previous case, detections are filtered according to person history in scene.
 
 \vspace{0.2cm}
-\hfill {\tiny Figure from Suleiman, A., Sze, V. J Sign Process Syst (2016)}
+\hfill {\tiny Figure from Suleiman, A., Sze, V. J \emph{Signal Process Systems} (2016)}
 \end{tframe}
 
 
@@ -343,26 +343,59 @@ $$height = |head_y - feet_y|$$
 \end{tframe}
 
 
+\begin{tframe}{Demo}
+Time for a \textbf{demo}!
+\begin{figure}[h]
+\centering
+\includegraphics[width=1\textwidth]{images/demo.jpg}
+\end{figure}
+\end{tframe}
+
+
+\begin{tframe}{Conclusions}
+
+WATSS application has been improved with \textbf{new features} and a renewed \textbf{user interface}.
+\vspace{0.2cm}
+
+Some features are based on Computer Vision techniques, as automatic annotation proposals generation and scene geometry-based annotation insertion.
+\vspace{0.4cm}
+\textbf{Future works}:
+\vspace{0.2cm}
+\begin{itemize}
+\item Use scene geometry in proposals generation
+\vspace{0.2cm}
+\item Using different people detector, e.g. an \textbf{upper body detector}, for more accurate proposals
+\vspace{0.2cm}
+\item Different types of \textbf{annotation shapes}, e.g circle, ellipsis, polygon etc.
+\end{itemize}
+
+\end{tframe}
+
+
 \begin{tframe}{References}
 
-[1] O. M. Parkhi, A. Vevaldi, A. Zisserman, Deep Face Recognition, British Machine Vision Conference, 2015.
+\begin{scriptsize}
+
+[1] F. Bartoli, L. Seidenari, G. Lisanti, S. Karaman, and A. Del Bimbo. \emph{Watts: A web annotation tool for surveillance scenarios}. In \emph{Proceedings of the 23rd ACM International Conference on Multimedia, MM ’15}, pages 701–704, New York, NY, USA, 2015. ACM.
 
 \vspace{0.1in}
 
-[2] Davis E. King, Dlib-ml: A Machine Learning Toolkit, Journal of Machine Learning Research, 2009, 10, 1755-1758.
+[2] F. Bartoli, G. Lisanti, L. Seidenari, S. Karaman, and A. Del Bimbo. \emph{Museumvisitors: A dataset for pedestrian and group detection, gaze estimation and behavior understanding}. In \emph{Proceedings of the IEEE Conference on Computer Vision and Pattern Recognition Workshops}, pages 19–27, 2015.
 
 \vspace{0.1in}
 
-[3] Chang, Chih-Chung and Lin, Chih-Jen, LIBSVM: A library for support vector machines, ACM Transactions on Intelligent System and Technology, 2, 3, 2011, 27:1—27:27.
+[3] C. Vondrick, D. Patterson, and D. Ramanan. \emph{Efficiently scaling up crowdsourced video annotation}. Int. J. Comput. Vision, 101(1):184–204, Jan. 2013.
 
 \vspace{0.1in}
 
-[4] A. Vevaldi and K. Lenc, MatConvNet: Convolutional Neural Networks for MATLAB, Proceedings of the ACM Int. Conf. On Multimedia, 2015.
+[4] B. C. Russell, A. Torralba, K. P. Murphy, and W. T. Freeman. \emph{Labelme: A database and web-based tool for image annotation}. Int. J. Comput. Vision, 77(1-3):157–173, May 2008.
+
 
 \vspace{0.1in}
 
-[5] A. Vevaldi and B. Fulkerson, VLFeat: An Open and Portable Library of Computer Vision Algorithms, 2008.
+[5] A. Del Bimbo, G. Lisanti, and F. Pernici. \emph{Scale invariant 3d multi-person tracking using a base set of bundle adjusted visual landmarks}. In Computer Vision Workshops (ICCV Work- shops), 2009 IEEE 12th International Conference on, pages 1121–1128. IEEE, 2009.
 
+\end{scriptsize}
 
 \end{tframe}
 
