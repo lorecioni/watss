@@ -69,8 +69,8 @@
 
 		<!-- video goes here -->
 		<div class="container-fluid">
-			<div class="row">
-			  <div class="col-md-7">
+			<div class="row" id="main-container">
+			  <div class="col-md-7" id="video-container">
 				<div id="video-wrapper" style="width:680px;height:425px;">
 					<div id="video-box"></div>
 				</div>

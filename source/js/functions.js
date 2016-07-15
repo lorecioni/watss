@@ -874,11 +874,6 @@ function setFrame(frame){
             increment: 1,
             onZoom: function(){
             	var transformMatrix = $('#video-box').panzoom("getMatrix");
-            	if(transformMatrix.input == 'matrix(1, 0, 0, 1, -15, 0)'){
-            		$('#video-box').panzoom("setTransform", 'matrix(1, 0, 0, 1, 0, 0)')
-            		transformMatrix = $('#video-box').panzoom("getMatrix");
-            	}
-            	
             	var scale = parseInt(transformMatrix[0]);
             	var videoInitialWidth = parseFloat($("#video-box").width());
             	var videoInitialHeight = parseFloat($("#video-box").height());
@@ -940,11 +935,6 @@ function setFrame(frame){
             },
             onPan: function(){
             	var transformMatrix = $('#video-box').panzoom("getMatrix");
-            	if(transformMatrix.input == 'matrix(1, 0, 0, 1, -15, 0)'){
-            		$('#video-box').panzoom("setTransform", 'matrix(1, 0, 0, 1, 0, 0)')
-            		transformMatrix = $('#video-box').panzoom("getMatrix");
-            	}
-            	
             	var scale = parseInt(transformMatrix[0]);
             	var videoInitialWidth = parseFloat($("#video-box").width());
             	var videoInitialHeight = parseFloat($("#video-box").height());

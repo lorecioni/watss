@@ -171,6 +171,14 @@ img#frame-preview-timeline {
 	overflow: hidden;
 }
 
+div#main-container {
+    padding-left: 15px;
+}
+
+div#video-container {
+    padding: 0;
+}
+
 div#annotation-container {
     width: 100%;
     height: 100%;

@@ -277,14 +277,18 @@ function setDragResize(bb, bbV, bbF) {
 	//Set bounding box draggable
 	bb.draggable({ 
 		containment: "parent",
+		start: function( event, ui){
+			bbV.data('drag-offset-left', Math.abs(bb.position().left - bbV.position().left));
+			bbV.data('drag-offset-top', Math.abs(bb.position().top - bbV.position().top));
+		},
 		drag: function( event, ui ) {
 			if(!bb.hasClass('bb-selected')){
 				bb.click();
 			}
 			bbV.css({
-				'left': ui.position.left,
-				'top':  ui.position.top
-			});
+				'left': ui.position.left + bbV.data('drag-offset-left'),
+				'top': ui.position.top + bbV.data('drag-offset-top')
+			})
 			bbF.css({
 				'left': ui.position.left,
 				'top': ui.position.top
@@ -300,38 +304,33 @@ function setDragResize(bb, bbV, bbF) {
 			if(!bb.hasClass('bb-selected')){
 				bb.click();
 			}
-			bbV.css({
-				'top': bb.position().top,
-				'left': bb.position().left
-			})
-			var border = bb.outerWidth() - bb.width();
-			//Updating visible bounding box
-			if(bb.width() < bbV.width()){
-				bbV.width(bb.width() - border);
+			if(bb.position().left + bb.width() < bbV.position().left){
+				bbV.css('left', bb.position().left);
 			}
-			if(bb.height() < bbV.height()){
-				bbV.height(bb.height() - border)
+			if(bb.position().top + bb.height() < bbV.position().top){
+				bbV.css('top', bb.position().top);
 			}
-			//Updating face bounding box
-			bbF.width(bb.width());
-			bbF.height(bb.height());
 			updateBoundingBoxesData(bb, bbV, bbF);
 		},
-		alsoResize : bbF
+		alsoResize : bbV
 	});
 	
 	//Set bounding box visible draggable
 	bbV.draggable({ 
 		containment: "parent",
 		drag: function( event, ui ) {
-			bb.css({
-				'left': ui.position.left,
-				'top': ui.position.top
-			});
-			bbF.css({
-				'left': bbV.position().left,
-				'top': bbV.position().top
-			});
+			if(ui.position.left + bbV.outerWidth() > bb.position().left + bb.width()){
+				ui.position.left = bb.position().left + Math.abs(bb.width() - bbV.width());
+			}
+			if(ui.position.top < bb.position().top){
+				ui.position.top = bb.position().top;
+			}
+			if(ui.position.left < bb.position().left){
+				ui.position.left = bb.position().left;
+			}
+			if(ui.position.top + bbV.outerHeight() > bb.position().top + bb.height()){
+				ui.position.top = bb.position().top + Math.abs(bb.height() - bbV.height());
+			}
 			updateBoundingBoxesData(bb, bbV, bbF);
 		}
   	});
@@ -340,12 +339,11 @@ function setDragResize(bb, bbV, bbF) {
 	bbV.resizable({
 		containment: "parent", 
 		resize: function(event, ui){
-			//Contaning resize
-			if(bb.width() <= bbV.width()){
-				bbV.width(bb.width());
+			if(ui.position.left + bbV.outerWidth() > bb.position().left + bb.width()){
+				bbV.width(bb.position().left + bb.width() - bbV.position().left);
 			}
-			if(bb.height() <= bbV.height()){
-				bbV.height(bb.height())
+			if(ui.position.top + bbV.outerHeight() > bb.position().top + bb.height()){
+				bbV.height(bb.position().top + bb.height() - bbV.position().top);
 			}
 			updateBoundingBoxesData(bb, bbV, bbF);
 		},
