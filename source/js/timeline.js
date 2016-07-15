@@ -78,6 +78,7 @@
 	    		selectFrame(prev);
 	    	}
 	    	centerTimeline();
+	    	updateCursor();
 	    },
 	    /**
 		 * Go to the next frame
@@ -106,8 +107,6 @@
 	    	if(currentPerson != undefined){
 	    		$('#people-table #tr-' + currentPerson.id).click();
 	    	}
-	    	
-	    	
 	    },
 	    /**
 		 * Function handler on frame selected
@@ -503,21 +502,21 @@
 				var width = 0;
 				var left = -100;
 				var offset = 0;
-				
-				if(intervals[i].start <= selectedFrame && intervals[i].end >= selectedFrame ){
-					
+	
 					if($('#timeline-frame-' + intervals[i].start).length > 0 ){
 						width = $('#timeline-frame-' + intervals[i].start).width();
 						left = $('#timeline-frame-' + intervals[i].start).position().left;
-						offset = width * (intervals[i].end - intervals[i].start);
+						offset = width * (intervals[i].end - intervals[i].start + 1);
 					} else {
 						if($('#timeline-frame-' + intervals[i].end).length > 0 ){
 							width = $('#timeline-frame-' + intervals[i].end).width();
 							offset = width * ((intervals[i].end - intervals[i].start) + 1) + width;
 							left = $('#timeline-frame-' + intervals[i].end).position().left + width - offset;
 						} else {
-							left = $('.timeline-frames-container').position().left;
-							offset = $('.timeline-frames-container').width();
+							if(intervals[i].start <= selectedFrame && intervals[i].end >= selectedFrame ){
+								left = $('.timeline-frames-container').position().left;
+								offset = $('.timeline-frames-container').width();
+							}
 						}
 					}
 					
@@ -552,7 +551,7 @@
 							console.log('End propagation selection');
 							var start = $(this).data('start');
 							var end = $(this).data('end');
-							var offset = (($(this).width() - (end - start + 1) * 20)/20) - 1;
+							var offset = (($(this).width() - (end - start + 1) * 20)/20);
 							if(offset > 0){
 								var person = $(this).data('person');
 								$('.timeline-frames').append('<div class="timeline-loading-container"></div>');
@@ -564,7 +563,7 @@
 					});
 
 					annotationContainer.append(over);
-				}
+
 								
 				
 			}

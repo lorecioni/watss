@@ -608,7 +608,6 @@
 			$done = true;
 			if(isset($_REQUEST['avatarid'])){
 				$sql = $QUERIES->removeAvatar($_REQUEST['avatarid']);
-				
 			}
 			mysql_query($sql) or $done = false;
 			jecho($done);
