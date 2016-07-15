@@ -56,7 +56,7 @@ WATSS, \textbf{Web Annotation Tool for Surveillance Scenarios}, is a web-based a
 \begin{column}{.3\textwidth}
 \begin{figure}[h]
 \centering
-\includegraphics[scale=0.15]{images/labelme.jpg}
+\includegraphics[width=1\textwidth]{images/labelme.jpg}
 \end{figure}
 \end{column}%
 \end{columns}
@@ -82,7 +82,7 @@ WATSS, \textbf{Web Annotation Tool for Surveillance Scenarios}, is a web-based a
 \begin{column}{.3\textwidth}
 \begin{figure}[h]
 \centering
-\includegraphics[scale=0.15]{images/vipergt.jpg}
+\includegraphics[width=1\textwidth]{images/vipergt.jpg}
 \end{figure}
 \end{column}%
 \end{columns}
@@ -105,7 +105,7 @@ WATSS, \textbf{Web Annotation Tool for Surveillance Scenarios}, is a web-based a
 \begin{column}{.3\textwidth}
 \begin{figure}[h]
 \centering
-\includegraphics[scale=0.2]{images/vatic.jpg}
+\includegraphics[width=1.2\textwidth]{images/vatic.jpg}
 \end{figure}
 \end{column}%
 \end{columns}
@@ -132,7 +132,7 @@ WATSS, \textbf{Web Annotation Tool for Surveillance Scenarios}, is a web-based a
 \begin{column}{.3\textwidth}
 \begin{figure}[h]
 \centering
-\includegraphics[scale=0.4]{images/gaze.jpg}
+\includegraphics[width=1\textwidth]{images/gaze.jpg}
 \end{figure}
 \end{column}%
 \end{columns}
@@ -160,7 +160,7 @@ WATSS, \textbf{Web Annotation Tool for Surveillance Scenarios}, is a web-based a
 The \textbf{old} WATSS user interface
 \begin{figure}[h]
 \centering
-\includegraphics[scale=0.13]{images/watss_old.jpg}
+\includegraphics[width=1\textwidth]{images/watss_old.jpg}
 \end{figure}
 \end{tframe}
 
@@ -238,7 +238,7 @@ The used \emph{pedestrian detection} technique is based on \textbf{Histogram of 
 As in the previous case, detections are filtered according to person history in scene.
 
 \vspace{0.2cm}
-\hfill {\tiny Figure from Suleiman, A.,Sze, V. J Sign Process Syst (2016)}
+\hfill {\tiny Figure from Suleiman, A., Sze, V. J Sign Process Syst (2016)}
 \end{tframe}
 
 
@@ -249,8 +249,97 @@ A \textbf{Kalman filter} is an optimal estimator used for following state estima
 \centering
 \includegraphics[width=0.6\textwidth]{images/kalmaneq.jpg}
 \end{figure}
-As system state is considered the coordinates $(x, y)$ of the person in the current scene, using motion and pedestrian detection for updating the measure.
+As system state is considered the \textbf{coordinates} $(x, y)$ \textbf{of the person} in the current scene, using motion and pedestrian detection for updating the measure.
 \end{tframe}
 
+
+\begin{tframe}{Proposals generation}
+A proposal for a generic frame is the result of the combination of the above descripted methods. each resulted bounding box is compared with the previous frame annotation for evaluating a \textbf{score}:
+\vspace{0.2cm}
+
+$$score(r) = \frac{intersection(r, p)}{union(r, p)}$$
+
+\vspace{0.3cm}
+
+where $r$ is a resulting bounding box (\emph{i.e. the output of the motion detector}) and $p$ is the bounding box of the previous frame. 
+
+\vspace{0.3cm}
+
+If motion or pedestrian detector fails, then the \emph{Kalman filter prediction} is used as proposal.
+\end{tframe}
+
+
+\begin{tframe}{Proposals generation example}
+
+\begin{figure}[h]
+\centering
+\includegraphics[width=.3\textwidth]{images/original.jpg}\quad
+\includegraphics[width=.3\textwidth]{images/motion.jpg}\quad
+\includegraphics[width=.3\textwidth]{images/pedestrian.jpg}
+\end{figure}
+
+\begin{figure}[h]
+\centering
+\includegraphics[width=.45\textwidth]{images/prediction1.jpg}\quad
+\includegraphics[width=.45\textwidth]{images/prediction2.jpg}\quad
+\end{figure}
+
+\end{tframe}
+
+
+\begin{tframe}{Scene geometry}
+In the annotation insertion step, it is possible to use\textbf{ scene geometry} knowledge in order to generate proposal based on the pointer position.
+
+\vspace{0.5cm}
+Requirements:
+\vspace{0.3cm}
+\begin{itemize}
+\item \textbf{Static} cameras: they must be fixed in their positions
+\vspace{0.2cm}
+\item Camera \textbf{calibration parameters}
+\vspace{0.2cm}
+\begin{itemize}
+\item \emph{Intrinsic} parameters, $\textbf{K}$
+\item \emph{Estrinsic} parameters, rotation $\textbf{R}$ and translation $\textbf{t}$
+\item A \emph{cross-ratio} \textbf{$\mu$}, being projective invariant
+\end{itemize}
+\end{itemize}
+\end{tframe}
+
+\begin{tframe}{Camera calibration}
+Given $\textbf{X} = (X, Y, Z, 1)$, coordinates in \textbf{world}, and $\textbf{x} = (x, y, 1)$, coordinates in \textbf{scene}:
+$$\textbf{x} = K [R | t] X$$
+\begin{figure}[h]
+\centering
+\includegraphics[width=0.8\textwidth]{images/camera.jpg}
+\end{figure}
+\end{tframe}
+
+\begin{tframe}{Human height estimation}
+From camera parameters, it is possible to evaluate \textbf{vanishing line} $\textbf{l}$ and \textbf{vanishing point} $\textbf{v}$
+
+
+\begin{columns}[t] % align columns
+\begin{column}{.45\textwidth}
+$$l = P * [0, 0, 1]'$$
+$$v = ((K')^{-1} * K^{-1}) * l$$
+$$W = I + (\frac{1}{(1 - \mu)} - 1) * \frac{v * l'}{v' * l}$$
+
+\vspace{0.2cm}
+Giveng head position $head = (x, y, 1)$ and $\textbf{W}$:
+$$feet = W^{-1} * head$$
+$$height = |head_y - feet_y|$$
+
+\end{column}%
+\begin{column}{.5\textwidth}
+\begin{figure}[h]
+\centering
+\includegraphics[width=1.1\textwidth]{images/height_calib.jpg}
+\end{figure}
+\end{column}%
+\end{columns}
+
+
+\end{tframe}
 
 \end{document}
