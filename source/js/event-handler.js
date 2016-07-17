@@ -245,7 +245,7 @@ $('#checkInfoModal #close-login').on('click', function(){
  */
 $('#people-table tbody').on( 'click', 'tr', function (e) {
 	var table = $('#people-table').DataTable();
-	if (! $(this).hasClass('info') ) {			
+	if (! $(this).hasClass('info') && !$(this).find('td').first().hasClass('dataTables_empty')) {			
 		deselectAllBox("#people-table");
 		selectBox($(this));
 		//Select person in timeline
