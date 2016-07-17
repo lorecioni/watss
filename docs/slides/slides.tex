@@ -24,7 +24,7 @@
 
 \begin{tframe}{Introduction}
 
-WATSS, \textbf{Web Annotation Tool for Surveillance Scenarios}, is a web-based annotation tool developed to annotate dataset in surveillance systems [1].
+WATSS, \textbf{Web Annotation Tool for Surveillance Scenarios}, is a web-based annotation tool developed for annotating dataset in surveillance systems [1].
 
 \vspace{0.3cm}
 
@@ -46,7 +46,7 @@ WATSS, \textbf{Web Annotation Tool for Surveillance Scenarios}, is a web-based a
 \begin{itemize}
 \item \textbf{Web-based} tool, also released as mobile application
 \vspace{0.2cm}
-\item Annotate scenes with \textbf{polygonal areas}
+\item Annotate scenes with \textbf{polygonal shapes}
 \vspace{0.2cm}
 \item \textbf{Nested} objects and \textbf{occlusion} annotations
 \vspace{0.2cm}
@@ -150,7 +150,7 @@ WATSS, \textbf{Web Annotation Tool for Surveillance Scenarios}, is a web-based a
 \vspace{0.2cm}
 \item Automatic \textbf{proposals} generation
 \vspace{0.2cm}
-\item \textbf{Scene geometry}-based enhancement
+\item \textbf{Scene geometry-based} enhancement
 \vspace{0.2cm}
 \item Easy \textbf{setup} process
 \end{itemize}
@@ -180,18 +180,18 @@ In the video \textbf{timeline} all the video frames are shown, coloring the ones
 \includegraphics[scale=0.22]{images/timeline.jpg}
 \end{figure}
 \vspace{0.2cm}
-Selecting a person in the list, the timeline displays its \textbf{history} highlighting frames where it is present. It is possible to navigate video frames by clicking on it.
+Selecting a person in the list makes the timeline display its \textbf{history} highlighting frames where it is present. It is possible to navigate video frames by clicking on it.
 \end{tframe}
 
 \begin{tframe}{Proposals generation}
-It is possible to generate \textbf{proposals} for a person in some selected frames based on previous  annotation of a it using timeline: just click and drag highlighted annotation.
+It is possible to generate \textbf{proposals} for a person in some selected frames based on previous annotation of it using timeline: just click and drag the highlighted annotation.
 
 \vspace{0.3cm}
 
 Proposals generation is based on the combination of three different techniques:
 \vspace{0.4cm}
 \begin{itemize}
-\item \textbf{Motion detection} using a \emph{background substractor}
+\item \textbf{Motion detection} using a \emph{background subtractor}
 \vspace{0.2cm}
 \item \textbf{Pedestrian detection} using \emph{HOG descriptors}
 \vspace{0.2cm}
@@ -201,7 +201,7 @@ Proposals generation is based on the combination of three different techniques:
 
 
 \begin{tframe}{Motion detection}
-Motion detection is based on a \textbf{background substraction} method: moving objects are detected performing a subtraction between the current frame and a background model of the current scene, obtaining a \textbf{foreground mask}.
+Motion detection is based on a \textbf{background subtraction} method: moving objects are detected performing a subtraction between the current frame and a background model of the current scene, obtaining a \textbf{foreground mask}.
 
 \vspace{0.3cm}
 Each pixel of a frame is modeled as a \textbf{Mixture of Gaussians} and those which correspond to background colors are selected according to variance and persistence.
@@ -235,7 +235,7 @@ The used \emph{pedestrian detection} technique is based on \textbf{Histogram of 
 \includegraphics[width=1\textwidth]{images/hog_detector.jpg}
 \end{figure}
 
-As in the previous case, detections are filtered according to person history in scene.
+As in the previous case, detections are filtered according to the person history in scene.
 
 \vspace{0.2cm}
 \hfill {\tiny Figure from Suleiman, A., Sze, V. J \emph{Signal Process Systems} (2016)}
@@ -244,17 +244,17 @@ As in the previous case, detections are filtered according to person history in 
 
 \begin{tframe}{Kalman filter}
 
-A \textbf{Kalman filter} is an optimal estimator used for following state estimation based on a set of previous observations.
+A \textbf{Kalman filter} is an optimal estimator used for following state estimations based on a set of previous observations.
 \begin{figure}[h]
 \centering
 \includegraphics[width=0.6\textwidth]{images/kalmaneq.jpg}
 \end{figure}
-As system state is considered the \textbf{coordinates} $(x, y)$ \textbf{of the person} in the current scene, using motion and pedestrian detection for updating the measure.
+A single state in the system considers the \textbf{coordinates} $(x, y)$ \textbf{of the person} in the current scene, using motion and pedestrian detection for updating the measure.
 \end{tframe}
 
 
 \begin{tframe}{Proposals generation}
-A proposal for a generic frame is the result of the combination of the above descripted methods. each resulted bounding box is compared with the previous frame annotation for evaluating a \textbf{score}:
+A proposal for a generic frame is the result of the combination of the above descripted methods. Each resulted bounding box is compared with the previous frame annotation in order to evaluate a \textbf{score}:
 \vspace{0.2cm}
 
 $$score(r) = \frac{intersection(r, p)}{union(r, p)}$$
@@ -265,7 +265,7 @@ where $r$ is a resulting bounding box (\emph{i.e. the output of the motion detec
 
 \vspace{0.3cm}
 
-If motion or pedestrian detector fails, then the \emph{Kalman filter prediction} is used as proposal.
+If the motion or the pedestrian detector fails, then the \emph{Kalman filter prediction} is used as the proposal.
 \end{tframe}
 
 
@@ -288,13 +288,13 @@ If motion or pedestrian detector fails, then the \emph{Kalman filter prediction}
 
 
 \begin{tframe}{Scene geometry}
-In the annotation insertion step, it is possible to use\textbf{ scene geometry} knowledge in order to generate proposal based on the pointer position.
+In the annotation insertion step, it is possible to use the\textbf{ scene geometry} knowledge in order to generate proposals based on the pointer position.
 
 \vspace{0.5cm}
 Requirements:
 \vspace{0.3cm}
 \begin{itemize}
-\item \textbf{Static} cameras: they must be fixed in their positions
+\item \textbf{Static} cameras
 \vspace{0.2cm}
 \item Camera \textbf{calibration parameters}
 \vspace{0.2cm}
@@ -307,7 +307,7 @@ Requirements:
 \end{tframe}
 
 \begin{tframe}{Camera calibration}
-Given $\textbf{X} = (X, Y, Z, 1)$, coordinates in \textbf{world}, and $\textbf{x} = (x, y, 1)$, coordinates in \textbf{scene}:
+Given $\textbf{X} = (X, Y, Z, 1)$ as coordinates in \textbf{world}, and $\textbf{x} = (x, y, 1)$ as coordinates in \textbf{scene}:
 $$\textbf{x} = K [R | t] X$$
 \begin{figure}[h]
 \centering
@@ -316,7 +316,7 @@ $$\textbf{x} = K [R | t] X$$
 \end{tframe}
 
 \begin{tframe}{Human height estimation}
-From camera parameters, it is possible to evaluate \textbf{vanishing line} $\textbf{l}$ and \textbf{vanishing point} $\textbf{v}$
+From the camera parameters, it is possible to evaluate the \textbf{vanishing line} $\textbf{l}$ and the \textbf{vanishing point} $\textbf{v}$
 
 
 \begin{columns}[t] % align columns
@@ -326,7 +326,7 @@ $$v = ((K')^{-1} * K^{-1}) * l$$
 $$W = I + (\frac{1}{(1 - \mu)} - 1) * \frac{v * l'}{v' * l}$$
 
 \vspace{0.2cm}
-Giveng head position $head = (x, y, 1)$ and $\textbf{W}$:
+Given the head position $head = (x, y, 1)$ and $\textbf{W}$:
 $$feet = W^{-1} * head$$
 $$height = |head_y - feet_y|$$
 
@@ -359,12 +359,13 @@ WATSS application has been improved with \textbf{new features} and a renewed \te
 
 Some features are based on Computer Vision techniques, as automatic annotation proposals generation and scene geometry-based annotation insertion.
 \vspace{0.4cm}
-\textbf{Future works}:
+
+\textbf{Future developments}:
 \vspace{0.2cm}
 \begin{itemize}
 \item Use scene geometry in proposals generation
 \vspace{0.2cm}
-\item Using different people detector, e.g. an \textbf{upper body detector}, for more accurate proposals
+\item Using different people detectors, e.g. an \textbf{upper body detector}, for more accurate proposals
 \vspace{0.2cm}
 \item Different types of \textbf{annotation shapes}, e.g circle, ellipsis, polygon etc.
 \end{itemize}
